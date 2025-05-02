@@ -1,0 +1,14 @@
+DevelopmentEnvironment/logs
+DevelopmentEnvironment/sync-tests
+DevelopmentEnvironment/test_logs
+DevelopmentEnvironment/windows-sync
+
+ToolManagement/Backups/ToolData
+
+ToolManagement/Logs
+
+ToolManagement/Scripts/Logs
+
+LastErrors.txt
+**/.claude/settings.local.json
+atlassian-docs/
