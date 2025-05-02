@@ -10,5 +10,8 @@ ToolManagement/Logs
 ToolManagement/Scripts/Logs
 
 LastErrors.txt
+
 **/.claude/settings.local.json
 atlassian-docs/
+
+C:\Mach3\ToolManagement\logs
