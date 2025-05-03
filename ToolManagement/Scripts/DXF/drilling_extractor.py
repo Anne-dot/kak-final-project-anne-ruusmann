@@ -13,10 +13,13 @@ References:
 
 import re
 import math
+import sys
+from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Any, Union
 
 # Import from Utils package
 from Utils.logging_utils import setup_logger, log_exception
+from Utils.error_utils import ErrorHandler, BaseError, FileError, ValidationError, ErrorSeverity, ErrorCategory
 
 
 class DrillPoint:
@@ -200,15 +203,20 @@ class DrillingExtractor:
             dxf_doc: ezdxf document object
             
         Returns:
-            tuple: (success, drill_points, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if points were found
-                - drill_points is a list of DrillPoint objects
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains the drilling points or error information
         """
         if dxf_doc is None:
-            error_msg = "No DXF document provided"
-            self.logger.error(error_msg)
-            return False, None, error_msg
+            self.logger.error("No DXF document provided")
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message="No DXF document provided",
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_document"}
+                )
+            )
         
         self.logger.info("Finding drilling points")
         
@@ -219,6 +227,10 @@ class DrillingExtractor:
             # List to store found drilling points
             drill_points = []
             
+            # Track processed and failed entities for reporting
+            processed_layers = set()
+            failed_entities = []
+            
             # Look for drilling points
             for entity in modelspace:
                 try:
@@ -226,6 +238,7 @@ class DrillingExtractor:
                     if entity.dxftype() == "CIRCLE":
                         # Get the layer name
                         layer_name = entity.dxf.layer
+                        processed_layers.add(layer_name)
                         
                         # Check if layer name contains any drill keyword
                         if any(keyword in layer_name for keyword in self.drill_keywords):
@@ -235,9 +248,12 @@ class DrillingExtractor:
                                 drill_points.append(point)
                                 self.logger.info(f"Found drilling point at {point.position} on layer: {layer_name}")
                             except Exception as e:
-                                self.logger.warning(f"Failed to process drill point on layer {layer_name}: {str(e)}")
+                                msg = f"Failed to process drill point on layer {layer_name}: {str(e)}"
+                                self.logger.warning(msg)
+                                failed_entities.append({"layer": layer_name, "error": str(e)})
                 except Exception as e:
                     self.logger.warning(f"Failed to process entity: {str(e)}")
+                    failed_entities.append({"error": str(e)})
                     continue
             
             # Check if any drilling points were found
@@ -252,18 +268,46 @@ class DrillingExtractor:
                         circle_layers.add(entity.dxf.layer)
                 
                 if circle_layers:
-                    self.logger.info(f"Circles found on these layers: {', '.join(circle_layers)}")
+                    layer_list = ', '.join(circle_layers)
+                    self.logger.info(f"Circles found on these layers: {layer_list}")
                 
-                return False, [], warning_msg
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=warning_msg,
+                        severity=ErrorSeverity.WARNING,
+                        details={
+                            "found_layers": list(circle_layers),
+                            "processed_layers": list(processed_layers),
+                            "drill_keywords": self.drill_keywords
+                        }
+                    )
+                )
             
             success_msg = f"Found {len(drill_points)} drilling points"
             self.logger.info(success_msg)
-            return True, drill_points, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data={
+                    "drill_points": drill_points,
+                    "count": len(drill_points),
+                    "processed_layers": list(processed_layers),
+                    "failed_entities": failed_entities
+                }
+            )
             
         except Exception as e:
             error_msg = f"Error finding drilling points: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, [], error_msg
+            
+            return ErrorHandler.from_exception(
+                FileError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
     def extract_drilling_parameters(self, drill_points):
         """
@@ -273,15 +317,21 @@ class DrillingExtractor:
             drill_points: List of DrillPoint objects
             
         Returns:
-            tuple: (success, parameters, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if parameters were extracted
-                - parameters is a list of parameter dictionaries
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains the extracted parameters or error information
         """
         if not drill_points:
             warning_msg = "No drilling points provided for parameter extraction"
             self.logger.warning(warning_msg)
-            return False, [], warning_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=warning_msg,
+                    severity=ErrorSeverity.WARNING,
+                    details={"error": "empty_drill_points_list"}
+                )
+            )
         
         self.logger.info("Extracting drilling parameters")
         
@@ -300,14 +350,27 @@ class DrillingExtractor:
                     
                 parameters.append(param_dict)
             
-            success_msg = "Drilling parameters extracted successfully"
+            success_msg = f"Extracted parameters for {len(parameters)} drilling points"
             self.logger.info(success_msg)
-            return True, parameters, success_msg
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data={
+                    "parameters": parameters,
+                    "count": len(parameters)
+                }
+            )
             
         except Exception as e:
             error_msg = f"Error extracting drilling parameters: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, [], error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
     def extract_all_drilling_info(self, dxf_doc):
         """
@@ -320,48 +383,80 @@ class DrillingExtractor:
             dxf_doc: ezdxf document object
             
         Returns:
-            tuple: (success, drilling_info, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if extraction succeeded
-                - drilling_info is a dict with all drilling information
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains all drilling information or error details
         """
         if dxf_doc is None:
             error_msg = "No DXF document provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_document"}
+                )
+            )
         
         self.logger.info("Extracting complete drilling information")
         
         try:
             # Extract drilling points
-            success, drill_points, message = self.find_drilling_points(dxf_doc)
+            success, message, details = self.find_drilling_points(dxf_doc)
             if not success:
-                return False, {'points': [], 'parameters': [], 'count': 0}, message
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=f"Failed to find drilling points: {message}",
+                        severity=ErrorSeverity.WARNING,
+                        details=details
+                    )
+                )
+                
+            drill_points = details.get('drill_points', [])
             
             # Extract parameters
-            params_success, parameters, params_msg = self.extract_drilling_parameters(drill_points)
+            params_success, params_message, params_details = self.extract_drilling_parameters(drill_points)
+            parameters = []
+            
             if not params_success:
-                warning_msg = f"Failed to extract drilling parameters: {params_msg}"
+                warning_msg = f"Failed to extract drilling parameters: {params_message}"
                 self.logger.warning(warning_msg)
-                parameters = []
+                # Continue despite parameter extraction failure
+            else:
+                parameters = params_details.get('parameters', [])
             
             # Combine all information into a single drilling info dictionary
             drilling_info = {
                 'points': drill_points,
                 'parameters': parameters,
-                'count': len(drill_points)
+                'count': len(drill_points),
+                'success_details': {
+                    'points_extraction': success,
+                    'params_extraction': params_success
+                }
             }
             
             success_msg = f"Drilling information extracted successfully: found {len(drill_points)} drilling points"
             self.logger.info(success_msg)
-            return True, drilling_info, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=drilling_info
+            )
             
         except Exception as e:
             error_msg = f"Error extracting drilling info: {str(e)}"
             log_exception(self.logger, error_msg)
             
-            # Return empty structure in case of error
-            return False, {'points': [], 'parameters': [], 'count': 0}, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
 
 
 # Example usage if run directly
@@ -372,20 +467,22 @@ if __name__ == "__main__":
     extractor = DrillingExtractor()
     loader = DxfLoader()
     
-    success, doc, message = loader.load_dxf()
+    success, message, details = loader.load_dxf()
     
     if success:
         print(message)
-        success, drilling_info, message = extractor.extract_all_drilling_info(doc)
+        doc = details.get('dxf_document')
+        success, message, details = extractor.extract_all_drilling_info(doc)
         
         print(f"\nDrilling info extraction: {'Succeeded' if success else 'Failed'}")
         print(f"Message: {message}")
         
         if success:
-            print(f"\nFound {drilling_info['count']} drilling points")
+            drilling_info = details
+            print(f"\nFound {drilling_info.get('count', 0)} drilling points")
             
             print("\nDrilling Points:")
-            for i, point in enumerate(drilling_info['points']):
+            for i, point in enumerate(drilling_info.get('points', [])):
                 print(f"\nPoint {i+1}:")
                 print(f"  Position: {point.position}")
                 print(f"  Layer: {point.layer_name}")
@@ -394,5 +491,7 @@ if __name__ == "__main__":
                 print(f"  Extrusion Vector: {point.extrusion_vector}")
         else:
             print(f"Error: {message}")
+            print(f"Error details: {details}")
     else:
         print(f"Error: {message}")
+        print(f"Error details: {details}")

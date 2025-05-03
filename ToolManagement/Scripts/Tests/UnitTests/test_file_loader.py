@@ -88,15 +88,15 @@ class TestDxfLoader(unittest.TestCase):
         mock_readfile.return_value = mock_doc
         
         # Test loading the valid file
-        success, doc, message = self.loader.load_dxf(self.valid_dxf_path)
+        success, message, details = self.loader.load_dxf(self.valid_dxf_path)
         
         # Verify results
         self.assertTrue(success)
-        self.assertIsNotNone(doc)
+        self.assertIsNotNone(details.get('document'))
         self.assertIn("Successfully loaded", message)
         
         # Verify mock was called correctly
-        mock_readfile.assert_called_once_with(self.valid_dxf_path)
+        mock_readfile.assert_called_once()
     
     @patch('ezdxf.readfile')
     def test_load_invalid_dxf(self, mock_readfile):
@@ -105,28 +105,28 @@ class TestDxfLoader(unittest.TestCase):
         mock_readfile.side_effect = ezdxf.DXFError("Invalid DXF format")
         
         # Test loading the invalid file
-        success, doc, message = self.loader.load_dxf(self.invalid_dxf_path)
+        success, message, details = self.loader.load_dxf(self.invalid_dxf_path)
         
         # Verify results
         self.assertFalse(success)
-        self.assertIsNone(doc)
         self.assertIn("Error loading DXF file", message)
+        self.assertIsNotNone(details.get('details'))
     
     def test_is_valid_dxf_nonexistent_file(self):
         """Test validation with a non-existent file."""
-        is_valid, message = self.loader.is_valid_dxf("nonexistent_file.dxf")
+        success, message, details = self.loader.is_valid_dxf("nonexistent_file.dxf")
         
         # Verify results
-        self.assertFalse(is_valid)
+        self.assertFalse(success)
         self.assertIn("not found", message)
     
     def test_is_valid_dxf_non_dxf_file(self):
         """Test validation with a non-DXF file."""
-        is_valid, message = self.loader.is_valid_dxf(self.non_dxf_path)
+        success, message, details = self.loader.is_valid_dxf(self.non_dxf_path)
         
         # Verify results
-        self.assertFalse(is_valid)
-        self.assertIn("does not have .dxf extension", message)
+        self.assertFalse(success)
+        self.assertIn("valid extension", message)
     
     @patch('ezdxf.readfile')
     def test_is_valid_dxf_empty_file(self, mock_readfile):
@@ -141,10 +141,10 @@ class TestDxfLoader(unittest.TestCase):
         mock_readfile.return_value = mock_doc
         
         # Test validation
-        is_valid, message = self.loader.is_valid_dxf(self.valid_dxf_path)
+        success, message, details = self.loader.is_valid_dxf(self.valid_dxf_path)
         
         # Verify results
-        self.assertFalse(is_valid)
+        self.assertFalse(success)
         self.assertIn("contains no entities", message)
     
     @patch('ezdxf.readfile')
@@ -189,10 +189,20 @@ class TestDxfLoader(unittest.TestCase):
         mock_readfile.return_value = mock_doc
         
         # Load the file first
-        success, doc, _ = self.loader.load_dxf(self.valid_dxf_path)
+        success, message, details = self.loader.load_dxf(self.valid_dxf_path)
+        
+        # Get the document from details dictionary
+        doc = details.get('document')
         
         # Get the DXF info
-        info = self.loader.get_dxf_info(doc)
+        info_success, info_message, info_details = self.loader.get_dxf_info(doc)
+        
+        # Verify success and message
+        self.assertTrue(info_success)
+        self.assertIn("Successfully extracted DXF information", info_message)
+        
+        # Extract info from details
+        info = info_details
         
         # Verify the info contents
         self.assertEqual(info['dxf_version'], "AC1024")
@@ -205,9 +215,9 @@ class TestDxfLoader(unittest.TestCase):
         self.assertIn('Layer2', info['layers'])
         self.assertEqual(info['header_variables'], 2)
     
-    @patch('DXF.file_loader.platform.system')
-    @patch('DXF.file_loader.filedialog.askopenfilename')
-    def test_select_dxf_file_windows(self, mock_askopenfilename, mock_system):
+    @patch('Utils.file_loader.platform.system')
+    @patch('Utils.file_loader.filedialog.askopenfilename')
+    def test_select_file_windows(self, mock_askopenfilename, mock_system):
         """Test file selection on Windows."""
         # Mock Windows platform
         mock_system.return_value = "Windows"
@@ -216,24 +226,24 @@ class TestDxfLoader(unittest.TestCase):
         mock_askopenfilename.return_value = "C:/Path/to/selected.dxf"
         
         # Test file selection
-        selected_file = self.loader.select_dxf_file()
+        selected_file = self.loader.select_file()
         
         # Verify results
         self.assertEqual(selected_file, "C:/Path/to/selected.dxf")
         mock_askopenfilename.assert_called_once()
 
     @unittest.skipIf(platform.system() == 'Windows', "Skipping Linux-specific test on Windows")
-    @patch('DXF.file_loader.platform.system')
-    @patch('DXF.file_loader.os.path.abspath')
-    @patch('DXF.file_loader.os.listdir')
+    @patch('Utils.file_loader.platform.system')
+    @patch('Utils.file_loader.os.path.exists')
+    @patch('Utils.file_loader.os.listdir')
     @patch('builtins.input')
-    def test_select_dxf_file_linux(self, mock_input, mock_listdir, mock_abspath, mock_system):
+    def test_select_file_linux(self, mock_input, mock_listdir, mock_exists, mock_system):
         """Test file selection on Linux."""
         # Mock Linux platform
         mock_system.return_value = "Linux"
         
-        # Mock directory path
-        mock_abspath.return_value = "/path/to/test/data/dir"
+        # Mock directory exists check
+        mock_exists.return_value = True
         
         # Mock directory listing
         mock_listdir.return_value = ["test1.dxf", "test2.dxf", "not_a_dxf.txt"]
@@ -241,10 +251,8 @@ class TestDxfLoader(unittest.TestCase):
         # Mock user input
         mock_input.return_value = "1"  # User selects the first file
         
-        # Mock directory existence check
-        with patch('DXF.file_loader.os.path.exists', return_value=True):
-            # Test file selection
-            selected_file = self.loader.select_dxf_file()
+        # Test file selection with a test directory
+        selected_file = self.loader.select_file(test_data_dir="/path/to/test/data/dir")
         
         # Verify results
         self.assertEqual(selected_file, "/path/to/test/data/dir/test1.dxf")

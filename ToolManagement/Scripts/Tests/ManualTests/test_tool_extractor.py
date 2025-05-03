@@ -10,8 +10,13 @@ test_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "TestDa
 dxf_dir = os.path.join(test_data_dir, "DXF")
 
 # Simple DXF file selector
-def select_dxf_file():
-    """Display a simple selection menu for DXF files."""
+def select_dxf_file(auto_select=True):
+    """Display a simple selection menu for DXF files.
+    
+    Args:
+        auto_select: If True, automatically select the first file
+                    If False, prompt for user input
+    """
     dxf_files = [f for f in os.listdir(dxf_dir) if f.lower().endswith('.dxf')]
     
     if not dxf_files:
@@ -22,21 +27,27 @@ def select_dxf_file():
     for i, file in enumerate(dxf_files):
         print(f"{i+1}. {file}")
     
-    while True:
-        try:
-            choice = input("\nSelect a file number (or press Enter for default): ")
-            if choice.strip() == "":
-                # Default to first file
-                selected_index = 0
-                break
-            else:
-                selected_index = int(choice) - 1
-                if 0 <= selected_index < len(dxf_files):
+    if auto_select:
+        # Default to first file for automated testing
+        selected_index = 0
+        print(f"\nAutomatically selecting: {dxf_files[selected_index]}")
+    else:
+        # Interactive mode for manual testing
+        while True:
+            try:
+                choice = input("\nSelect a file number (or press Enter for default): ")
+                if choice.strip() == "":
+                    # Default to first file
+                    selected_index = 0
                     break
                 else:
-                    print(f"Please enter a number between 1 and {len(dxf_files)}")
-        except ValueError:
-            print("Please enter a valid number")
+                    selected_index = int(choice) - 1
+                    if 0 <= selected_index < len(dxf_files):
+                        break
+                    else:
+                        print(f"Please enter a number between 1 and {len(dxf_files)}")
+            except ValueError:
+                print("Please enter a valid number")
     
     selected_file = dxf_files[selected_index]
     return os.path.join(dxf_dir, selected_file)
@@ -58,7 +69,8 @@ print(f"Using test DXF file: {dxf_file_path}")
 
 # Step 1: Load the DXF file
 print("\nStep 1: Loading DXF file...")
-success, doc, message = loader.load_dxf(dxf_file_path)
+success, message, details = loader.load_dxf(dxf_file_path)
+doc = details.get('document') if success else None
 
 if not success:
     print(f"Error loading DXF: {message}")
@@ -68,19 +80,45 @@ print(f"SUCCESS: DXF loaded successfully: {message}")
 
 # Step 2: Extract drilling information
 print("\nStep 2: Extracting drilling information...")
-drill_success, drilling_info, drill_message = drill_extractor.extract_all_drilling_info(doc)
+drill_success, drill_message, drill_details = drill_extractor.extract_all_drilling_info(doc)
 
 if not drill_success:
     print(f"Error extracting drilling info: {drill_message}")
     sys.exit(1)
 
+# With new error response format, the drilling_info is the entire drill_details
+drilling_info = drill_details
+
+# Debug the structure
 print(f"SUCCESS: Drilling information extracted: {drill_message}")
-print(f"  Found {drilling_info['vertical_count']} vertical drilling points")
-print(f"  Found {drilling_info['horizontal_count']} horizontal drilling points")
+print(f"  Found {len(drilling_info.get('points', []))} drilling points")
+print("\nDebugging drilling_info structure:")
+import json
+try:
+    # Convert only serializable parts for display
+    debug_info = {}
+    for k, v in drilling_info.items():
+        if k == 'points':
+            debug_info[k] = f"List with {len(v)} DrillPoint objects"
+        elif k == 'parameters':
+            debug_info[k] = json.dumps({'vertical': len(v), 'horizontal': 0})
+        else:
+            debug_info[k] = str(v)
+    print(json.dumps(debug_info, indent=2))
+except Exception as e:
+    print(f"Error debugging structure: {str(e)}")
 
 # Step 3: Extract tool requirements
 print("\nStep 3: Extracting tool requirements...")
-tool_success, requirements, tool_message = tool_extractor.extract_tool_requirements(doc, drilling_info)
+# Fix the drilling_info structure to match what tool_extractor expects
+# It expects a different format than what drilling_extractor now returns
+fixed_drilling_info = {
+    'parameters': {
+        'vertical': drilling_info.get('parameters', []),
+        'horizontal': []
+    }
+}
+tool_success, tool_message, requirements = tool_extractor.extract_tool_requirements(doc, fixed_drilling_info)
 
 if not tool_success:
     print(f"Error extracting tool requirements: {tool_message}")

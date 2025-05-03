@@ -1,26 +1,34 @@
 """
-Manual test script for window_detector module.
+Manual test script for window detection functionality.
 
-This script provides a simple way to manually test if the WindowDetector
-can detect if a specific file is open in Notepad or WordPad.
+This script provides a simple way to manually test if the tool data
+file is detected as open in Notepad or WordPad.
+
+Note: This test is Windows-specific and will be skipped on other platforms.
 
 Usage:
-    python test_manual_window_detector.py [path_to_file]
+    python test_window_detector_manual.py [path_to_file]
 """
 
 import os
 import sys
 import time
 import logging
+import platform
+
+# Skip test on non-Windows platforms
+if platform.system() != "Windows":
+    print(f"Skipping window detection test on {platform.system()} - Windows required.")
+    sys.exit(0)
 
 # Add FileMonitor directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'FileMonitor'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
-from window_detector import WindowDetector
+from FileMonitor import is_tool_data_open
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
@@ -51,18 +59,13 @@ def test_file_detection(file_path):
     
     print(f"Testing file: {file_path}")
     print(f"Filename: {os.path.basename(file_path)}")
-    print("\nInitializing detector...")
-    
-    # Create detector
-    detector = WindowDetector(debug_mode=True)
     
     # First test with file hopefully NOT open
     print("\nTEST 1: Checking if file is currently open...")
-    result = detector.is_file_open(file_path)
+    result = is_tool_data_open()
     
     if result:
-        app = detector.get_application_with_file(file_path)
-        print(f"File IS currently open in {app}")
+        print(f"File IS currently open")
         print("Please close the file and run the test again.")
         return
     else:
@@ -80,11 +83,10 @@ def test_file_detection(file_path):
     
     # Test again after file should be open
     print("\nTEST 2: Checking if file is now open...")
-    result = detector.is_file_open(file_path)
+    result = is_tool_data_open()
     
     if result:
-        app = detector.get_application_with_file(file_path)
-        print(f"SUCCESS: File detected as open in {app}")
+        print(f"SUCCESS: File detected as open")
     else:
         print("FAILED: File not detected as open in any supported editor.")
         print("This could mean:")
@@ -98,12 +100,21 @@ def test_file_detection(file_path):
 
 
 if __name__ == "__main__":
-    # Get file path from command line or use default
+    # Get file path from command line or use default from TestData
     if len(sys.argv) > 1:
         file_path = sys.argv[1]
     else:
-        # Default path for tool data CSV
-        file_path = r"C:\Mach3\ToolManagement\Data\tool-data.csv"
+        # Use a test file from the TestData directory
+        test_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "TestData")
+        
+        # Try DXF file first
+        dxf_file = os.path.join(test_data_dir, "DXF", "Bottom_2_f0.dxf")
+        
+        # If DXF file doesn't exist, try a GCode file
+        if not os.path.exists(dxf_file):
+            file_path = os.path.join(test_data_dir, "Gcode", "001.txt")
+        else:
+            file_path = dxf_file
     
     # Run test
     test_file_detection(file_path)

@@ -14,7 +14,8 @@ from typing import List, Dict, Any, Tuple, Set, Union
 import numpy as np
 
 # Import from Utils package
-from Utils.logging_utils import setup_logger
+from Utils.logging_utils import setup_logger, log_exception
+from Utils.error_utils import ErrorHandler, BaseError, ValidationError, ErrorSeverity, ErrorCategory
 
 # Setup logger
 logger = setup_logger(__name__)
@@ -175,7 +176,7 @@ class DrillPointAnalyzer:
         logger.info(f"Found {len(sorted_groups)} tool groups")
         return sorted_groups
     
-    def analyze_drilling_data(self, drilling_points: List[Any]) -> Tuple[bool, Dict[str, Any], Dict[str, Any]]:
+    def analyze_drilling_data(self, drilling_points: List[Any]) -> Tuple[bool, str, Dict]:
         """
         Analyze drilling points and group them by tool requirements.
         
@@ -183,14 +184,18 @@ class DrillPointAnalyzer:
             drilling_points: List of drilling point objects
             
         Returns:
-            Tuple containing:
-            - success flag (bool)
-            - results dictionary with tool groups and statistics
-            - details dictionary with additional information
+            Tuple of (success, message, details)
         """
         if not drilling_points:
-            logger.warning("No drilling points to analyze")
-            return True, {'tool_groups': {}, 'statistics': {'total_points': 0}}, {}
+            warning_msg = "No drilling points to analyze"
+            logger.warning(warning_msg)
+            return ErrorHandler.create_success_response(
+                message=warning_msg,
+                data={
+                    'tool_groups': {},
+                    'statistics': {'total_points': 0}
+                }
+            )
         
         try:
             # Group points by tool requirements
@@ -233,19 +238,36 @@ class DrillPointAnalyzer:
                         'diameters': sorted(set(group['diameter'] for group in edge_groups))
                     }
             
-            details = {
-                'group_count': len(tool_groups),
-                'edge_summary': edge_counts,
-                'edge_details': edge_details
-            }
+            success_msg = (f"Analysis complete: {statistics['total_groups']} tool groups "
+                         f"({statistics['vertical_groups']} vertical, {statistics['horizontal_groups']} horizontal)")
+            logger.info(success_msg)
             
-            logger.info(f"Analysis complete: {statistics['total_groups']} tool groups "
-                      f"({statistics['vertical_groups']} vertical, {statistics['horizontal_groups']} horizontal)")
-            return True, results, details
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data={
+                    'results': results,
+                    'statistics': statistics,
+                    'edge_details': edge_details,
+                    'group_count': len(tool_groups),
+                    'edge_summary': edge_counts
+                }
+            )
             
         except Exception as e:
-            logger.error(f"Error during drilling analysis: {str(e)}")
-            return False, {}, {'error': str(e)}
+            error_msg = f"Error during drilling analysis: {str(e)}"
+            log_exception(logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={
+                        "error_type": "Exception",
+                        "error": str(e),
+                        "points_count": len(drilling_points)
+                    }
+                )
+            )
 
 
 class DrillPointClassifier:
@@ -262,7 +284,7 @@ class DrillPointClassifier:
         self.analyzer = DrillPointAnalyzer()
         logger.info("DrillPointClassifier initialized")
     
-    def classify_points(self, drilling_points: List[Any]) -> Tuple[bool, List[Any], Dict[str, Any]]:
+    def classify_points(self, drilling_points: List[Any]) -> Tuple[bool, str, Dict]:
         """
         Classify drilling points by edge and operation type.
         
@@ -272,24 +294,40 @@ class DrillPointClassifier:
             drilling_points: List of drilling point objects
             
         Returns:
-            Tuple of (success, classified_points, details) where:
-            - success is a boolean indicating if classification succeeded
-            - classified_points is the list of updated drilling points
-            - details contains statistics about classification
+            Tuple of (success, message, details)
         """
         if not drilling_points:
-            logger.warning("No drilling points to classify")
-            return True, [], {"classified_count": 0}
+            warning_msg = "No drilling points to classify"
+            logger.warning(warning_msg)
+            return ErrorHandler.create_success_response(
+                message=warning_msg,
+                data={
+                    "points": [],
+                    "classified_count": 0
+                }
+            )
         
         logger.info(f"Classifying {len(drilling_points)} drilling points")
         
         try:
             # First analyze the drilling data to group points
-            success, results, analysis_details = self.analyzer.analyze_drilling_data(drilling_points)
+            success, message, analysis_details = self.analyzer.analyze_drilling_data(drilling_points)
             
             if not success:
-                logger.error(f"Error analyzing drilling points: {analysis_details.get('error', 'Unknown error')}")
-                return False, drilling_points, {"error": "Analysis failed", "details": analysis_details}
+                error_msg = f"Error analyzing drilling points: {message}"
+                logger.error(error_msg)
+                return ErrorHandler.from_exception(
+                    BaseError(
+                        message=error_msg,
+                        severity=ErrorSeverity.ERROR,
+                        category=ErrorCategory.PROCESSING,
+                        details={"analysis_error": message, "details": analysis_details}
+                    )
+                )
+            
+            # Extract the tool_groups from the results
+            results = analysis_details.get('results', {})
+            tool_groups = results.get('tool_groups', {})
             
             # Statistics for tracking classification
             classification_stats = {
@@ -304,7 +342,7 @@ class DrillPointClassifier:
                 classification_stats["by_edge"][edge] = 0
             
             # Update each drilling point with its classification
-            for key, group in results['tool_groups'].items():
+            for key, group in tool_groups.items():
                 edge, diameter = key
                 
                 # Process each point in this group
@@ -328,20 +366,35 @@ class DrillPointClassifier:
                     if "primary_vector" in group and group["primary_vector"] is not None:
                         point.primary_vector = group["primary_vector"]
             
-            # Add analysis results to details
-            details = {
-                "classified_count": len(drilling_points),
-                "stats": classification_stats,
-                "analysis_results": results
-            }
+            success_msg = (f"Classification complete: {classification_stats['vertical_count']} vertical, "
+                         f"{classification_stats['horizontal_count']} horizontal points")
+            logger.info(success_msg)
             
-            logger.info(f"Classification complete: {classification_stats['vertical_count']} vertical, "
-                       f"{classification_stats['horizontal_count']} horizontal points")
-            return True, drilling_points, details
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data={
+                    "points": drilling_points,
+                    "classified_count": len(drilling_points),
+                    "stats": classification_stats,
+                    "analysis_results": results
+                }
+            )
             
         except Exception as e:
-            logger.error(f"Error during drilling classification: {str(e)}")
-            return False, drilling_points, {'error': str(e)}
+            error_msg = f"Error during drilling classification: {str(e)}"
+            log_exception(logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={
+                        "error_type": "Exception",
+                        "error": str(e),
+                        "points_count": len(drilling_points)
+                    }
+                )
+            )
     
     def get_points_by_edge(self, drilling_points: List[Any]) -> Dict[str, List[Any]]:
         """
@@ -375,12 +428,12 @@ class DrillPointClassifier:
 
 
 # Backwards compatibility functions for existing code
-def analyze_drilling_data(drilling_points: List[Any]) -> Tuple[bool, Dict[str, Any], Dict[str, Any]]:
+def analyze_drilling_data(drilling_points: List[Any]) -> Tuple[bool, str, Dict]:
     """Legacy function that calls the DrillPointAnalyzer class method."""
     analyzer = DrillPointAnalyzer()
     return analyzer.analyze_drilling_data(drilling_points)
 
-def classify_drilling_points(drilling_points: List[Any]) -> Tuple[bool, List[Any], Dict[str, Any]]:
+def classify_drilling_points(drilling_points: List[Any]) -> Tuple[bool, str, Dict]:
     """Legacy function that calls the DrillPointClassifier class method."""
     classifier = DrillPointClassifier()
     return classifier.classify_points(drilling_points)
@@ -414,39 +467,56 @@ if __name__ == "__main__":
     # Load DXF file
     UIUtils.print_separator("Loading DXF File")
     loader = DxfLoader()
-    success, doc, message = loader.load_dxf(dxf_file_path)
+    success, message, details = loader.load_dxf(dxf_file_path)
     
     if success:
         print(f"SUCCESS: {message}")
         
+        # Get the document from details
+        doc = details.get('document')
+        
         # Extract drilling points
         UIUtils.print_separator("Extracting Drilling Points")
         extractor = DrillingExtractor()
-        success, drilling_info, message = extractor.extract_all_drilling_info(doc)
+        success, message, drilling_details = extractor.extract_all_drilling_info(doc)
         
         if success:
             print(f"SUCCESS: {message}")
             
+            # Get drilling points from details
+            drilling_points = drilling_details.get('points', [])
+            
             # Analyze drilling points
             UIUtils.print_separator("Analyzing Drilling Points")
-            success, results, details = analyzer.analyze_drilling_data(drilling_info["points"])
+            success, message, analysis_details = analyzer.analyze_drilling_data(drilling_points)
             
             if success:
-                print(f"SUCCESS: Found {results['statistics']['total_groups']} tool groups")
+                print(f"SUCCESS: {message}")
+                
+                # Get analysis results from details
+                results = analysis_details.get('results', {})
+                statistics = results.get('statistics', {}) if 'statistics' in results else analysis_details.get('statistics', {})
+                group_count = statistics.get('total_groups', 0)
+                print(f"Found {group_count} tool groups")
                 
                 # Classify drilling points
                 UIUtils.print_separator("Classifying Drilling Points")
-                success, classified_points, classification_details = classifier.classify_points(drilling_info["points"])
+                success, message, classification_details = classifier.classify_points(drilling_points)
                 
                 if success:
+                    print(f"SUCCESS: {message}")
+                    
+                    # Get classified points from details
+                    classified_points = classification_details.get('points', drilling_points)
+                    
                     # Get points by edge
                     points_by_edge = classifier.get_points_by_edge(classified_points)
                     
                     # Show results
                     UIUtils.print_separator("Classification Results")
-                    stats = classification_details["stats"]
-                    print(f"Vertical points: {stats['vertical_count']}")
-                    print(f"Horizontal points: {stats['horizontal_count']}")
+                    stats = classification_details.get('stats', {})
+                    print(f"Vertical points: {stats.get('vertical_count', 0)}")
+                    print(f"Horizontal points: {stats.get('horizontal_count', 0)}")
                     
                     # Show points by edge
                     for edge, points in points_by_edge.items():
@@ -456,16 +526,26 @@ if __name__ == "__main__":
                                 position = getattr(point, 'position', None)
                                 if position:
                                     pos_str = f"({position[0]:.1f}, {position[1]:.1f}, {position[2]:.1f})"
-                                    print(f"  {i+1}. {pos_str}, Ø{point.diameter:.1f}mm")
+                                    print(f"  {i+1}. {pos_str}, Ø{getattr(point, 'diameter', 0):.1f}mm")
                             
                             if len(points) > 3:
                                 print(f"  ...and {len(points) - 3} more")
+                else:
+                    print(f"Classification failed: {message}")
+                    if 'details' in classification_details:
+                        print(f"Details: {classification_details.get('details')}")
             else:
-                print(f"Analysis failed: {details.get('error', 'Unknown error')}")
+                print(f"Analysis failed: {message}")
+                if 'details' in analysis_details:
+                    print(f"Details: {analysis_details.get('details')}")
         else:
             print(f"Extraction failed: {message}")
+            if 'details' in drilling_details:
+                print(f"Details: {drilling_details.get('details')}")
     else:
         print(f"Loading failed: {message}")
+        if 'details' in details:
+            print(f"Details: {details.get('details')}")
         
     # Keep terminal open
     UIUtils.keep_terminal_open("Drilling analysis completed.")

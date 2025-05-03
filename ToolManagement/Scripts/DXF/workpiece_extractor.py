@@ -13,9 +13,11 @@ References:
 import re
 import math
 from typing import List, Dict, Tuple, Optional, Any, Union
+from pathlib import Path
 
 # Import from Utils package
 from Utils.logging_utils import setup_logger, log_exception
+from Utils.error_utils import ErrorHandler, BaseError, FileError, ValidationError, ErrorSeverity, ErrorCategory
 
 
 class WorkpieceExtractor:
@@ -59,15 +61,21 @@ class WorkpieceExtractor:
             dxf_doc: ezdxf document object
             
         Returns:
-            tuple: (success, boundaries, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if boundaries were found
-                - boundaries is a list of boundary entities or None if not found
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains the boundary entities or error information
         """
         if dxf_doc is None:
             error_msg = "No DXF document provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_document"}
+                )
+            )
         
         self.logger.info("Extracting workpiece boundaries")
         
@@ -80,6 +88,9 @@ class WorkpieceExtractor:
             outline_boundaries = []
             other_closed_polylines = []  # For fallback
             
+            # Track all layers for debugging
+            all_layers = set()
+            
             # Look for closed polylines on relevant layers
             for entity in modelspace:
                 try:
@@ -87,6 +98,7 @@ class WorkpieceExtractor:
                     if entity.dxftype() == "POLYLINE" or entity.dxftype() == "LWPOLYLINE":
                         # Get the layer name
                         layer_name = entity.dxf.layer if hasattr(entity.dxf, "layer") else ""
+                        all_layers.add(layer_name)
                         
                         # Check if it's closed
                         is_closed = self._is_entity_closed(entity)
@@ -119,16 +131,46 @@ class WorkpieceExtractor:
             if not all_boundaries:
                 error_msg = "No workpiece boundaries found in DXF file"
                 self.logger.warning(error_msg)
-                return False, None, error_msg
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=error_msg,
+                        severity=ErrorSeverity.WARNING,
+                        details={
+                            "error": "no_boundaries_found",
+                            "all_layers": list(all_layers),
+                            "panel_count": len(panel_boundaries),
+                            "outline_count": len(outline_boundaries),
+                            "other_count": len(other_closed_polylines)
+                        }
+                    )
+                )
             
             success_msg = f"Found {len(all_boundaries)} workpiece boundaries"
             self.logger.info(success_msg)
-            return True, all_boundaries, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data={
+                    "boundaries": all_boundaries,
+                    "panel_count": len(panel_boundaries),
+                    "outline_count": len(outline_boundaries),
+                    "other_count": len(other_closed_polylines),
+                    "all_layers": list(all_layers)
+                }
+            )
         
         except Exception as e:
             error_msg = f"Error extracting workpiece boundaries: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
     def _is_panel_layer(self, layer_name):
         """Check if layer name indicates a panel layer."""
@@ -218,15 +260,21 @@ class WorkpieceExtractor:
             boundaries: List of boundary entities (polylines)
             
         Returns:
-            tuple: (success, dimensions, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if dimensions were calculated
-                - dimensions is a dict with 'width', 'height', 'depth' keys
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains the dimensions or error information
         """
         if not boundaries:
             error_msg = "No boundaries provided for dimension calculation"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_boundaries"}
+                )
+            )
         
         self.logger.info("Calculating workpiece dimensions")
         
@@ -243,9 +291,19 @@ class WorkpieceExtractor:
             if not vertices:
                 error_msg = "Failed to extract vertices from boundary"
                 self.logger.error(error_msg)
-                return False, None, error_msg
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=error_msg,
+                        severity=ErrorSeverity.ERROR,
+                        details={
+                            "error": "no_vertices",
+                            "boundary_type": boundary.dxftype() if hasattr(boundary, "dxftype") else "Unknown"
+                        }
+                    )
+                )
             
             # Calculate bounding box
+            vertex_count = 0
             for vertex in vertices:
                 try:
                     # Safely extract x, y coordinates
@@ -254,6 +312,7 @@ class WorkpieceExtractor:
                     min_y = min(min_y, y)
                     max_x = max(max_x, x)
                     max_y = max(max_y, y)
+                    vertex_count += 1
                 except Exception as e:
                     self.logger.warning(f"Error processing vertex: {str(e)}")
                     continue
@@ -262,7 +321,19 @@ class WorkpieceExtractor:
             if min_x >= max_x or min_y >= max_y:
                 error_msg = "Invalid dimensions calculated (zero or negative size)"
                 self.logger.error(error_msg)
-                return False, None, error_msg
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=error_msg,
+                        severity=ErrorSeverity.ERROR,
+                        details={
+                            "error": "invalid_dimensions",
+                            "min_x": min_x,
+                            "min_y": min_y,
+                            "max_x": max_x,
+                            "max_y": max_y
+                        }
+                    )
+                )
             
             # Calculate dimensions
             width = max_x - min_x
@@ -284,12 +355,22 @@ class WorkpieceExtractor:
             
             success_msg = f"Calculated dimensions: {width:.2f} x {height:.2f} x {depth:.2f}mm"
             self.logger.info(success_msg)
-            return True, dimensions, success_msg
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=dimensions
+            )
             
         except Exception as e:
             error_msg = f"Error calculating dimensions: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
     def _extract_vertices(self, boundary):
         """
@@ -508,51 +589,77 @@ class WorkpieceExtractor:
             boundaries: Optional list of boundary entities
             
         Returns:
-            tuple: (success, orientation, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if orientation was determined
-                - orientation is a dict with orientation information
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains the orientation information or error details
         """
+        # Default orientation for fallback cases
+        default_orientation = {
+            'origin_aligned': False,
+            'axis_aligned': True,
+            'angle_to_x_axis': 0,
+            'origin_offset_x': 0,
+            'origin_offset_y': 0
+        }
+        
         if dxf_doc is None:
             error_msg = "No DXF document provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={
+                        "error": "missing_document",
+                        "fallback_orientation": default_orientation
+                    }
+                )
+            )
         
         try:
             # Get boundaries if not provided
             if boundaries is None:
-                success, boundaries, _ = self.extract_workpiece_boundaries(dxf_doc)
-                if not success or not boundaries:
-                    error_msg = "Could not extract boundaries for orientation analysis"
+                success, message, details = self.extract_workpiece_boundaries(dxf_doc)
+                if not success:
+                    error_msg = f"Could not extract boundaries for orientation analysis: {message}"
                     self.logger.error(error_msg)
                     
-                    # Return default orientation values as fallback
-                    default_orientation = {
-                        'origin_aligned': False,
-                        'axis_aligned': True,
-                        'angle_to_x_axis': 0,
-                        'origin_offset_x': 0,
-                        'origin_offset_y': 0
-                    }
-                    return False, default_orientation, error_msg
+                    return ErrorHandler.from_exception(
+                        ValidationError(
+                            message=error_msg,
+                            severity=ErrorSeverity.WARNING,
+                            details={
+                                "error": "missing_boundaries",
+                                "extraction_details": details,
+                                "fallback_orientation": default_orientation
+                            }
+                        )
+                    )
+                
+                boundaries = details.get('boundaries', [])
             
             self.logger.info("Identifying workpiece orientation")
             
             # Get dimensions for orientation analysis
-            success, dimensions, _ = self.calculate_dimensions(boundaries)
-            if not success or not dimensions:
-                error_msg = "Could not calculate dimensions for orientation analysis"
+            success, message, details = self.calculate_dimensions(boundaries)
+            if not success:
+                error_msg = f"Could not calculate dimensions for orientation analysis: {message}"
                 self.logger.error(error_msg)
                 
-                # Return default orientation values as fallback
-                default_orientation = {
-                    'origin_aligned': False,
-                    'axis_aligned': True,
-                    'angle_to_x_axis': 0,
-                    'origin_offset_x': 0,
-                    'origin_offset_y': 0
-                }
-                return False, default_orientation, error_msg
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=error_msg,
+                        severity=ErrorSeverity.WARNING,
+                        details={
+                            "error": "dimension_calculation_failed",
+                            "dimension_details": details,
+                            "fallback_orientation": default_orientation
+                        }
+                    )
+                )
+            
+            dimensions = details
             
             # Analyze the workpiece position
             min_x = dimensions['min_x']
@@ -586,21 +693,28 @@ class WorkpieceExtractor:
             
             success_msg = f"Workpiece orientation identified: origin_aligned={starts_at_origin}, axis_aligned={is_rectangular}"
             self.logger.info(success_msg)
-            return True, orientation, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=orientation
+            )
             
         except Exception as e:
             error_msg = f"Error identifying orientation: {str(e)}"
             log_exception(self.logger, error_msg)
             
-            # Return default orientation values on error
-            default_orientation = {
-                'origin_aligned': False,
-                'axis_aligned': True,
-                'angle_to_x_axis': 0,
-                'origin_offset_x': 0,
-                'origin_offset_y': 0
-            }
-            return False, default_orientation, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={
+                        "error_type": "Exception", 
+                        "error": str(e),
+                        "fallback_orientation": default_orientation
+                    }
+                )
+            )
     
     def _is_rectangular(self, boundary):
         """
@@ -713,57 +827,80 @@ class WorkpieceExtractor:
             boundaries: Optional list of boundary entities
             
         Returns:
-            tuple: (success, reference_points, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if points were extracted
-                - reference_points is a dict with point coordinates
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains the reference points or error information
         """
+        # Default reference points for fallback cases
+        default_points = {
+            'origin': (0, 0),
+            'corner_bl': (0, 0),
+            'corner_br': (100, 0),
+            'corner_tr': (100, 100),
+            'corner_tl': (0, 100),
+            'center': (50, 50),
+            'machine_zero': (0, 0),
+            'offset_from_machine_zero': (0, 0)
+        }
+        
         if dxf_doc is None:
             error_msg = "No DXF document provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={
+                        "error": "missing_document",
+                        "fallback_points": default_points
+                    }
+                )
+            )
         
         try:
             # Get boundaries if not provided
             if boundaries is None:
-                success, boundaries, _ = self.extract_workpiece_boundaries(dxf_doc)
-                if not success or not boundaries:
-                    error_msg = "Could not extract boundaries for reference points"
+                success, message, details = self.extract_workpiece_boundaries(dxf_doc)
+                if not success:
+                    error_msg = f"Could not extract boundaries for reference points: {message}"
                     self.logger.error(error_msg)
                     
-                    # Return default reference points as fallback
-                    default_points = {
-                        'origin': (0, 0),
-                        'corner_bl': (0, 0),
-                        'corner_br': (100, 0),
-                        'corner_tr': (100, 100),
-                        'corner_tl': (0, 100),
-                        'center': (50, 50),
-                        'machine_zero': (0, 0),
-                        'offset_from_machine_zero': (0, 0)
-                    }
-                    return False, default_points, error_msg
+                    return ErrorHandler.from_exception(
+                        ValidationError(
+                            message=error_msg,
+                            severity=ErrorSeverity.WARNING,
+                            details={
+                                "error": "missing_boundaries",
+                                "extraction_details": details,
+                                "fallback_points": default_points
+                            }
+                        )
+                    )
+                
+                boundaries = details.get('boundaries', [])
             
             self.logger.info("Extracting reference points")
             
             # Get dimensions for reference points
-            success, dimensions, _ = self.calculate_dimensions(boundaries)
-            if not success or not dimensions:
-                error_msg = "Could not calculate dimensions for reference points"
+            success, message, details = self.calculate_dimensions(boundaries)
+            if not success:
+                error_msg = f"Could not calculate dimensions for reference points: {message}"
                 self.logger.error(error_msg)
                 
-                # Return default reference points as fallback
-                default_points = {
-                    'origin': (0, 0),
-                    'corner_bl': (0, 0),
-                    'corner_br': (100, 0),
-                    'corner_tr': (100, 100),
-                    'corner_tl': (0, 100),
-                    'center': (50, 50),
-                    'machine_zero': (0, 0),
-                    'offset_from_machine_zero': (0, 0)
-                }
-                return False, default_points, error_msg
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=error_msg,
+                        severity=ErrorSeverity.WARNING,
+                        details={
+                            "error": "dimension_calculation_failed",
+                            "dimension_details": details,
+                            "fallback_points": default_points
+                        }
+                    )
+                )
+            
+            dimensions = details
             
             # Extract key points from dimensions
             min_x = dimensions['min_x']
@@ -790,24 +927,28 @@ class WorkpieceExtractor:
             
             success_msg = "Reference points extracted successfully"
             self.logger.info(success_msg)
-            return True, reference_points, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=reference_points
+            )
             
         except Exception as e:
             error_msg = f"Error extracting reference points: {str(e)}"
             log_exception(self.logger, error_msg)
             
-            # Return default reference points on error
-            default_points = {
-                'origin': (0, 0),
-                'corner_bl': (0, 0),
-                'corner_br': (100, 0),
-                'corner_tr': (100, 100),
-                'corner_tl': (0, 100),
-                'center': (50, 50),
-                'machine_zero': (0, 0),
-                'offset_from_machine_zero': (0, 0)
-            }
-            return False, default_points, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={
+                        "error_type": "Exception", 
+                        "error": str(e),
+                        "fallback_points": default_points
+                    }
+                )
+            )
     
     def extract_workpiece_info(self, dxf_doc):
         """
@@ -820,94 +961,142 @@ class WorkpieceExtractor:
             dxf_doc: ezdxf document object
             
         Returns:
-            tuple: (success, workpiece_info, message) where:
+            tuple: (success, message, details) where:
                 - success is a boolean indicating if extraction succeeded
-                - workpiece_info is a dict with all workpiece properties
-                - message contains success details or error information
+                - message contains success details or error message
+                - details contains all workpiece properties or error information
         """
+        # Create empty result structure for fallbacks
+        empty_workpiece_info = {
+            'dimensions': {
+                'width': 100.0,
+                'height': 100.0,
+                'depth': self.DEFAULT_THICKNESS,
+                'min_x': 0,
+                'min_y': 0,
+                'max_x': 100,
+                'max_y': 100
+            },
+            'orientation': {
+                'origin_aligned': False,
+                'axis_aligned': True,
+                'angle_to_x_axis': 0,
+                'origin_offset_x': 0,
+                'origin_offset_y': 0
+            },
+            'reference_points': {
+                'origin': (0, 0),
+                'corner_bl': (0, 0),
+                'corner_br': (100, 0),
+                'corner_tr': (100, 100),
+                'corner_tl': (0, 100),
+                'center': (50, 50),
+                'machine_zero': (0, 0),
+                'offset_from_machine_zero': (0, 0)
+            },
+            'boundary_count': 0,
+            'material_thickness': self.DEFAULT_THICKNESS
+        }
+        
         if dxf_doc is None:
             error_msg = "No DXF document provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={
+                        "error": "missing_document",
+                        "fallback_info": empty_workpiece_info
+                    }
+                )
+            )
         
         self.logger.info("Extracting complete workpiece information")
         
         try:
-            # Create empty result structure for fallbacks
-            empty_workpiece_info = {
-                'dimensions': {
-                    'width': 100.0,
-                    'height': 100.0,
-                    'depth': self.DEFAULT_THICKNESS,
-                    'min_x': 0,
-                    'min_y': 0,
-                    'max_x': 100,
-                    'max_y': 100
-                },
-                'orientation': {
-                    'origin_aligned': False,
-                    'axis_aligned': True,
-                    'angle_to_x_axis': 0,
-                    'origin_offset_x': 0,
-                    'origin_offset_y': 0
-                },
-                'reference_points': {
-                    'origin': (0, 0),
-                    'corner_bl': (0, 0),
-                    'corner_br': (100, 0),
-                    'corner_tr': (100, 100),
-                    'corner_tl': (0, 100),
-                    'center': (50, 50),
-                    'machine_zero': (0, 0),
-                    'offset_from_machine_zero': (0, 0)
-                },
-                'boundary_count': 0,
-                'material_thickness': self.DEFAULT_THICKNESS
-            }
+            # Initialize workpiece info with defaults
+            workpiece_info = dict(empty_workpiece_info)
             
             # Extract boundaries
-            boundaries_success, boundaries, boundaries_msg = self.extract_workpiece_boundaries(dxf_doc)
+            boundaries_success, boundaries_msg, boundaries_details = self.extract_workpiece_boundaries(dxf_doc)
             if not boundaries_success:
                 self.logger.error(f"Failed to extract boundaries: {boundaries_msg}")
-                return False, empty_workpiece_info, f"Failed to extract workpiece info: {boundaries_msg}"
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=f"Failed to extract workpiece info: {boundaries_msg}",
+                        severity=ErrorSeverity.ERROR,
+                        details={
+                            "error": "boundary_extraction_failed",
+                            "extraction_details": boundaries_details,
+                            "fallback_info": empty_workpiece_info
+                        }
+                    )
+                )
+            
+            boundaries = boundaries_details.get('boundaries', [])
+            workpiece_info['boundary_count'] = len(boundaries)
             
             # Calculate dimensions
-            dimensions_success, dimensions, dimensions_msg = self.calculate_dimensions(boundaries)
+            dimensions_success, dimensions_msg, dimensions = self.calculate_dimensions(boundaries)
             if not dimensions_success:
                 self.logger.error(f"Failed to calculate dimensions: {dimensions_msg}")
-                return False, empty_workpiece_info, f"Failed to extract workpiece info: {dimensions_msg}"
+                return ErrorHandler.from_exception(
+                    ValidationError(
+                        message=f"Failed to extract workpiece info: {dimensions_msg}",
+                        severity=ErrorSeverity.ERROR,
+                        details={
+                            "error": "dimension_calculation_failed",
+                            "dimension_details": dimensions,
+                            "boundaries_details": boundaries_details,
+                            "fallback_info": empty_workpiece_info
+                        }
+                    )
+                )
+            
+            workpiece_info['dimensions'] = dimensions
+            workpiece_info['material_thickness'] = dimensions.get('depth', self.DEFAULT_THICKNESS)
             
             # Identify orientation
-            orientation_success, orientation, orientation_msg = self.identify_orientation(dxf_doc, boundaries)
+            orientation_success, orientation_msg, orientation = self.identify_orientation(dxf_doc, boundaries)
             if not orientation_success:
                 self.logger.warning(f"Failed to identify orientation: {orientation_msg}")
-                # Continue with default orientation from identify_orientation
+                # Continue with default orientation from fallback data
+            else:
+                workpiece_info['orientation'] = orientation
             
             # Get reference points
-            points_success, reference_points, points_msg = self.get_reference_points(dxf_doc, boundaries)
+            points_success, points_msg, reference_points = self.get_reference_points(dxf_doc, boundaries)
             if not points_success:
                 self.logger.warning(f"Failed to extract reference points: {points_msg}")
-                # Continue with default reference points from get_reference_points
-            
-            # Combine all information into a single workpiece info dictionary
-            workpiece_info = {
-                'dimensions': dimensions,
-                'orientation': orientation,
-                'reference_points': reference_points,
-                'boundary_count': len(boundaries),
-                'material_thickness': dimensions['depth']  # For convenience
-            }
+                # Continue with default reference points from fallback data
+            else:
+                workpiece_info['reference_points'] = reference_points
             
             success_msg = "Workpiece information extracted successfully"
             self.logger.info(success_msg)
-            return True, workpiece_info, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=workpiece_info
+            )
             
         except Exception as e:
             error_msg = f"Error extracting workpiece info: {str(e)}"
             log_exception(self.logger, error_msg)
             
-            # Return empty structure on error
-            return False, empty_workpiece_info, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={
+                        "error_type": "Exception", 
+                        "error": str(e),
+                        "fallback_info": empty_workpiece_info
+                    }
+                )
+            )
 
 
 # Example usage if run directly
@@ -918,16 +1107,18 @@ if __name__ == "__main__":
     extractor = WorkpieceExtractor()
     loader = DxfLoader()
     
-    success, doc, message = loader.load_dxf()
+    success, message, details = loader.load_dxf()
     
     if success:
         print(message)
-        success, workpiece_info, message = extractor.extract_workpiece_info(doc)
+        doc = details.get('dxf_document')
+        success, message, details = extractor.extract_workpiece_info(doc)
         
         print(f"\nWorkpiece info extraction: {'Succeeded' if success else 'Failed'}")
         print(f"Message: {message}")
         
         if success:
+            workpiece_info = details
             print("\nWorkpiece Information:")
             print(f"Dimensions: {workpiece_info['dimensions']['width']:.2f} x {workpiece_info['dimensions']['height']:.2f} x {workpiece_info['dimensions']['depth']:.2f}mm")
             print(f"Aligned with origin: {workpiece_info['orientation']['origin_aligned']}")
@@ -937,5 +1128,7 @@ if __name__ == "__main__":
                 print(f"  - {point_name}: ({coordinates[0]:.2f}, {coordinates[1]:.2f})")
         else:
             print(f"Error: {message}")
+            print(f"Error details: {details}")
     else:
         print(f"Error: {message}")
+        print(f"Error details: {details}")

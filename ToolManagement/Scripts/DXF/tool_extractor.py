@@ -16,6 +16,7 @@ from typing import List, Dict, Tuple, Optional, Any, Union
 # Import from Utils package
 from Utils.logging_utils import setup_logger, log_exception
 from Utils.file_utils import FileUtils
+from Utils.error_utils import ErrorHandler, BaseError, ValidationError, FileError, ErrorSeverity, ErrorCategory
 
 # Import from DXF package
 from DXF.drilling_extractor import DrillingExtractor
@@ -46,7 +47,7 @@ class ToolRequirementExtractor:
         
         self.logger.info("ToolRequirementExtractor initialized")
     
-    def extract_tool_requirements(self, dxf_doc, drilling_info=None):
+    def extract_tool_requirements(self, dxf_doc, drilling_info=None) -> Tuple[bool, str, Dict]:
         """
         Extract all tool requirements from a DXF document.
         
@@ -55,15 +56,18 @@ class ToolRequirementExtractor:
             drilling_info: Optional pre-extracted drilling information
             
         Returns:
-            tuple: (success, requirements, message) where:
-                - success is a boolean indicating if extraction succeeded
-                - requirements is a dict with tool requirements information
-                - message contains success details or error information
+            Tuple of (success, message, details)
         """
         if dxf_doc is None:
             error_msg = "No DXF document provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_document"}
+                )
+            )
         
         self.logger.info("Extracting tool requirements")
         
@@ -71,12 +75,21 @@ class ToolRequirementExtractor:
             # If drilling_info not provided, we need to get it
             if drilling_info is None:
                 drilling_extractor = DrillingExtractor()
-                success, drilling_info, message = drilling_extractor.extract_all_drilling_info(dxf_doc)
+                success, message, drilling_details = drilling_extractor.extract_all_drilling_info(dxf_doc)
                 
                 if not success:
                     error_msg = f"Failed to extract drilling information: {message}"
                     self.logger.error(error_msg)
-                    return False, None, error_msg
+                    return ErrorHandler.from_exception(
+                        BaseError(
+                            message=error_msg,
+                            severity=ErrorSeverity.ERROR,
+                            category=ErrorCategory.PROCESSING,
+                            details={"error_source": "drilling_extractor", "original_message": message}
+                        )
+                    )
+                    
+                drilling_info = drilling_details
             
             # Reset requirements dictionary
             self.requirements = {
@@ -86,16 +99,23 @@ class ToolRequirementExtractor:
             }
             
             # Convert drilling info into tool requirements
-            success, result, message = self._convert_drilling_to_requirements(drilling_info)
+            success, message, result_details = self._convert_drilling_to_requirements(drilling_info)
             if not success:
-                return False, None, message
+                return ErrorHandler.from_exception(
+                    BaseError(
+                        message=message,
+                        severity=ErrorSeverity.ERROR,
+                        category=ErrorCategory.PROCESSING,
+                        details={"error_source": "convert_drilling_to_requirements", "error": message}
+                    )
+                )
             
             # Group requirements by operation
-            success, grouped_result, message = self._group_requirements_by_operation()
+            success, message, grouped_details = self._group_requirements_by_operation()
             if not success:
                 self.logger.warning(f"Warning grouping requirements: {message}")
             else:
-                self.requirements['grouped'] = grouped_result
+                self.requirements['grouped'] = grouped_details
             
             # Add summary information
             self.requirements['summary'] = {
@@ -107,20 +127,31 @@ class ToolRequirementExtractor:
             }
             
             # Create human-readable summary
-            success, summary, message = self._format_requirements_summary()
-            if success:
-                self.requirements['readable_summary'] = summary
+            success, message, summary_details = self._format_requirements_summary()
+            if success and summary_details:
+                self.requirements['readable_summary'] = summary_details
             
             success_msg = "Tool requirements extracted successfully"
             self.logger.info(success_msg)
-            return True, self.requirements, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=self.requirements
+            )
             
         except Exception as e:
             error_msg = f"Error extracting tool requirements: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
-    def _convert_drilling_to_requirements(self, drilling_info):
+    def _convert_drilling_to_requirements(self, drilling_info) -> Tuple[bool, str, Dict]:
         """
         Convert drilling information into tool requirements.
         
@@ -128,12 +159,18 @@ class ToolRequirementExtractor:
             drilling_info: Dict containing drilling information from DrillingExtractor
             
         Returns:
-            tuple: (success, requirements, message)
+            Tuple of (success, message, details)
         """
         if not drilling_info:
             error_msg = "No drilling information provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_drilling_info"}
+                )
+            )
         
         self.logger.info("Converting drilling info to tool requirements")
         
@@ -176,19 +213,34 @@ class ToolRequirementExtractor:
             
             success_msg = f"Converted {len(vertical_parameters)} vertical and {len(horizontal_parameters)} horizontal drilling points to tool requirements"
             self.logger.info(success_msg)
-            return True, self.requirements, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data={
+                    "vertical_count": len(vertical_parameters),
+                    "horizontal_count": len(horizontal_parameters),
+                    "requirements": self.requirements
+                }
+            )
             
         except Exception as e:
             error_msg = f"Error converting drilling info to requirements: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
-    def _group_requirements_by_operation(self):
+    def _group_requirements_by_operation(self) -> Tuple[bool, str, Dict]:
         """
         Group similar requirements by operation type.
         
         Returns:
-            tuple: (success, grouped_requirements, message)
+            Tuple of (success, message, details)
         """
         self.logger.info("Grouping requirements by operation")
         
@@ -226,21 +278,39 @@ class ToolRequirementExtractor:
                 
                 grouped['horizontal_drills'][group_key].append(req)
             
-            success_msg = f"Grouped requirements into {len(grouped['vertical_drills'])} vertical and {len(grouped['horizontal_drills'])} horizontal operation types"
+            # Calculate statistics
+            stats = {
+                "vertical_groups": len(grouped['vertical_drills']),
+                "horizontal_groups": len(grouped['horizontal_drills']),
+                "total_groups": len(grouped['vertical_drills']) + len(grouped['horizontal_drills'])
+            }
+            
+            success_msg = f"Grouped requirements into {stats['vertical_groups']} vertical and {stats['horizontal_groups']} horizontal operation types"
             self.logger.info(success_msg)
-            return True, grouped, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=grouped
+            )
             
         except Exception as e:
             error_msg = f"Error grouping requirements: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
-    def _format_requirements_summary(self):
+    def _format_requirements_summary(self) -> Tuple[bool, str, str]:
         """
         Create a human-readable summary of tool requirements.
         
         Returns:
-            tuple: (success, summary, message)
+            Tuple of (success, message, summary)
         """
         self.logger.info("Creating human-readable requirements summary")
         
@@ -282,12 +352,23 @@ class ToolRequirementExtractor:
             
             success_msg = "Created human-readable requirements summary"
             self.logger.info(success_msg)
-            return True, summary, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=summary
+            )
             
         except Exception as e:
             error_msg = f"Error creating requirements summary: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
 
 
 class ToolSelector:
@@ -330,7 +411,7 @@ class ToolSelector:
         
         self.logger.info("ToolSelector initialized")
     
-    def select_tools(self, requirements, tool_data_path=None):
+    def select_tools(self, requirements, tool_data_path=None) -> Tuple[bool, str, Dict]:
         """
         Select appropriate tools based on requirements.
         
@@ -339,22 +420,35 @@ class ToolSelector:
             tool_data_path: Optional path to tool data CSV file
             
         Returns:
-            tuple: (success, selections, message)
+            Tuple of (success, message, details)
         """
         if not requirements:
             error_msg = "No tool requirements provided"
             self.logger.error(error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_requirements"}
+                )
+            )
         
         self.logger.info("Selecting tools based on requirements")
         
         try:
             # Load tool data if not already loaded
             if self.tool_data is None:
-                success, tool_data, message = self._load_tool_data(tool_data_path)
+                success, message, tool_data_details = self._load_tool_data(tool_data_path)
                 if not success:
-                    return False, None, message
-                self.tool_data = tool_data
+                    return ErrorHandler.from_exception(
+                        BaseError(
+                            message=f"Failed to load tool data: {message}",
+                            severity=ErrorSeverity.ERROR,
+                            category=ErrorCategory.PROCESSING,
+                            details={"error_source": "load_tool_data", "original_message": message}
+                        )
+                    )
+                self.tool_data = tool_data_details
             
             # Create selections dictionary
             selections = {
@@ -364,20 +458,20 @@ class ToolSelector:
             }
             
             # Process vertical drilling requirements
-            vert_success, vert_selections, vert_message = self._select_vertical_drill_tools(
+            vert_success, vert_message, vert_details = self._select_vertical_drill_tools(
                 requirements.get('vertical_drills', [])
             )
             if vert_success:
-                selections['vertical_drills'] = vert_selections
+                selections['vertical_drills'] = vert_details
             else:
                 self.logger.warning(f"Warning selecting vertical drill tools: {vert_message}")
             
             # Process horizontal drilling requirements
-            horz_success, horz_selections, horz_message = self._select_horizontal_drill_tools(
+            horz_success, horz_message, horz_details = self._select_horizontal_drill_tools(
                 requirements.get('horizontal_drills', [])
             )
             if horz_success:
-                selections['horizontal_drills'] = horz_selections
+                selections['horizontal_drills'] = horz_details
             else:
                 self.logger.warning(f"Warning selecting horizontal drill tools: {horz_message}")
             
@@ -394,20 +488,31 @@ class ToolSelector:
             }
             
             # Create human-readable summary
-            success, summary, message = self._format_selections_summary(selections)
-            if success:
-                selections['readable_summary'] = summary
+            summary_success, summary_message, summary_details = self._format_selections_summary(selections)
+            if summary_success:
+                selections['readable_summary'] = summary_details
             
             success_msg = f"Selected {len(selections['all_selections'])} tools successfully"
             self.logger.info(success_msg)
-            return True, selections, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=selections
+            )
             
         except Exception as e:
             error_msg = f"Error selecting tools: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
-    def _load_tool_data(self, tool_data_path=None):
+    def _load_tool_data(self, tool_data_path=None) -> Tuple[bool, str, Dict]:
         """
         Load tool data from CSV file.
         
@@ -415,7 +520,7 @@ class ToolSelector:
             tool_data_path: Path to tool data CSV file, defaults to standard location
             
         Returns:
-            tuple: (success, tool_data, message)
+            Tuple of (success, message, details)
         """
         self.logger.info("Loading tool data from CSV")
         
@@ -427,14 +532,22 @@ class ToolSelector:
                 tool_data_path = os.path.join(data_dir, "tool-data.csv")
             
             # Use FileUtils to read CSV file
-            success, result, details = FileUtils.read_csv(tool_data_path)
+            success, message, details = FileUtils.read_csv(tool_data_path)
             
             if not success:
-                error_msg = f"Failed to read tool data CSV: {result}"
+                error_msg = f"Failed to read tool data CSV: {message}"
                 self.logger.error(error_msg)
-                return False, None, error_msg
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=error_msg,
+                        file_path=tool_data_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"original_message": message}
+                    )
+                )
             
             # Extract rows from result
+            result = details.get('data', {})
             if isinstance(result, dict) and 'rows' in result:
                 rows = result['rows']
             else:
@@ -445,12 +558,23 @@ class ToolSelector:
             
             success_msg = f"Loaded data for {len(tool_data)} tools"
             self.logger.info(success_msg)
-            return True, tool_data, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=tool_data
+            )
             
         except Exception as e:
             error_msg = f"Error loading tool data: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                FileError(
+                    message=error_msg,
+                    file_path=str(tool_data_path) if tool_data_path else "default path",
+                    severity=ErrorSeverity.ERROR,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
     def _process_tool_data(self, rows):
         """
@@ -505,7 +629,7 @@ class ToolSelector:
         
         return tools
     
-    def _select_vertical_drill_tools(self, requirements):
+    def _select_vertical_drill_tools(self, requirements) -> Tuple[bool, str, Dict]:
         """
         Select appropriate tools for vertical drilling operations.
         
@@ -513,10 +637,13 @@ class ToolSelector:
             requirements: List of vertical drilling requirements
             
         Returns:
-            tuple: (success, selections, message)
+            Tuple of (success, message, details)
         """
         if not requirements:
-            return True, {}, "No vertical drilling requirements"
+            return ErrorHandler.create_success_response(
+                message="No vertical drilling requirements",
+                data={}
+            )
         
         self.logger.info(f"Selecting tools for {len(requirements)} vertical drilling operations")
         
@@ -582,14 +709,25 @@ class ToolSelector:
             
             success_msg = f"Selected tools for {len(selections)} vertical drilling diameter groups"
             self.logger.info(success_msg)
-            return True, selections, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=selections
+            )
             
         except Exception as e:
             error_msg = f"Error selecting vertical drill tools: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, {}, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
-    def _select_horizontal_drill_tools(self, requirements):
+    def _select_horizontal_drill_tools(self, requirements) -> Tuple[bool, str, Dict]:
         """
         Select appropriate tools for horizontal drilling operations.
         
@@ -597,10 +735,13 @@ class ToolSelector:
             requirements: List of horizontal drilling requirements
             
         Returns:
-            tuple: (success, selections, message)
+            Tuple of (success, message, details)
         """
         if not requirements:
-            return True, {}, "No horizontal drilling requirements"
+            return ErrorHandler.create_success_response(
+                message="No horizontal drilling requirements",
+                data={}
+            )
         
         self.logger.info(f"Selecting tools for {len(requirements)} horizontal drilling operations")
         
@@ -676,14 +817,25 @@ class ToolSelector:
             
             success_msg = f"Selected tools for {len(selections)} horizontal drilling edge-diameter groups"
             self.logger.info(success_msg)
-            return True, selections, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=selections
+            )
             
         except Exception as e:
             error_msg = f"Error selecting horizontal drill tools: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, {}, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
-    def _format_selections_summary(self, selections):
+    def _format_selections_summary(self, selections) -> Tuple[bool, str, str]:
         """
         Create a human-readable summary of tool selections.
         
@@ -691,7 +843,7 @@ class ToolSelector:
             selections: Dict containing tool selections
             
         Returns:
-            tuple: (success, summary, message)
+            Tuple of (success, message, summary)
         """
         self.logger.info("Creating human-readable selections summary")
         
@@ -734,12 +886,23 @@ class ToolSelector:
             
             success_msg = "Created human-readable selections summary"
             self.logger.info(success_msg)
-            return True, summary, success_msg
+            
+            return ErrorHandler.create_success_response(
+                message=success_msg,
+                data=summary
+            )
             
         except Exception as e:
             error_msg = f"Error creating selections summary: {str(e)}"
             log_exception(self.logger, error_msg)
-            return False, None, error_msg
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
 
 
 # Example usage if run directly
@@ -752,24 +915,31 @@ if __name__ == "__main__":
     drill_extractor = DrillingExtractor()
     loader = DxfLoader()
     
-    success, doc, message = loader.load_dxf()
+    success, message, details = loader.load_dxf()
     
     if success:
         print(message)
         
+        # Get document from details
+        doc = details.get('document')
+        
         # Extract drilling information first
-        drill_success, drilling_info, drill_message = drill_extractor.extract_all_drilling_info(doc)
+        drill_success, drill_message, drilling_details = drill_extractor.extract_all_drilling_info(doc)
         
         if drill_success:
             # Extract tool requirements based on drilling info
-            tool_success, requirements, tool_message = extractor.extract_tool_requirements(doc, drilling_info)
+            tool_success, tool_message, tool_details = extractor.extract_tool_requirements(doc, drilling_details)
             
             print(f"\nTool requirements extraction: {'Succeeded' if tool_success else 'Failed'}")
             print(f"Message: {tool_message}")
             
-            if tool_success and 'readable_summary' in requirements:
-                print("\n" + requirements['readable_summary'])
+            if tool_success and 'readable_summary' in tool_details:
+                print("\n" + tool_details['readable_summary'])
         else:
             print(f"Error extracting drilling info: {drill_message}")
+            if 'details' in drilling_details:
+                print(f"Details: {drilling_details.get('details')}")
     else:
         print(f"Error: {message}")
+        if 'details' in details:
+            print(f"Details: {details.get('details')}")

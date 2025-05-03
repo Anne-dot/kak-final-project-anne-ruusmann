@@ -4,14 +4,19 @@ test_window_detector.py - Unit tests for window_detector module.
 This script tests the WindowDetector class, mocking the Windows API
 functions to simulate different scenarios.
 
+Note: These tests are Windows-specific and will be skipped on other platforms.
+
 Place in: C:\Mach3\ToolManagement\Scripts\Tests\UnitTests\
 """
 
 import sys
 import unittest
+import platform
 
-if not sys.platform.startswith("win"):
-    raise unittest.SkipTest("Skipping Windows-only test on non-Windows platform")
+# Skip the entire test module on non-Windows platforms
+if platform.system() != "Windows":
+    print(f"Skipping window detection tests on {platform.system()} - Windows required.")
+    sys.exit(0)
 
 import os
 import tempfile

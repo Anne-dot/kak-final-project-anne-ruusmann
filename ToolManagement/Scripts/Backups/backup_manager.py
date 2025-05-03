@@ -20,21 +20,23 @@ import argparse
 import logging
 import time
 from pathlib import Path
-from file_lock import FileLock
+
+# Import from Utils package
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from Utils.file_lock_utils import FileLock
+from Utils.logging_utils import setup_logger, log_exception
+from Utils.error_utils import (
+    ErrorHandler, BaseError, FileError, ValidationError, 
+    ConfigurationError, ErrorSeverity, ErrorCategory
+)
+from Utils.config import AppConfig
 
 # Configure logging
-log_dir = r"C:\Mach3\ToolManagement\Logs"
+log_dir = AppConfig.paths.get_logs_dir()
 os.makedirs(log_dir, exist_ok=True)
 
-log_file = os.path.join(log_dir, "backup_log.txt")
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(log_file),
-        logging.StreamHandler(sys.stdout)
-    ]
-)
+# Use default logging configuration
+logger = setup_logger(__name__)
 
 class BackupRotation:
     """
@@ -44,31 +46,51 @@ class BackupRotation:
     old backups beyond the maximum limit.
     """
     
-    def __init__(self, backup_dir, max_backups=10):
+    def __init__(self, backup_dir, max_backups=None):
         """
         Initialize the backup rotation manager.
         
         Args:
             backup_dir: Directory where backups are stored
-            max_backups: Maximum number of backups to keep (default: 20)
+            max_backups: Maximum number of backups to keep (default: from AppConfig)
         """
+        self.logger = setup_logger(f"{__name__}.BackupRotation")
         self.backup_dir = backup_dir
+        
+        # Use config value if not specified
+        if max_backups is None:
+            max_backups = AppConfig.limits.DEFAULT_MAX_BACKUPS
         self.max_backups = max_backups
         
         # Ensure backup directory exists
         os.makedirs(self.backup_dir, exist_ok=True)
+        self.logger.info(f"BackupRotation initialized with directory: {backup_dir}, max_backups: {max_backups}")
     
     def list_backups(self):
         """
         List all backup files with creation times.
         
         Returns:
-            list: List of dictionaries with 'path' and 'timestamp' keys,
-                 sorted by timestamp (newest first)
+            tuple: (success, message, details) where:
+                - success is a boolean indicating if operation succeeded
+                - message contains success details or error message
+                - details contains the backup list or error information
         """
-        backups = []
-        
         try:
+            self.logger.info(f"Listing backups in {self.backup_dir}")
+            backups = []
+            
+            # Verify directory exists
+            if not os.path.exists(self.backup_dir):
+                self.logger.error(f"Backup directory does not exist: {self.backup_dir}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Backup directory does not exist: {self.backup_dir}",
+                        file_path=self.backup_dir,
+                        severity=ErrorSeverity.ERROR
+                    )
+                )
+            
             # Get all CSV files in backup directory
             for file in os.listdir(self.backup_dir):
                 if file.endswith('.csv'):
@@ -84,40 +106,116 @@ class BackupRotation:
             
             # Sort by timestamp (newest first)
             backups.sort(key=lambda x: x['timestamp'], reverse=True)
+            self.logger.info(f"Found {len(backups)} backup files")
             
+            return ErrorHandler.create_success_response(
+                message=f"Found {len(backups)} backup files",
+                data={"backups": backups}
+            )
+            
+        except PermissionError:
+            error_msg = f"Permission denied accessing backup directory: {self.backup_dir}"
+            self.logger.error(error_msg)
+            return ErrorHandler.from_exception(
+                FileError(
+                    message=error_msg,
+                    file_path=self.backup_dir,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "permission_denied"}
+                )
+            )
         except Exception as e:
-            logging.error(f"Error listing backups: {str(e)}")
-        
-        return backups
+            error_msg = f"Error listing backups: {str(e)}"
+            log_exception(self.logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    category=ErrorCategory.FILE,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error_type": type(e).__name__}
+                )
+            )
     
     def prune(self):
         """
         Remove old backups beyond the maximum limit.
         
         Returns:
-            int: Number of backups removed
+            tuple: (success, message, details) where:
+                - success is a boolean indicating if pruning was successful
+                - message contains success details or error message
+                - details contains pruning statistics or error information
         """
         try:
-            backups = self.list_backups()
+            self.logger.info(f"Pruning backups to maintain maximum of {self.max_backups}")
+            
+            # Get the current list of backups
+            success, message, details = self.list_backups()
+            if not success:
+                self.logger.error(f"Failed to list backups for pruning: {message}")
+                return ErrorHandler.from_exception(
+                    BaseError(
+                        message=f"Failed to list backups for pruning: {message}",
+                        category=ErrorCategory.FILE,
+                        severity=ErrorSeverity.ERROR,
+                        details=details
+                    )
+                )
+            
+            backups = details.get("backups", [])
             
             # If we have more backups than the limit, remove the oldest ones
             if len(backups) > self.max_backups:
                 backups_to_remove = backups[self.max_backups:]
+                removed_count = 0
+                failed_removals = []
                 
                 for backup in backups_to_remove:
                     try:
                         os.remove(backup['path'])
-                        logging.info(f"Removed old backup: {backup['filename']}")
+                        self.logger.info(f"Removed old backup: {backup['filename']}")
+                        removed_count += 1
+                    except PermissionError:
+                        error_msg = f"Permission denied removing backup: {backup['path']}"
+                        self.logger.error(error_msg)
+                        failed_removals.append({"path": backup['path'], "error": "permission_denied"})
                     except Exception as e:
-                        logging.error(f"Error removing backup {backup['path']}: {str(e)}")
+                        error_msg = f"Error removing backup {backup['path']}: {str(e)}"
+                        self.logger.error(error_msg)
+                        failed_removals.append({"path": backup['path'], "error": str(e)})
                 
-                return len(backups_to_remove)
+                if failed_removals:
+                    return ErrorHandler.create_success_response(
+                        message=f"Partially pruned backups: removed {removed_count} of {len(backups_to_remove)} old backups",
+                        data={
+                            "removed_count": removed_count,
+                            "attempted_count": len(backups_to_remove),
+                            "failed_removals": failed_removals
+                        }
+                    )
+                
+                return ErrorHandler.create_success_response(
+                    message=f"Successfully pruned {removed_count} old backups",
+                    data={"removed_count": removed_count}
+                )
             
-            return 0
+            self.logger.info(f"No pruning needed, current backup count ({len(backups)}) is within limit")
+            return ErrorHandler.create_success_response(
+                message="No pruning needed, backup count is within limit",
+                data={"removed_count": 0, "current_count": len(backups)}
+            )
             
         except Exception as e:
-            logging.error(f"Error pruning backups: {str(e)}")
-            return 0
+            error_msg = f"Error pruning backups: {str(e)}"
+            log_exception(self.logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    category=ErrorCategory.FILE,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error_type": type(e).__name__}
+                )
+            )
 
 
 class BackupManager:
@@ -128,18 +226,27 @@ class BackupManager:
     class to handle backup file rotation.
     """
     
-    def __init__(self, backup_dir=None, max_backups=10, lock_timeout=1800):
+    def __init__(self, backup_dir=None, max_backups=None, lock_timeout=None):
         """
         Initialize the backup manager.
         
         Args:
-            backup_dir: Directory where backups are stored (default: C:\\Mach3\\ToolManagement\\Backups\\ToolData)
-            max_backups: Maximum number of backups to keep (default: 20)
-            lock_timeout: Timeout for file locks in seconds (default: 30 minutes)
+            backup_dir: Directory where backups are stored (default: from AppConfig)
+            max_backups: Maximum number of backups to keep (default: from AppConfig)
+            lock_timeout: Timeout for file locks in seconds (default: from AppConfig)
         """
+        self.logger = setup_logger(f"{__name__}.BackupManager")
+        
         # Set default backup directory if not provided
         if backup_dir is None:
-            backup_dir = r"C:\Mach3\ToolManagement\Backups\ToolData"
+            backup_dir = str(AppConfig.paths.get_backups_dir() / "ToolData")
+        
+        # Set default timeouts and limits from config
+        if max_backups is None:
+            max_backups = AppConfig.limits.DEFAULT_MAX_BACKUPS
+            
+        if lock_timeout is None:
+            lock_timeout = AppConfig.timeouts.BACKUP_LOCK_TIMEOUT
         
         self.backup_dir = backup_dir
         self.lock_timeout = lock_timeout
@@ -149,6 +256,7 @@ class BackupManager:
         
         # Ensure backup directory exists
         os.makedirs(self.backup_dir, exist_ok=True)
+        self.logger.info(f"BackupManager initialized with directory: {backup_dir}, max_backups: {max_backups}, lock_timeout: {lock_timeout}")
     
     def create_backup(self, file_path):
         """
@@ -158,15 +266,24 @@ class BackupManager:
             file_path: Path to the file to backup
             
         Returns:
-            dict: Result containing status and message
+            tuple: (success, message, details) where:
+                - success is a boolean indicating if backup was successful
+                - message contains success details or error message
+                - details contains backup information or error details
         """
         try:
+            self.logger.info(f"Creating backup of file: {file_path}")
+            
             # Verify the source file exists
             if not os.path.exists(file_path):
-                return {
-                    'status': 'ERROR',
-                    'message': f"Source file does not exist: {file_path}"
-                }
+                self.logger.error(f"Source file does not exist: {file_path}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Source file does not exist: {file_path}",
+                        file_path=file_path,
+                        severity=ErrorSeverity.ERROR
+                    )
+                )
             
             # Get file name and generate backup file name with timestamp
             file_name = os.path.basename(file_path)
@@ -177,54 +294,88 @@ class BackupManager:
             
             # Acquire file lock on the source file
             file_lock = FileLock(file_path, self.lock_timeout)
-
-            # Add right before trying to check file lock
-            print(f"DEBUG: Checking if file is locked: {file_path}")
-            file_locked, lock_info = file_lock.check_file_lock()
-            print(f"DEBUG: Lock check result: {file_locked}, Info: {lock_info}")
             
             # Explicitly check if file is locked first
             file_locked, lock_info = file_lock.check_file_lock()
             if file_locked:
-                logging.warning(f"Cannot create backup: {file_path} is locked: {lock_info}")
-                return {
-                    'status': 'ERROR',
-                    'message': f"Could not backup file: {file_path} is currently in use by another application"
-                }
+                self.logger.warning(f"Cannot create backup: {file_path} is locked: {lock_info}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Could not backup file: {file_path} is currently in use by another application",
+                        file_path=file_path,
+                        severity=ErrorSeverity.WARNING,
+                        details={"lock_info": lock_info}
+                    )
+                )
     
             # Then try to acquire the lock
             if not file_lock.acquire():
-                return {
-                    'status': 'ERROR',
-                    'message': f"Could not acquire lock on {file_path}. File may be in use."
-                }
+                self.logger.error(f"Could not acquire lock on {file_path}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Could not acquire lock on {file_path}. File may be in use.",
+                        file_path=file_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error": "lock_acquisition_failed"}
+                    )
+                )
             
             try:
                 # Create backup
                 shutil.copy2(file_path, backup_path)
-                logging.info(f"Created backup: {backup_file_name}")
+                self.logger.info(f"Created backup: {backup_file_name}")
                 
                 # Prune old backups
-                removed_count = self.rotation.prune()
-                if removed_count > 0:
-                    logging.info(f"Removed {removed_count} old backup(s)")
+                success, message, prune_details = self.rotation.prune()
+                if success:
+                    removed_count = prune_details.get("removed_count", 0)
+                    if removed_count > 0:
+                        self.logger.info(f"Removed {removed_count} old backup(s)")
+                else:
+                    self.logger.warning(f"Pruning failed: {message}")
                 
-                return {
-                    'status': 'SUCCESS',
-                    'message': f"Backup created: {backup_file_name}",
-                    'backup_path': backup_path
-                }
+                return ErrorHandler.create_success_response(
+                    message=f"Backup created: {backup_file_name}",
+                    data={
+                        "backup_path": backup_path,
+                        "backup_file_name": backup_file_name,
+                        "original_file": file_path,
+                        "timestamp": timestamp,
+                        "pruning_result": {
+                            "success": success,
+                            "message": message,
+                            "details": prune_details
+                        }
+                    }
+                )
                 
             finally:
                 # Always release the lock
                 file_lock.release()
+                self.logger.debug(f"Released lock on {file_path}")
                 
+        except PermissionError:
+            error_msg = f"Permission denied accessing file: {file_path}"
+            self.logger.error(error_msg)
+            return ErrorHandler.from_exception(
+                FileError(
+                    message=error_msg,
+                    file_path=file_path,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "permission_denied"}
+                )
+            )
         except Exception as e:
-            logging.error(f"Error creating backup: {str(e)}")
-            return {
-                'status': 'ERROR',
-                'message': f"Backup failed: {str(e)}"
-            }
+            error_msg = f"Error creating backup: {str(e)}"
+            log_exception(self.logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    category=ErrorCategory.FILE,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error_type": type(e).__name__}
+                )
+            )
     
     def restore_from_backup(self, backup_path, target_path):
         """
@@ -235,15 +386,24 @@ class BackupManager:
             target_path: Path where the file should be restored
             
         Returns:
-            dict: Result containing status and message
+            tuple: (success, message, details) where:
+                - success is a boolean indicating if restore was successful
+                - message contains success details or error message
+                - details contains restore information or error details
         """
         try:
+            self.logger.info(f"Restoring from backup {backup_path} to {target_path}")
+            
             # Verify the backup file exists
             if not os.path.exists(backup_path):
-                return {
-                    'status': 'ERROR',
-                    'message': f"Backup file does not exist: {backup_path}"
-                }
+                self.logger.error(f"Backup file does not exist: {backup_path}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Backup file does not exist: {backup_path}",
+                        file_path=backup_path,
+                        severity=ErrorSeverity.ERROR
+                    )
+                )
             
             # Create safety backup of current file if it exists
             safety_backup = None
@@ -258,54 +418,98 @@ class BackupManager:
                 # Acquire lock on target file
                 file_lock = FileLock(target_path, self.lock_timeout)
                 if not file_lock.acquire():
-                    return {
-                        'status': 'ERROR',
-                        'message': f"Could not acquire lock on {target_path}. File may be in use."
-                    }
+                    self.logger.error(f"Could not acquire lock on {target_path}")
+                    return ErrorHandler.from_exception(
+                        FileError(
+                            message=f"Could not acquire lock on {target_path}. File may be in use.",
+                            file_path=target_path,
+                            severity=ErrorSeverity.ERROR,
+                            details={"error": "lock_acquisition_failed"}
+                        )
+                    )
                 
                 try:
                     # Create safety backup
                     shutil.copy2(target_path, safety_backup)
-                    logging.info(f"Created safety backup before restore: {safety_name}")
+                    self.logger.info(f"Created safety backup before restore: {safety_name}")
                     
                     # Copy backup to target
                     shutil.copy2(backup_path, target_path)
-                    logging.info(f"Restored from backup: {os.path.basename(backup_path)}")
+                    self.logger.info(f"Restored from backup: {os.path.basename(backup_path)}")
                     
-                    return {
-                        'status': 'SUCCESS',
-                        'message': f"Restored from backup: {os.path.basename(backup_path)}",
-                        'safety_backup': safety_backup
-                    }
+                    return ErrorHandler.create_success_response(
+                        message=f"Restored from backup: {os.path.basename(backup_path)}",
+                        data={
+                            "backup_path": backup_path,
+                            "target_path": target_path,
+                            "backup_filename": os.path.basename(backup_path),
+                            "safety_backup": safety_backup,
+                            "safety_backup_name": safety_name
+                        }
+                    )
                     
                 finally:
                     # Always release the lock
                     file_lock.release()
+                    self.logger.debug(f"Released lock on {target_path}")
             else:
                 # Target doesn't exist, just copy the backup
                 os.makedirs(os.path.dirname(target_path), exist_ok=True)
                 shutil.copy2(backup_path, target_path)
-                logging.info(f"Restored from backup (target did not exist): {os.path.basename(backup_path)}")
+                self.logger.info(f"Restored from backup (target did not exist): {os.path.basename(backup_path)}")
                 
-                return {
-                    'status': 'SUCCESS',
-                    'message': f"Restored from backup: {os.path.basename(backup_path)}"
-                }
+                return ErrorHandler.create_success_response(
+                    message=f"Restored from backup: {os.path.basename(backup_path)}",
+                    data={
+                        "backup_path": backup_path,
+                        "target_path": target_path,
+                        "backup_filename": os.path.basename(backup_path),
+                        "target_created": True
+                    }
+                )
                 
+        except PermissionError:
+            error_msg = f"Permission denied accessing file during restore"
+            self.logger.error(error_msg)
+            return ErrorHandler.from_exception(
+                FileError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={
+                        "error": "permission_denied",
+                        "backup_path": backup_path,
+                        "target_path": target_path
+                    }
+                )
+            )
         except Exception as e:
-            logging.error(f"Error restoring backup: {str(e)}")
-            return {
-                'status': 'ERROR',
-                'message': f"Restore failed: {str(e)}"
-            }
+            error_msg = f"Error restoring backup: {str(e)}"
+            log_exception(self.logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    category=ErrorCategory.FILE,
+                    severity=ErrorSeverity.ERROR,
+                    details={
+                        "error_type": type(e).__name__,
+                        "backup_path": backup_path,
+                        "target_path": target_path
+                    }
+                )
+            )
     
     def list_backups(self):
         """
         List all available backups.
         
         Returns:
-            list: List of dictionaries with backup information
+            tuple: (success, message, details) where:
+                - success is a boolean indicating if listing was successful
+                - message contains success details or error message
+                - details contains the backups list or error information
         """
+        self.logger.info("Listing available backups")
+        # The rotation class now returns the standardized response format
         return self.rotation.list_backups()
 
 
@@ -316,22 +520,54 @@ def write_status_file(status, message=""):
     Args:
         status: Status string (SUCCESS, ERROR)
         message: Optional message
+        
+    Returns:
+        tuple: (success, message, details) containing the result
     """
-    status_file = os.path.join(log_dir, "backup_status.txt")
+    status_logger = setup_logger("backup_status_writer")
+    status_file = os.path.join(AppConfig.paths.get_logs_dir(), "backup_status.txt")
     
     try:
         with open(status_file, 'w') as f:
             f.write(f"{status}\n")
             if message:
                 f.write(message)
+        
+        status_logger.info(f"Wrote status file: {status}")
+        return ErrorHandler.create_success_response(
+            message="Status file written successfully",
+            data={"status": status, "file_path": status_file}
+        )
+    except PermissionError:
+        error_msg = f"Permission denied writing status file: {status_file}"
+        status_logger.error(error_msg)
+        return ErrorHandler.from_exception(
+            FileError(
+                message=error_msg,
+                file_path=status_file,
+                severity=ErrorSeverity.ERROR,
+                details={"error": "permission_denied"}
+            )
+        )
     except Exception as e:
-        logging.error(f"Error writing status file: {str(e)}")
+        error_msg = f"Error writing status file: {str(e)}"
+        log_exception(status_logger, error_msg)
+        return ErrorHandler.from_exception(
+            FileError(
+                message=error_msg,
+                file_path=status_file,
+                severity=ErrorSeverity.ERROR,
+                details={"error_type": type(e).__name__}
+            )
+        )
 
 
 def main():
     """
     Main function that processes command line arguments and executes operations.
     """
+    main_logger = setup_logger("backup_manager_main")
+    
     parser = argparse.ArgumentParser(description="Tool Data Backup Manager")
     
     # Add exclusive command arguments
@@ -352,45 +588,57 @@ def main():
     # Create backup manager
     backup_manager = BackupManager()
     
-    result = None
+    success = False
+    message = "Operation not executed"
+    details = {}
     
     if args.create:
         # Create backup
-        result = backup_manager.create_backup(args.create)
-        print(f"{result['status']}: {result['message']}")
+        main_logger.info(f"Creating backup of file: {args.create}")
+        success, message, details = backup_manager.create_backup(args.create)
+        status_str = "SUCCESS" if success else "ERROR"
+        print(f"{status_str}: {message}")
         
     elif args.restore:
         # Verify target path is provided
         if not args.target:
+            main_logger.error("Target path is required for restore operation")
             print("ERROR: Target path is required for restore operation")
             parser.print_help()
             sys.exit(1)
             
         # Restore from backup
-        result = backup_manager.restore_from_backup(args.restore, args.target)
-        print(f"{result['status']}: {result['message']}")
+        main_logger.info(f"Restoring from backup {args.restore} to {args.target}")
+        success, message, details = backup_manager.restore_from_backup(args.restore, args.target)
+        status_str = "SUCCESS" if success else "ERROR"
+        print(f"{status_str}: {message}")
         
     elif args.list:
         # List backups
-        backups = backup_manager.list_backups()
+        main_logger.info("Listing backups")
+        success, message, details = backup_manager.list_backups()
         
-        if not backups:
-            print("No backups found")
-            result = {'status': 'SUCCESS', 'message': 'No backups found'}
+        if success:
+            backups = details.get("backups", [])
+            if not backups:
+                print("No backups found")
+            else:
+                print(f"Found {len(backups)} backup(s):")
+                for i, backup in enumerate(backups, 1):
+                    date_str = backup['datetime'].strftime("%Y-%m-%d %H:%M:%S")
+                    print(f"{i}. {backup['filename']} - {date_str}")
         else:
-            print(f"Found {len(backups)} backup(s):")
-            for i, backup in enumerate(backups, 1):
-                date_str = backup['datetime'].strftime("%Y-%m-%d %H:%M:%S")
-                print(f"{i}. {backup['filename']} - {date_str}")
-            
-            result = {'status': 'SUCCESS', 'message': f"Listed {len(backups)} backup(s)"}
+            print(f"Error listing backups: {message}")
     
     # Write status file for VBScript if requested
-    if args.status_file and result:
-        write_status_file(result['status'], result['message'])
+    if args.status_file:
+        status_str = "SUCCESS" if success else "ERROR"
+        write_result = write_status_file(status_str, message)
+        if not write_result[0]:  # If writing status file failed
+            main_logger.error(f"Failed to write status file: {write_result[1]}")
     
     # Return exit code based on result
-    return 0 if result and result['status'] == 'SUCCESS' else 1
+    return 0 if success else 1
 
 
 if __name__ == "__main__":

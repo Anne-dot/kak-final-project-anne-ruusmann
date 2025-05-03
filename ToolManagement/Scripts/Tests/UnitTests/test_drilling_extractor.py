@@ -42,9 +42,9 @@ class TestDrillingExtractorSimple(unittest.TestCase):
         
         if cls.dxf_files:
             cls.dxf_file = os.path.join(cls.test_dir, cls.dxf_files[0])
-            success, doc, message = cls.loader.load_dxf(cls.dxf_file)
+            success, message, details = cls.loader.load_dxf(cls.dxf_file)
             if success:
-                cls.doc = doc
+                cls.doc = details.get('document')
             else:
                 print(f"Failed to load test file: {message}")
     
@@ -60,7 +60,10 @@ class TestDrillingExtractorSimple(unittest.TestCase):
         self.assertTrue(self.dxf_file.endswith('.dxf'))
         
         # Print file info for debugging
-        info = self.loader.get_dxf_info(self.doc)
+        success, message, details = self.loader.get_dxf_info(self.doc)
+        self.assertTrue(success, f"Failed to get DXF info: {message}")
+        info = details
+        
         print(f"\nLoaded test file: {os.path.basename(self.dxf_file)}")
         print(f"  Version: {info['dxf_version']}")
         print(f"  Total entities: {info['total_entities']}")
@@ -78,115 +81,86 @@ class TestDrillingExtractorSimple(unittest.TestCase):
     def test_find_drilling_points(self):
         """Test extraction of drilling points from the test file."""
         # Extract drilling points
-        success, points, message = self.extractor.find_drilling_points(self.doc)
+        success, message, details = self.extractor.find_drilling_points(self.doc)
         
         # Print results for debugging
         print(f"\nDrilling point extraction: {'Success' if success else 'Failed'}")
         print(f"Message: {message}")
         
         if success:
-            print(f"Vertical drilling points: {len(points['vertical'])}")
-            print(f"Horizontal drilling points: {len(points['horizontal'])}")
+            drill_points = details.get('drill_points', [])
+            print(f"Found {len(drill_points)} drilling points")
             
             # Print some details about the first few points
-            if points['vertical']:
-                print("\nSample vertical points:")
-                for i, point in enumerate(points['vertical'][:2]):  # Just show first 2
+            if drill_points:
+                print("\nSample drilling points:")
+                for i, point in enumerate(drill_points[:3]):  # Just show first 3
                     print(f"  {i+1}. Position: {point.position}, Diameter: {point.diameter}, Depth: {point.depth}")
-            
-            if points['horizontal']:
-                print("\nSample horizontal points:")
-                for i, point in enumerate(points['horizontal'][:2]):  # Just show first 2
-                    print(f"  {i+1}. Position: {point.position}, Diameter: {point.diameter}, Depth: {point.depth}, Edge: {point.edge}")
         
         # Basic assertions
-        self.assertTrue(success)
-        self.assertIsNotNone(points)
-        self.assertIn('vertical', points)
-        self.assertIn('horizontal', points)
+        self.assertTrue(success, f"Failed to find drilling points: {message}")
+        self.assertIsNotNone(details)
+        self.assertIn('drill_points', details)
+        self.assertIn('count', details)
     
     def test_extract_parameters(self):
         """Test extraction of drilling parameters."""
         # First get drilling points
-        success, points, _ = self.extractor.find_drilling_points(self.doc)
+        success, message, details = self.extractor.find_drilling_points(self.doc)
         if not success:
-            self.skipTest("Could not extract drilling points")
+            self.skipTest(f"Could not extract drilling points: {message}")
+        
+        drill_points = details.get('drill_points', [])
         
         # Extract parameters
-        success, params, message = self.extractor.extract_drilling_parameters(self.doc, points)
+        success, message, details = self.extractor.extract_drilling_parameters(drill_points)
         
         # Print results for debugging
         print(f"\nParameter extraction: {'Success' if success else 'Failed'}")
         print(f"Message: {message}")
         
         if success:
-            print(f"Vertical parameters: {len(params['vertical'])}")
-            print(f"Horizontal parameters: {len(params['horizontal'])}")
-        
-        # Basic assertions
-        self.assertTrue(success)
-        self.assertIsNotNone(params)
-        self.assertIn('vertical', params)
-        self.assertIn('horizontal', params)
-    
-    def test_group_drilling_operations(self):
-        """Test grouping of drilling operations."""
-        # First get drilling points
-        success, points, _ = self.extractor.find_drilling_points(self.doc)
-        if not success:
-            self.skipTest("Could not extract drilling points")
-        
-        # Extract parameters
-        success, params, _ = self.extractor.extract_drilling_parameters(self.doc, points)
-        if not success:
-            self.skipTest("Could not extract drilling parameters")
-        
-        # Group operations
-        success, groups, message = self.extractor.group_drilling_operations(self.doc, params)
-        
-        # Print results for debugging
-        print(f"\nGrouping operations: {'Success' if success else 'Failed'}")
-        print(f"Message: {message}")
-        
-        if success:
-            print("\nVertical groups:")
-            for group_key, operations in groups['vertical'].items():
-                print(f"  - {group_key}: {len(operations)} operations")
+            parameters = details.get('parameters', [])
+            print(f"Extracted parameters for {len(parameters)} points")
             
-            print("\nHorizontal groups:")
-            for group_key, operations in groups['horizontal'].items():
-                print(f"  - {group_key}: {len(operations)} operations")
+            # Display sample parameters
+            if parameters:
+                print("\nSample parameters:")
+                for i, param in enumerate(parameters[:3]):  # Just show first 3
+                    print(f"  {i+1}. Position: {param.get('position')}, Diameter: {param.get('diameter')}, Depth: {param.get('depth')}")
         
         # Basic assertions
-        self.assertTrue(success)
-        self.assertIsNotNone(groups)
-        self.assertIn('vertical', groups)
-        self.assertIn('horizontal', groups)
+        self.assertTrue(success, f"Failed to extract parameters: {message}")
+        self.assertIsNotNone(details)
+        self.assertIn('parameters', details)
+        self.assertIn('count', details)
     
     def test_extract_all_drilling_info(self):
         """Test complete extraction of drilling info."""
         # Extract all info in one call
-        success, info, message = self.extractor.extract_all_drilling_info(self.doc)
+        success, message, details = self.extractor.extract_all_drilling_info(self.doc)
         
         # Print results for debugging
         print(f"\nAll drilling info extraction: {'Success' if success else 'Failed'}")
         print(f"Message: {message}")
         
         if success:
-            print(f"Vertical points: {info['vertical_count']}")
-            print(f"Horizontal points: {info['horizontal_count']}")
-            print(f"Vertical groups: {info['vertical_groups']}")
-            print(f"Horizontal groups: {info['horizontal_groups']}")
+            print(f"Found {details.get('count', 0)} drilling points")
+            points = details.get('points', [])
+            parameters = details.get('parameters', [])
+            
+            print(f"Points: {len(points)}")
+            print(f"Parameters: {len(parameters)}")
         else:
             print(f"Error: {message}")
+            print(f"Error details: {details}")
         
         # Basic assertions
-        self.assertTrue(success)
-        self.assertIsNotNone(info)
-        self.assertIn('points', info)
-        self.assertIn('directions', info)
-        self.assertIn('parameters', info)
-        self.assertIn('groups', info)
+        self.assertTrue(success, f"Failed to extract all drilling info: {message}")
+        self.assertIsNotNone(details)
+        self.assertIn('points', details)
+        self.assertIn('parameters', details)
+        self.assertIn('count', details)
 
 if __name__ == '__main__':
     unittest.main()

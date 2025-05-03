@@ -5,7 +5,6 @@ This module provides safe file operations with locking mechanisms
 to prevent concurrent access issues across the application.
 
 Classes:
-    FileLock: Provides file locking capabilities
     FileUtils: Main class for safe file operations
 """
 
@@ -24,126 +23,13 @@ from typing import Dict, Any, Optional, Union, List, Tuple, BinaryIO, TextIO, It
 try:
     from Utils.error_utils import FileError, ErrorSeverity, ErrorHandler
     from Utils.path_utils import PathUtils
+    from Utils.file_lock_utils import FileLock
 except ImportError:
     # Add parent directory to path for standalone testing
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     from error_utils import FileError, ErrorSeverity, ErrorHandler
     from path_utils import PathUtils
-
-
-class FileLock:
-    """
-    Provides file locking mechanism to prevent concurrent access.
-    
-    This class implements a simple file-based locking system that works
-    across platforms and prevents multiple processes from accessing
-    the same file simultaneously.
-    """
-    
-    def __init__(self, file_path: Union[str, Path], timeout: float = 30.0):
-        """
-        Initialize a file lock for the specified file.
-        
-        Args:
-            file_path: Path to the file to lock
-            timeout: Maximum time in seconds to wait for lock acquisition (default: 30)
-        """
-        self.file_path = Path(file_path)
-        self.lock_path = self.file_path.with_suffix(self.file_path.suffix + '.lock')
-        self.timeout = timeout
-        self.acquired = False
-    
-    def acquire(self) -> bool:
-        """
-        Acquire a lock on the file.
-        
-        Returns:
-            bool: True if lock was acquired, False otherwise
-        
-        Raises:
-            FileError: If lock path creation fails
-        """
-        if self.acquired:
-            return True
-        
-        start_time = time.time()
-        
-        # Try to acquire lock until timeout
-        while time.time() - start_time < self.timeout:
-            try:
-                # Check if lock file exists and is fresh
-                if self.lock_path.exists():
-                    # Check if lock is stale
-                    lock_age = time.time() - self.lock_path.stat().st_mtime
-                    if lock_age > self.timeout:
-                        # Lock is stale, remove it
-                        self.lock_path.unlink()
-                    else:
-                        # Lock is fresh, wait and retry
-                        time.sleep(0.1)
-                        continue
-                
-                # Create lock file with process information
-                with open(self.lock_path, 'w') as f:
-                    lock_info = {
-                        'pid': os.getpid(),
-                        'hostname': platform.node(),
-                        'created': time.time()
-                    }
-                    f.write(json.dumps(lock_info))
-                
-                # Verify the lock was created by us
-                with open(self.lock_path, 'r') as f:
-                    lock_data = json.loads(f.read())
-                    if lock_data['pid'] == os.getpid():
-                        self.acquired = True
-                        return True
-            
-            except Exception as e:
-                error_msg = f"Failed to acquire lock for {self.file_path.name}"
-                raise FileError(
-                    message=error_msg,
-                    file_path=str(self.file_path),
-                    severity=ErrorSeverity.ERROR,
-                    details={"error": str(e)}
-                )
-            
-            # Wait before retrying
-            time.sleep(0.1)
-        
-        # Timeout expired
-        return False
-    
-    def release(self) -> bool:
-        """
-        Release the lock if it is held.
-        
-        Returns:
-            bool: True if lock was released, False if it wasn't held
-        """
-        if not self.acquired:
-            return False
-        
-        try:
-            if self.lock_path.exists():
-                self.lock_path.unlink()
-            self.acquired = False
-            return True
-        except Exception:
-            return False
-    
-    def __enter__(self):
-        """Enter context manager."""
-        self.acquire()
-        return self
-    
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Exit context manager."""
-        self.release()
-    
-    def __del__(self):
-        """Ensure lock is released when object is garbage collected."""
-        self.release()
+    from file_lock_utils import FileLock
 
 
 class FileUtils:
@@ -345,19 +231,27 @@ class FileUtils:
         try:
             # Check if file exists
             if not file_path.exists():
-                return False, b'', {
-                    "error": f"File not found: {file_path.name}",
-                    "file_path": str(file_path)
-                }
+                error_result = ErrorHandler.from_exception(
+                    FileError(
+                        message=f"File not found: {file_path.name}",
+                        file_path=str(file_path),
+                        severity=ErrorSeverity.ERROR
+                    )
+                )
+                return error_result[0], b'', error_result[2]
             
             if use_lock:
                 lock = FileLock(file_path, timeout=lock_timeout)
                 if not lock.acquire():
-                    return False, b'', {
-                        "error": f"Could not acquire lock for {file_path.name}",
-                        "file_path": str(file_path),
-                        "timeout": lock_timeout
-                    }
+                    error_result = ErrorHandler.from_exception(
+                        FileError(
+                            message=f"Could not acquire lock for {file_path.name}",
+                            file_path=str(file_path),
+                            severity=ErrorSeverity.ERROR,
+                            details={"timeout": lock_timeout}
+                        )
+                    )
+                    return error_result[0], b'', error_result[2]
             
             # Read file content
             with open(file_path, 'rb') as f:
@@ -367,17 +261,26 @@ class FileUtils:
             if use_lock:
                 lock.release()
             
-            return True, content, {"size": len(content)}
+            success_response = ErrorHandler.create_success_response(
+                message=f"Successfully read {file_path.name}",
+                data={"size": len(content)}
+            )
+            return success_response[0], content, success_response[2]
         
         except Exception as e:
             # Ensure lock is released if used
             if use_lock and 'lock' in locals() and lock.acquired:
                 lock.release()
             
-            return False, b'', {
-                "error": str(e),
-                "file_path": str(file_path)
-            }
+            error_result = ErrorHandler.from_exception(
+                FileError(
+                    message=f"Failed to read {file_path.name}",
+                    file_path=str(file_path),
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": str(e)}
+                )
+            )
+            return error_result[0], b'', error_result[2]
     
     @staticmethod
     def write_binary(

@@ -35,8 +35,8 @@ from Utils.path_utils import PathUtils
 # Import the normalizer
 from GCode.gcode_normalizer import GCodeNormalizer
 
-# Set up logger
-logger = setup_logger(__name__)
+# Import file errors
+from Utils.error_utils import FileError
 
 
 class MovementAnalyzer:
@@ -58,6 +58,9 @@ class MovementAnalyzer:
     
     def __init__(self):
         """Initialize the MovementAnalyzer with regex patterns."""
+        # Set up logger
+        self.logger = setup_logger(__name__ + ".MovementAnalyzer")
+        
         # G-code command patterns - updated to be more precise and avoid false positives
         self.g1_pattern = re.compile(r'(?:N\d+)?G0*1(?=[XYZIJKRF\s]|$)')  # Match G1 followed by axis or end
         self.g2_pattern = re.compile(r'(?:N\d+)?G0*2(?=[XYZIJKRF\s]|$)')  # Match G2 followed by axis or end
@@ -67,6 +70,8 @@ class MovementAnalyzer:
         self.x_pattern = re.compile(r'[Xx][+-]?[0-9.]+')
         self.y_pattern = re.compile(r'[Yy][+-]?[0-9.]+')
         self.z_pattern = re.compile(r'[Zz][+-]?[0-9.]+')
+        
+        self.logger.info("MovementAnalyzer initialized with regex patterns")
     
     def analyze_line(self, line: str) -> Dict[str, Any]:
         """
@@ -100,22 +105,22 @@ class MovementAnalyzer:
         if g1_match:
             result["g_code"] = 1
             result["needs_check"] = True
-            logger.debug(f"Found G1 command in line: {line.strip()}")
+            self.logger.debug(f"Found G1 command in line: {line.strip()}")
         elif g2_match:
             result["g_code"] = 2
             result["needs_check"] = True
-            logger.debug(f"Found G2 command in line: {line.strip()}")
+            self.logger.debug(f"Found G2 command in line: {line.strip()}")
         elif g3_match:
             result["g_code"] = 3
             result["needs_check"] = True
-            logger.debug(f"Found G3 command in line: {line.strip()}")
+            self.logger.debug(f"Found G3 command in line: {line.strip()}")
         
         # Only check for axis movements if this is a movement command
         if result["needs_check"]:
             result["x_move"] = 1 if self.x_pattern.search(line) else 0
             result["y_move"] = 1 if self.y_pattern.search(line) else 0
             result["z_move"] = 1 if self.z_pattern.search(line) else 0
-            logger.debug(f"Movement axes: X={result['x_move']}, Y={result['y_move']}, Z={result['z_move']}")
+            self.logger.debug(f"Movement axes: X={result['x_move']}, Y={result['y_move']}, Z={result['z_move']}")
             
         return result
 
@@ -136,8 +141,13 @@ class GCodePreprocessor:
     
     def __init__(self):
         """Initialize the GCodePreprocessor."""
+        # Set up logger
+        self.logger = setup_logger(__name__ + ".GCodePreprocessor")
+        
         self.analyzer = MovementAnalyzer()
         self.current_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        self.logger.info("GCodePreprocessor initialized")
     
     def preprocess_file(self, input_file: str, output_file: Optional[str] = None) -> Tuple[bool, str, Dict[str, Any]]:
         """
@@ -154,7 +164,7 @@ class GCodePreprocessor:
         try:
             # Normalize and validate paths
             input_path = PathUtils.normalize_path(input_file)
-            logger.info(f"Processing file: {input_path}")
+            self.logger.info(f"Processing file: {input_path}")
             
             # Generate output filename if not provided
             if output_file is None:
@@ -164,48 +174,107 @@ class GCodePreprocessor:
             else:
                 output_path = PathUtils.normalize_path(output_file)
             
-            logger.info(f"Output will be written to: {output_path}")
+            self.logger.info(f"Output will be written to: {output_path}")
             
             # Ensure output directory exists
             output_dir = os.path.dirname(output_path)
             PathUtils.ensure_dir(output_dir)
             
             # Read input file
-            logger.info("Reading input file...")
+            self.logger.info("Reading input file...")
             try:
                 with open(input_path, 'r') as f:
                     content = f.read()
-                logger.info(f"Successfully read file: {len(content)} characters")
+                self.logger.info(f"Successfully read file: {len(content)} characters")
+            except FileNotFoundError:
+                error_msg = f"Input file not found: {input_path}"
+                self.logger.error(error_msg)
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=error_msg,
+                        file_path=input_path,
+                        severity=ErrorSeverity.ERROR
+                    )
+                )
+            except PermissionError:
+                error_msg = f"Permission denied reading input file: {input_path}"
+                self.logger.error(error_msg)
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=error_msg,
+                        file_path=input_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error": "permission_denied"}
+                    )
+                )
             except Exception as e:
-                logger.error(f"Failed to read input file: {str(e)}")
-                return False, f"Failed to read input file: {str(e)}", {}
+                error_msg = f"Failed to read input file: {str(e)}"
+                self.logger.error(error_msg)
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=error_msg,
+                        file_path=input_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error_type": type(e).__name__}
+                    )
+                )
             
             # Process content
-            logger.info("Analyzing G-code content...")
+            self.logger.info("Analyzing G-code content...")
             result = self._process_content(content, os.path.basename(input_path))
-            logger.info(f"Analysis complete. Found {result['safety_checks_added']} movements requiring safety checks.")
+            self.logger.info(f"Analysis complete. Found {result['safety_checks_added']} movements requiring safety checks.")
             
             # Write output file
-            logger.info(f"Writing output file: {output_path}")
+            self.logger.info(f"Writing output file: {output_path}")
             try:
                 with open(output_path, 'w') as f:
                     f.write(result["processed_content"])
-                logger.info(f"Successfully wrote output file: {len(result['processed_content'])} characters")
+                self.logger.info(f"Successfully wrote output file: {len(result['processed_content'])} characters")
+            except PermissionError:
+                error_msg = f"Permission denied writing output file: {output_path}"
+                self.logger.error(error_msg)
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=error_msg,
+                        file_path=output_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error": "permission_denied"}
+                    )
+                )
             except Exception as e:
-                logger.error(f"Failed to write output file: {str(e)}")
-                return False, f"Failed to write output file: {str(e)}", {}
+                error_msg = f"Failed to write output file: {str(e)}"
+                self.logger.error(error_msg)
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=error_msg,
+                        file_path=output_path, 
+                        severity=ErrorSeverity.ERROR,
+                        details={"error_type": type(e).__name__}
+                    )
+                )
             
-            logger.info(f"Successfully processed {result['line_count']} lines, added {result['safety_checks_added']} safety checks")
-            return True, "G-code preprocessing completed successfully", {
-                "input_file": input_path,
-                "output_file": output_path,
-                "lines_processed": result["line_count"],
-                "safety_checks_added": result["safety_checks_added"]
-            }
+            self.logger.info(f"Successfully processed {result['line_count']} lines, added {result['safety_checks_added']} safety checks")
+            return ErrorHandler.create_success_response(
+                message="G-code preprocessing completed successfully",
+                data={
+                    "input_file": input_path,
+                    "output_file": output_path,
+                    "lines_processed": result["line_count"],
+                    "safety_checks_added": result["safety_checks_added"]
+                }
+            )
             
         except Exception as e:
-            logger.error(f"Error preprocessing G-code: {str(e)}")
-            return ErrorHandler.from_exception(e)
+            error_msg = f"Error preprocessing G-code: {str(e)}"
+            log_exception(self.logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    category=ErrorCategory.PROCESSING,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error_type": type(e).__name__}
+                )
+            )
     
     def _process_content(self, content: str, filename: str) -> Dict[str, Any]:
         """
@@ -232,9 +301,9 @@ class GCodePreprocessor:
         
         # Log some sample lines for debugging
         if len(lines) > 20:
-            logger.info(f"First 5 lines of file:")
+            self.logger.info(f"First 5 lines of file:")
             for i in range(min(5, len(lines))):
-                logger.info(f"Line {i+1}: {lines[i]}")
+                self.logger.info(f"Line {i+1}: {lines[i]}")
         
         # Process each line
         for line in lines:
@@ -248,14 +317,14 @@ class GCodePreprocessor:
             
             # Analyze movement - print debug for specific important lines
             if "G1" in stripped_line or "G2" in stripped_line or "G3" in stripped_line:
-                logger.info(f"Line {line_count} (potential G-code): {stripped_line}")
+                self.logger.info(f"Line {line_count} (potential G-code): {stripped_line}")
             
             movement = self.analyzer.analyze_line(stripped_line)
             
             # Add safety checks if needed
             if movement["needs_check"]:
-                logger.info(f"Line {line_count}: Adding safety check for G{movement['g_code']} movement")
-                logger.info(f"  Axes: X={movement['x_move']} Y={movement['y_move']} Z={movement['z_move']}")
+                self.logger.info(f"Line {line_count}: Adding safety check for G{movement['g_code']} movement")
+                self.logger.info(f"  Axes: X={movement['x_move']} Y={movement['y_move']} Z={movement['z_move']}")
                 result_lines.append(f"#600 = {movement['g_code']}")
                 result_lines.append(f"#601 = {movement['x_move']}")
                 result_lines.append(f"#602 = {movement['y_move']}")
@@ -268,7 +337,7 @@ class GCodePreprocessor:
             
             # Periodic progress updates for large files
             if line_count % 500 == 0:
-                logger.info(f"Processed {line_count} lines, found {safety_checks_added} safety checks so far")
+                self.logger.info(f"Processed {line_count} lines, found {safety_checks_added} safety checks so far")
         
         # Add footer
         result_lines.append("")

@@ -9,10 +9,12 @@ Modules:
 - file_loader.py: Loading and validating DXF files
 - workpiece_extractor.py: Extracting workpiece geometry
 - drilling_extractor.py: Finding drilling points and parameters
+- drilling_analyzer.py: Analyzing drilling point patterns
 - tool_extractor.py: Identifying tool requirements
 - entity_processor.py: Processing different entity types
 - geometry.py: Geometric calculations
-- coordinate_utils.py: Coordinate transformations
+- coordinate_transformer.py: Coordinate transformations
+- tool_path_generator.py: Generate optimized tool paths
 
 Conventions:
 - Z-coordinate values in DXF entities determine the drilling edge:
@@ -23,15 +25,25 @@ References:
 - MRFP-80: DXF to G-code Generation Epic
 - Python Code Structure and Organization (knowledge base)
 """
-# Imports and exports will be added as the modules are implemented
+
 # Import key items to make them available at package level
-# These will be uncommented as the modules are implemented
-# from .file_loader import load_dxf, is_valid_dxf
-# from .workpiece_extractor import extract_workpiece_boundaries, calculate_dimensions
-# from .drilling_extractor import find_drilling_points, determine_drilling_direction
-# from .tool_extractor import determine_required_tools
-# from .entity_processor import process_entity
-# from .geometry import calculate_distance, calculate_angle
-# from .coordinate_utils import dxf_to_machine_coords
-# Define publicly available items - will expand as modules are implemented
-__all__ = []
+from .file_loader import DxfLoader
+from .workpiece_extractor import WorkpieceExtractor
+from .drilling_extractor import DrillingExtractor
+from .drilling_analyzer import DrillPointAnalyzer, DrillPointClassifier
+from .tool_extractor import ToolRequirementExtractor, ToolSelector
+from .coordinate_transformer import CoordinateTransformer
+from .tool_path_generator import ToolPathGenerator
+
+# Define publicly available items
+__all__ = [
+    'DxfLoader',
+    'WorkpieceExtractor',
+    'DrillingExtractor',
+    'DrillPointAnalyzer',
+    'DrillPointClassifier',
+    'ToolRequirementExtractor',
+    'ToolSelector',
+    'CoordinateTransformer',
+    'ToolPathGenerator'
+]

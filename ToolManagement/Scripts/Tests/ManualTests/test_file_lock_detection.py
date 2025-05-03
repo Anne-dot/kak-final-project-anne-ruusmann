@@ -5,9 +5,19 @@ This script attempts to detect if a file is locked by another program
 using multiple detection methods. Specifically designed to detect
 when Notepad, Wordpad, or other text editors have a file open.
 
+Tests the underlying lock detection methods used by Utils.file_lock_utils.FileLock.
+
 Usage:
-    python file_lock_detection.py [path_to_csv_file]
+    python test_file_lock_detection.py [path_to_csv_file]
 """
+
+import os
+import sys
+
+# Add parent directory to path so we can import from Utils
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+# Import the consolidated FileLock implementation
+from Utils.file_lock_utils import FileLock
 
 import os
 import sys

@@ -1,5 +1,5 @@
 """
-Unit tests for file_lock.py functionality.
+Unit tests for file_lock_utils.py functionality.
 
 This module contains tests for the FileLock class, verifying lock acquisition,
 release, stale lock detection, and proper handling of error conditions.
@@ -11,9 +11,9 @@ import time
 import shutil
 import unittest
 
-# Add parent directory to path so we can import from Backup
+# Add parent directory to path so we can import from Utils
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
-from Backups.file_lock import FileLock
+from Utils.file_lock_utils import FileLock
 
 
 class TestFileLock(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestFileLock(unittest.TestCase):
         self.assertTrue(self.lock.acquire())
         
         # Lock file should exist
-        self.assertTrue(os.path.exists(self.lock.lock_file))
+        self.assertTrue(os.path.exists(self.lock.lock_path))
         
         # Release lock for next tests
         self.lock.release()
@@ -91,7 +91,7 @@ class TestFileLock(unittest.TestCase):
         self.assertTrue(self.lock.release())
         
         # Lock file should be gone
-        self.assertFalse(os.path.exists(self.lock.lock_file))
+        self.assertFalse(os.path.exists(self.lock.lock_path))
         
         # Releasing again should still return true (idempotent)
         self.assertTrue(self.lock.release())
@@ -104,12 +104,12 @@ class TestFileLock(unittest.TestCase):
         and automatically removed when a new lock is attempted.
         """
         # Create a lock file manually with old timestamp
-        with open(self.lock.lock_file, 'w') as f:
+        with open(self.lock.lock_path, 'w') as f:
             f.write('Stale lock')
         
         # Set modification time to 2 hours ago (definitely stale)
         stale_time = time.time() - 7200  # 2 hours ago
-        os.utime(self.lock.lock_file, (stale_time, stale_time))
+        os.utime(self.lock.lock_path, (stale_time, stale_time))
         
         # Should be able to acquire lock despite existing lock file
         self.assertTrue(self.lock.acquire())
@@ -125,17 +125,17 @@ class TestFileLock(unittest.TestCase):
         like permission issues or unexpected file system states.
         """
         # Create a directory with same name as lock file to cause error
-        os.makedirs(self.lock.lock_file, exist_ok=True)
+        os.makedirs(self.lock.lock_path, exist_ok=True)
         
         # Acquire should handle error gracefully
         self.assertFalse(self.lock.acquire())
         
         # Release should handle error gracefully 
-        self.assertFalse(self.lock.release())
+        self.assertTrue(self.lock.release())  # Release always returns True in new implementation
         
         # Clean up directory
-        if os.path.exists(self.lock.lock_file):
-            shutil.rmtree(self.lock.lock_file)
+        if os.path.exists(self.lock.lock_path):
+            shutil.rmtree(self.lock.lock_path)
     
     def tearDown(self):
         """

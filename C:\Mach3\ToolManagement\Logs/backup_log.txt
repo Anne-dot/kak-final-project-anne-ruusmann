@@ -1,0 +1,795 @@
+2025-04-29 13:25:15,739 - INFO - Lock acquired: /tmp/backup_test_j00mo_vu/test_file.csv.lock
+2025-04-29 13:25:15,740 - INFO - Created backup: test_file_20250429_132515.csv
+2025-04-29 13:25:15,740 - INFO - Lock released: /tmp/backup_test_j00mo_vu/test_file.csv.lock
+2025-04-29 13:25:15,749 - INFO - Lock acquired: /tmp/backup_test_oo8kz2rr/test_file.csv.lock
+2025-04-29 13:25:15,749 - INFO - Created backup: test_file_20250429_132515.csv
+2025-04-29 13:25:15,750 - INFO - Lock released: /tmp/backup_test_oo8kz2rr/test_file.csv.lock
+2025-04-29 13:25:15,750 - INFO - Restored from backup (target did not exist): test_file_20250429_132515.csv
+2025-04-29 13:25:15,758 - INFO - Lock acquired: /tmp/backup_test_wpxa57rt/test_file.csv.lock
+2025-04-29 13:25:15,758 - INFO - Created backup: test_file_20250429_132515.csv
+2025-04-29 13:25:15,759 - INFO - Lock released: /tmp/backup_test_wpxa57rt/test_file.csv.lock
+2025-04-29 13:25:15,761 - INFO - Lock acquired: /tmp/backup_test_wpxa57rt/test_file.csv.lock
+2025-04-29 13:25:15,761 - INFO - Created safety backup before restore: test_file_prerestore_20250429_132515.csv
+2025-04-29 13:25:15,762 - INFO - Restored from backup: test_file_20250429_132515.csv
+2025-04-29 13:25:15,762 - INFO - Lock released: /tmp/backup_test_wpxa57rt/test_file.csv.lock
+2025-04-29 13:25:16,768 - INFO - Removed old backup: test_1.csv
+2025-04-29 13:25:16,769 - INFO - Removed old backup: test_0.csv
+2025-04-29 13:25:16,771 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,772 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,772 - INFO - Creating HorizontalDrillTransformer
+2025-04-29 13:25:16,773 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,773 - INFO - HorizontalDrillTransformer initialized
+2025-04-29 13:25:16,773 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,773 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,774 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,774 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,774 - INFO - Workpiece parameters set: 545.5mm x 555.0mm x 22.5mm
+2025-04-29 13:25:16,774 - INFO - Testing edge detection logic
+2025-04-29 13:25:16,775 - INFO - Point 1: (-517.5, -9.5, 0.0) → Expected edge: front, Detected: front
+2025-04-29 13:25:16,775 - INFO - Point 2: (-67.5, -9.5, 0.0) → Expected edge: front, Detected: front
+2025-04-29 13:25:16,775 - INFO - Point 3: (517.5, -9.5, -555.0) → Expected edge: back, Detected: back
+2025-04-29 13:25:16,775 - INFO - Point 4: (67.5, -9.5, -555.0) → Expected edge: back, Detected: back
+2025-04-29 13:25:16,775 - INFO - Point 5: (-485.5, -9.5, 0.0) → Expected edge: front, Detected: front
+2025-04-29 13:25:16,775 - INFO - Point 6: (-35.5, -9.5, 0.0) → Expected edge: front, Detected: front
+2025-04-29 13:25:16,775 - INFO - Point 7: (485.5, -9.5, -555.0) → Expected edge: back, Detected: back
+2025-04-29 13:25:16,775 - INFO - Point 8: (35.5, -9.5, -555.0) → Expected edge: back, Detected: back
+2025-04-29 13:25:16,776 - INFO - Creating HorizontalDrillTransformer
+2025-04-29 13:25:16,776 - INFO - HorizontalDrillTransformer initialized
+2025-04-29 13:25:16,776 - INFO - Workpiece parameters set: 545.5mm x 555.0mm x 22.5mm
+2025-04-29 13:25:16,776 - INFO - Testing manual calculation vs transformer
+2025-04-29 13:25:16,776 - INFO - Transformed horizontal drilling point (front edge): DXF (-517.5, -9.5, 0.0) → Machine (28.0, -555.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Point 1: Manual: (28.0, -555.0, 13.0), Transformer: (28.0, -555.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Transformed horizontal drilling point (front edge): DXF (-67.5, -9.5, 0.0) → Machine (478.0, -555.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Point 2: Manual: (478.0, -555.0, 13.0), Transformer: (478.0, -555.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Transformed horizontal drilling point (back edge): DXF (517.5, -9.5, -555.0) → Machine (28.0, 0.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Point 3: Manual: (28.0, 0.0, 13.0), Transformer: (28.0, 0.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Transformed horizontal drilling point (back edge): DXF (67.5, -9.5, -555.0) → Machine (478.0, 0.0, 13.0)
+2025-04-29 13:25:16,777 - INFO - Point 4: Manual: (478.0, 0.0, 13.0), Transformer: (478.0, 0.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Transformed horizontal drilling point (front edge): DXF (-485.5, -9.5, 0.0) → Machine (60.0, -555.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Point 5: Manual: (60.0, -555.0, 13.0), Transformer: (60.0, -555.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Transformed horizontal drilling point (front edge): DXF (-35.5, -9.5, 0.0) → Machine (510.0, -555.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Point 6: Manual: (510.0, -555.0, 13.0), Transformer: (510.0, -555.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Transformed horizontal drilling point (back edge): DXF (485.5, -9.5, -555.0) → Machine (60.0, 0.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Point 7: Manual: (60.0, 0.0, 13.0), Transformer: (60.0, 0.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Transformed horizontal drilling point (back edge): DXF (35.5, -9.5, -555.0) → Machine (510.0, 0.0, 13.0)
+2025-04-29 13:25:16,778 - INFO - Point 8: Manual: (510.0, 0.0, 13.0), Transformer: (510.0, 0.0, 13.0)
+2025-04-29 13:25:16,779 - INFO - Creating HorizontalDrillTransformer
+2025-04-29 13:25:16,779 - INFO - HorizontalDrillTransformer initialized
+2025-04-29 13:25:16,779 - INFO - Workpiece parameters set: 545.5mm x 555.0mm x 22.5mm
+2025-04-29 13:25:16,779 - INFO - Testing point transformation
+2025-04-29 13:25:16,779 - INFO - Transformed horizontal drilling point (front edge): DXF (-517.5, -9.5, 0.0) → Machine (28.0, -555.0, 13.0)
+2025-04-29 13:25:16,779 - INFO - Point 1: Original: (-517.5, -9.5, 0.0) → Expected: (28.0, -555.0, 13.0), Got: (28.0, -555.0, 13.0)
+2025-04-29 13:25:16,779 - INFO - Transformed horizontal drilling point (front edge): DXF (-67.5, -9.5, 0.0) → Machine (478.0, -555.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Point 2: Original: (-67.5, -9.5, 0.0) → Expected: (478.0, -555.0, 13.0), Got: (478.0, -555.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Transformed horizontal drilling point (back edge): DXF (517.5, -9.5, -555.0) → Machine (28.0, 0.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Point 3: Original: (517.5, -9.5, -555.0) → Expected: (28.0, 0.0, 13.0), Got: (28.0, 0.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Transformed horizontal drilling point (back edge): DXF (67.5, -9.5, -555.0) → Machine (478.0, 0.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Point 4: Original: (67.5, -9.5, -555.0) → Expected: (478.0, 0.0, 13.0), Got: (478.0, 0.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Transformed horizontal drilling point (front edge): DXF (-485.5, -9.5, 0.0) → Machine (60.0, -555.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Point 5: Original: (-485.5, -9.5, 0.0) → Expected: (60.0, -555.0, 13.0), Got: (60.0, -555.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Transformed horizontal drilling point (front edge): DXF (-35.5, -9.5, 0.0) → Machine (510.0, -555.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Point 6: Original: (-35.5, -9.5, 0.0) → Expected: (510.0, -555.0, 13.0), Got: (510.0, -555.0, 13.0)
+2025-04-29 13:25:16,780 - INFO - Transformed horizontal drilling point (back edge): DXF (485.5, -9.5, -555.0) → Machine (60.0, 0.0, 13.0)
+2025-04-29 13:25:16,781 - INFO - Point 7: Original: (485.5, -9.5, -555.0) → Expected: (60.0, 0.0, 13.0), Got: (60.0, 0.0, 13.0)
+2025-04-29 13:25:16,781 - INFO - Transformed horizontal drilling point (back edge): DXF (35.5, -9.5, -555.0) → Machine (510.0, 0.0, 13.0)
+2025-04-29 13:25:16,781 - INFO - Point 8: Original: (35.5, -9.5, -555.0) → Expected: (510.0, 0.0, 13.0), Got: (510.0, 0.0, 13.0)
+2025-04-29 13:25:16,781 - INFO - Creating HorizontalDrillTransformer
+2025-04-29 13:25:16,781 - INFO - HorizontalDrillTransformer initialized
+2025-04-29 13:25:16,781 - INFO - Workpiece parameters set: 545.5mm x 555.0mm x 22.5mm
+2025-04-29 13:25:16,781 - INFO - Testing points transformation
+2025-04-29 13:25:16,781 - INFO - Transformed horizontal drilling point (front edge): DXF (-517.5, -9.5, 0.0) → Machine (28.0, -555.0, 13.0)
+2025-04-29 13:25:16,781 - INFO - Transformed horizontal drilling point (front edge): DXF (-67.5, -9.5, 0.0) → Machine (478.0, -555.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Transformed horizontal drilling point (back edge): DXF (517.5, -9.5, -555.0) → Machine (28.0, 0.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Transformed horizontal drilling point (back edge): DXF (67.5, -9.5, -555.0) → Machine (478.0, 0.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Transformed horizontal drilling point (front edge): DXF (-485.5, -9.5, 0.0) → Machine (60.0, -555.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Transformed horizontal drilling point (front edge): DXF (-35.5, -9.5, 0.0) → Machine (510.0, -555.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Transformed horizontal drilling point (back edge): DXF (485.5, -9.5, -555.0) → Machine (60.0, 0.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Transformed horizontal drilling point (back edge): DXF (35.5, -9.5, -555.0) → Machine (510.0, 0.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Point 1: Got: (28.0, -555.0, 13.0), Expected: (28.0, -555.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Point 2: Got: (478.0, -555.0, 13.0), Expected: (478.0, -555.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Point 3: Got: (28.0, 0.0, 13.0), Expected: (28.0, 0.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Point 4: Got: (478.0, 0.0, 13.0), Expected: (478.0, 0.0, 13.0)
+2025-04-29 13:25:16,782 - INFO - Point 5: Got: (60.0, -555.0, 13.0), Expected: (60.0, -555.0, 13.0)
+2025-04-29 13:25:16,783 - INFO - Point 6: Got: (510.0, -555.0, 13.0), Expected: (510.0, -555.0, 13.0)
+2025-04-29 13:25:16,783 - INFO - Point 7: Got: (60.0, 0.0, 13.0), Expected: (60.0, 0.0, 13.0)
+2025-04-29 13:25:16,783 - INFO - Point 8: Got: (510.0, 0.0, 13.0), Expected: (510.0, 0.0, 13.0)
+2025-04-29 13:25:16,783 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,783 - INFO - DrillingExtractor initialized
+2025-04-29 13:25:16,783 - INFO - Logger initialized - Linux 6.11.0-24-generic
+2025-04-29 13:25:16,783 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,784 - INFO - Attempting to load DXF file: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/TestData/DXF/Bottom_2_f0.dxf
+2025-04-29 13:25:16,791 - INFO - creating ACAD_COLOR dictionary
+2025-04-29 13:25:16,792 - INFO - creating ACAD_LAYOUT dictionary
+2025-04-29 13:25:16,792 - INFO - creating ACAD_MATERIAL dictionary
+2025-04-29 13:25:16,792 - INFO - creating ACAD_MLEADERSTYLE dictionary
+2025-04-29 13:25:16,792 - INFO - creating ACAD_PLOTSETTINGS dictionary
+2025-04-29 13:25:16,792 - INFO - creating ACAD_PLOTSTYLENAME dictionary
+2025-04-29 13:25:16,793 - INFO - creating ACAD_SCALELIST dictionary
+2025-04-29 13:25:16,793 - INFO - creating ACAD_TABLESTYLE dictionary
+2025-04-29 13:25:16,793 - INFO - creating ACAD_VISUALSTYLE dictionary
+2025-04-29 13:25:16,794 - INFO - Successfully loaded DXF file: Bottom_2_f0.dxf
+2025-04-29 13:25:16,794 - INFO - Extracting complete drilling information
+2025-04-29 13:25:16,795 - INFO - Finding drilling points
+2025-04-29 13:25:16,795 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,795 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,795 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,795 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,795 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,796 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,796 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,796 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,796 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,796 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,796 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,797 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,797 - INFO - Found 12 drilling points
+2025-04-29 13:25:16,797 - INFO - Extracting drilling parameters
+2025-04-29 13:25:16,797 - INFO - Drilling parameters extracted successfully
+2025-04-29 13:25:16,797 - INFO - Drilling information extracted successfully: found 12 drilling points
+2025-04-29 13:25:16,798 - INFO - Finding drilling points
+2025-04-29 13:25:16,798 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,798 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,799 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,799 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,799 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,799 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,799 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,799 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,800 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,800 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,800 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,800 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,800 - INFO - Found 12 drilling points
+2025-04-29 13:25:16,801 - INFO - Extracting DXF file information
+2025-04-29 13:25:16,801 - INFO - Extracted information from DXF file with 14 total entities
+2025-04-29 13:25:16,801 - INFO - Finding drilling points
+2025-04-29 13:25:16,802 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,802 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,802 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,802 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,802 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,802 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,803 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,803 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,803 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,803 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,803 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,803 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,803 - INFO - Found 12 drilling points
+2025-04-29 13:25:16,804 - INFO - Finding drilling points
+2025-04-29 13:25:16,804 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,804 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,804 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,805 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-04-29 13:25:16,805 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,805 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,805 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,805 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-04-29 13:25:16,805 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,806 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,806 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,806 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-04-29 13:25:16,806 - INFO - Found 12 drilling points
+2025-04-29 13:25:16,810 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,817 - INFO - Attempting to load DXF file: /tmp/tmpprcpi_vm/valid_test.dxf
+2025-04-29 13:25:16,817 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-04-29 13:25:16,817 - INFO - Extracting DXF file information
+2025-04-29 13:25:16,818 - INFO - Extracted information from DXF file with 3 total entities
+2025-04-29 13:25:16,818 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,819 - INFO - Validating DXF file: /tmp/tmpj4f4bhu3/valid_test.dxf
+2025-04-29 13:25:16,820 - ERROR - DXF file contains no entities in modelspace
+2025-04-29 13:25:16,820 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,820 - INFO - Validating DXF file: /tmp/tmpgcx_2q57/test.txt
+2025-04-29 13:25:16,821 - ERROR - File does not have .dxf extension: /tmp/tmpgcx_2q57/test.txt
+2025-04-29 13:25:16,821 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,821 - INFO - Validating DXF file: nonexistent_file.dxf
+2025-04-29 13:25:16,821 - ERROR - File not found: nonexistent_file.dxf
+2025-04-29 13:25:16,822 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,823 - INFO - Attempting to load DXF file: /tmp/tmpbdwv3rh8/invalid_test.dxf
+2025-04-29 13:25:16,830 - ERROR - Error loading DXF file: Invalid DXF format: DXFError - Invalid DXF format
+2025-04-29 13:25:16,831 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,833 - INFO - Attempting to load DXF file: /tmp/tmpvj8qbmdn/valid_test.dxf
+2025-04-29 13:25:16,833 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-04-29 13:25:16,834 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,835 - INFO - Using terminal interface for DXF selection
+2025-04-29 13:25:16,836 - INFO - Selected file: /path/to/test/data/dir/test1.dxf
+2025-04-29 13:25:16,837 - INFO - DxfLoader initialized
+2025-04-29 13:25:16,837 - INFO - Using Windows file dialog for DXF selection
+2025-04-29 13:25:17,149 - INFO - Selected file: C:/Path/to/selected.dxf
+2025-04-29 13:25:17,154 - INFO - Lock acquired: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:17,154 - INFO - Lock released: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:17,157 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:17,158 - INFO - Retrying file removal in 0.75 seconds
+2025-04-29 13:25:17,907 - INFO - Retrying file removal in 1.14 seconds
+2025-04-29 13:25:19,052 - ERROR - Failed to remove file /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock after 3 attempts: [Errno 21] Is a directory: '/home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock'
+2025-04-29 13:25:19,052 - ERROR - Failed to release lock: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,055 - INFO - Lock acquired: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,057 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,058 - INFO - Lock released: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,061 - INFO - Lock acquired: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,061 - INFO - Lock released: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,064 - INFO - Removed stale lock: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,065 - INFO - Lock acquired: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-04-29 13:25:19,065 - INFO - Lock released: /home/d0021/kool/mach3-retrofit-final-project/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:18:55,841 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:18:55,842 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:55,842 - INFO - Created backup: test_file_20250502_211855.csv
+2025-05-02 21:18:55,842 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:55,843 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:55,844 - INFO - Created backup: test_file_20250502_211855.csv
+2025-05-02 21:18:55,844 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:56,845 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:56,845 - INFO - Created backup: test_file_20250502_211856.csv
+2025-05-02 21:18:56,845 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:57,847 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:57,852 - INFO - Created backup: test_file_20250502_211857.csv
+2025-05-02 21:18:57,852 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:58,854 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:58,854 - INFO - Created backup: test_file_20250502_211858.csv
+2025-05-02 21:18:58,855 - INFO - Removed old backup: test_file_20250502_211855.csv
+2025-05-02 21:18:58,855 - INFO - Removed 1 old backup(s)
+2025-05-02 21:18:58,855 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:59,857 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:18:59,857 - INFO - Created backup: test_file_20250502_211859.csv
+2025-05-02 21:18:59,858 - INFO - Removed old backup: test_file_20250502_211856.csv
+2025-05-02 21:18:59,858 - INFO - Removed 1 old backup(s)
+2025-05-02 21:18:59,858 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:00,861 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:00,862 - INFO - Created backup: test_file_20250502_211900.csv
+2025-05-02 21:19:00,862 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:00,863 - INFO - Restored from backup (target did not exist): test_file_20250502_211900.csv
+2025-05-02 21:19:00,865 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:00,866 - INFO - Created backup: test_file_20250502_211900.csv
+2025-05-02 21:19:00,866 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:00,868 - INFO - Lock acquired: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:00,869 - INFO - Created backup: test_file_20250502_211900.csv
+2025-05-02 21:19:00,869 - INFO - Lock released: /tmp/backup_test_8fu3y5c6/test_file.csv.lock
+2025-05-02 21:19:13,822 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:19:13,823 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:13,823 - INFO - Created backup: test_file_20250502_211913.csv
+2025-05-02 21:19:13,823 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:13,824 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:13,824 - INFO - Created backup: test_file_20250502_211913.csv
+2025-05-02 21:19:13,825 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:14,826 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:14,826 - INFO - Created backup: test_file_20250502_211914.csv
+2025-05-02 21:19:14,826 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:15,827 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:15,828 - INFO - Created backup: test_file_20250502_211915.csv
+2025-05-02 21:19:15,828 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:16,830 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:16,830 - INFO - Created backup: test_file_20250502_211916.csv
+2025-05-02 21:19:16,830 - INFO - Removed old backup: test_file_20250502_211913.csv
+2025-05-02 21:19:16,830 - INFO - Removed 1 old backup(s)
+2025-05-02 21:19:16,830 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:17,832 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:17,832 - INFO - Created backup: test_file_20250502_211917.csv
+2025-05-02 21:19:17,833 - INFO - Removed old backup: test_file_20250502_211914.csv
+2025-05-02 21:19:17,833 - INFO - Removed 1 old backup(s)
+2025-05-02 21:19:17,833 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:18,835 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:18,836 - INFO - Created backup: test_file_20250502_211918.csv
+2025-05-02 21:19:18,837 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:18,838 - INFO - Restored from backup (target did not exist): test_file_20250502_211918.csv
+2025-05-02 21:19:18,839 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:18,840 - INFO - Created backup: test_file_20250502_211918.csv
+2025-05-02 21:19:18,840 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:18,841 - INFO - Lock acquired: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:19:18,842 - INFO - Created backup: test_file_20250502_211918.csv
+2025-05-02 21:19:18,842 - INFO - Lock released: /tmp/backup_test_j6djye7m/test_file.csv.lock
+2025-05-02 21:20:09,034 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:09,074 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:09,075 - INFO - Lock acquired: /tmp/backup_test_12e0vyr9/test_file.csv.lock
+2025-05-02 21:20:09,075 - INFO - Created backup: test_file_20250502_212009.csv
+2025-05-02 21:20:09,075 - INFO - Lock released: /tmp/backup_test_12e0vyr9/test_file.csv.lock
+2025-05-02 21:20:09,077 - INFO - Lock acquired: /tmp/backup_test_axtfd8aa/test_file.csv.lock
+2025-05-02 21:20:09,077 - INFO - Created backup: test_file_20250502_212009.csv
+2025-05-02 21:20:09,077 - INFO - Lock released: /tmp/backup_test_axtfd8aa/test_file.csv.lock
+2025-05-02 21:20:09,078 - INFO - Restored from backup (target did not exist): test_file_20250502_212009.csv
+2025-05-02 21:20:09,079 - INFO - Lock acquired: /tmp/backup_test_uf884rfj/test_file.csv.lock
+2025-05-02 21:20:09,080 - INFO - Created backup: test_file_20250502_212009.csv
+2025-05-02 21:20:09,080 - INFO - Lock released: /tmp/backup_test_uf884rfj/test_file.csv.lock
+2025-05-02 21:20:09,081 - INFO - Lock acquired: /tmp/backup_test_uf884rfj/test_file.csv.lock
+2025-05-02 21:20:09,081 - INFO - Created safety backup before restore: test_file_prerestore_20250502_212009.csv
+2025-05-02 21:20:09,081 - INFO - Restored from backup: test_file_20250502_212009.csv
+2025-05-02 21:20:09,081 - INFO - Lock released: /tmp/backup_test_uf884rfj/test_file.csv.lock
+2025-05-02 21:20:10,089 - INFO - Removed old backup: test_1.csv
+2025-05-02 21:20:10,089 - INFO - Removed old backup: test_0.csv
+2025-05-02 21:20:10,092 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:10,093 - INFO - DrillingExtractor initialized
+2025-05-02 21:20:10,094 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:10,094 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,095 - INFO - Attempting to load DXF file: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/TestData/DXF/Bottom_2_f0.dxf
+2025-05-02 21:20:10,127 - INFO - creating ACAD_COLOR dictionary
+2025-05-02 21:20:10,128 - INFO - creating ACAD_LAYOUT dictionary
+2025-05-02 21:20:10,129 - INFO - creating ACAD_MATERIAL dictionary
+2025-05-02 21:20:10,129 - INFO - creating ACAD_MLEADERSTYLE dictionary
+2025-05-02 21:20:10,130 - INFO - creating ACAD_PLOTSETTINGS dictionary
+2025-05-02 21:20:10,130 - INFO - creating ACAD_PLOTSTYLENAME dictionary
+2025-05-02 21:20:10,131 - INFO - creating ACAD_SCALELIST dictionary
+2025-05-02 21:20:10,132 - INFO - creating ACAD_TABLESTYLE dictionary
+2025-05-02 21:20:10,132 - INFO - creating ACAD_VISUALSTYLE dictionary
+2025-05-02 21:20:10,136 - INFO - Successfully loaded DXF file: Bottom_2_f0.dxf
+2025-05-02 21:20:10,137 - INFO - Extracting complete drilling information
+2025-05-02 21:20:10,138 - INFO - Finding drilling points
+2025-05-02 21:20:10,138 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,139 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,139 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,140 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,140 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,141 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,141 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,141 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,142 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,142 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,142 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,143 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,143 - INFO - Found 12 drilling points
+2025-05-02 21:20:10,143 - INFO - Extracting drilling parameters
+2025-05-02 21:20:10,143 - INFO - Drilling parameters extracted successfully
+2025-05-02 21:20:10,144 - INFO - Drilling information extracted successfully: found 12 drilling points
+2025-05-02 21:20:10,145 - INFO - Finding drilling points
+2025-05-02 21:20:10,146 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,146 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,146 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,146 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,147 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,147 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,147 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,147 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,148 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,148 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,148 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,149 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,149 - INFO - Found 12 drilling points
+2025-05-02 21:20:10,150 - INFO - Extracting DXF file information
+2025-05-02 21:20:10,150 - INFO - Extracted information from DXF file with 14 total entities
+2025-05-02 21:20:10,151 - INFO - Finding drilling points
+2025-05-02 21:20:10,151 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,151 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,151 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,152 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,152 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,152 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,152 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,152 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,152 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,153 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,153 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,153 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,153 - INFO - Found 12 drilling points
+2025-05-02 21:20:10,154 - INFO - Finding drilling points
+2025-05-02 21:20:10,154 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,154 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,155 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,155 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:10,155 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,155 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,156 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,156 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:10,156 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,157 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,157 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,157 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:10,157 - INFO - Found 12 drilling points
+2025-05-02 21:20:10,160 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,164 - INFO - Attempting to load DXF file: /tmp/tmpm1id_ff4/valid_test.dxf
+2025-05-02 21:20:10,164 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:20:10,164 - INFO - Extracting DXF file information
+2025-05-02 21:20:10,165 - INFO - Extracted information from DXF file with 3 total entities
+2025-05-02 21:20:10,168 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,169 - INFO - Validating DXF file: /tmp/tmpr07qazcd/valid_test.dxf
+2025-05-02 21:20:10,169 - ERROR - DXF file contains no entities in modelspace
+2025-05-02 21:20:10,170 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,171 - INFO - Validating DXF file: /tmp/tmpt0ynyv3z/test.txt
+2025-05-02 21:20:10,171 - ERROR - File does not have .dxf extension: /tmp/tmpt0ynyv3z/test.txt
+2025-05-02 21:20:10,172 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,172 - INFO - Validating DXF file: nonexistent_file.dxf
+2025-05-02 21:20:10,173 - ERROR - File not found: nonexistent_file.dxf
+2025-05-02 21:20:10,173 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,174 - INFO - Attempting to load DXF file: /tmp/tmpz0hy3jq7/invalid_test.dxf
+2025-05-02 21:20:10,177 - ERROR - Error loading DXF file: Invalid DXF format: DXFError - Invalid DXF format
+2025-05-02 21:20:10,177 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,179 - INFO - Attempting to load DXF file: /tmp/tmp680nb8bz/valid_test.dxf
+2025-05-02 21:20:10,179 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:20:10,180 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,182 - INFO - Using terminal interface for DXF selection
+2025-05-02 21:20:10,182 - INFO - Selected file: /path/to/test/data/dir/test1.dxf
+2025-05-02 21:20:10,183 - INFO - DxfLoader initialized
+2025-05-02 21:20:10,185 - INFO - Using Windows file dialog for DXF selection
+2025-05-02 21:20:10,535 - INFO - Selected file: C:/Path/to/selected.dxf
+2025-05-02 21:20:10,536 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,537 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,538 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,539 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,539 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,539 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,540 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,540 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,541 - INFO - Removed stale lock: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,542 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,542 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:10,543 - INFO - Lock acquired: /tmp/tmp23bib2lr/test_file.txt.lock
+2025-05-02 21:20:10,543 - INFO - Lock released: /tmp/tmp23bib2lr/test_file.txt.lock
+2025-05-02 21:20:10,544 - INFO - Lock acquired: /tmp/tmpw1wp3h7k/test_file.txt.lock
+2025-05-02 21:20:10,544 - INFO - Lock released: /tmp/tmpw1wp3h7k/test_file.txt.lock
+2025-05-02 21:20:10,545 - INFO - Lock acquired: /tmp/tmpj5_dtn26/test_file.txt.lock
+2025-05-02 21:20:10,545 - INFO - Lock file exists and is still valid: /tmp/tmpj5_dtn26/test_file.txt.lock
+2025-05-02 21:20:10,545 - INFO - Lock released: /tmp/tmpj5_dtn26/test_file.txt.lock
+2025-05-02 21:20:10,545 - INFO - Lock acquired: /tmp/tmpj5_dtn26/test_file.txt.lock
+2025-05-02 21:20:10,546 - INFO - Lock released: /tmp/tmpj5_dtn26/test_file.txt.lock
+2025-05-02 21:20:10,546 - INFO - Removed stale lock: /tmp/tmp9qwcjgnf/test_file.txt.lock
+2025-05-02 21:20:10,547 - INFO - Lock acquired: /tmp/tmp9qwcjgnf/test_file.txt.lock
+2025-05-02 21:20:10,547 - INFO - Lock released: /tmp/tmp9qwcjgnf/test_file.txt.lock
+2025-05-02 21:20:10,548 - INFO - Lock acquired: /tmp/tmp7ffbd970/test_file.txt.lock
+2025-05-02 21:20:10,548 - INFO - Lock released: /tmp/tmp7ffbd970/test_file.txt.lock
+2025-05-02 21:20:10,819 - INFO - Lock acquired: /tmp/tmpfysleebv/test_binary.bin.lock
+2025-05-02 21:20:10,820 - INFO - Lock released: /tmp/tmpfysleebv/test_binary.bin.lock
+2025-05-02 21:20:10,822 - INFO - Lock acquired: /tmp/tmpyh8qeeto/test_data.csv.lock
+2025-05-02 21:20:10,824 - INFO - Lock released: /tmp/tmpyh8qeeto/test_data.csv.lock
+2025-05-02 21:20:10,826 - INFO - Lock acquired: /tmp/tmpqjsu819n/test_file.txt.lock
+2025-05-02 21:20:10,827 - INFO - Lock released: /tmp/tmpqjsu819n/test_file.txt.lock
+2025-05-02 21:20:10,828 - INFO - Lock acquired: /tmp/tmpbjb88kcb/new_binary.bin.lock
+2025-05-02 21:20:10,829 - INFO - Lock released: /tmp/tmpbjb88kcb/new_binary.bin.lock
+2025-05-02 21:20:10,830 - INFO - Lock acquired: /tmp/tmp6zxacelk/new_data.csv.lock
+2025-05-02 21:20:10,831 - INFO - Lock released: /tmp/tmp6zxacelk/new_data.csv.lock
+2025-05-02 21:20:10,833 - INFO - Lock acquired: /tmp/tmpzjluagny/new_file.txt.lock
+2025-05-02 21:20:10,834 - INFO - Lock released: /tmp/tmpzjluagny/new_file.txt.lock
+2025-05-02 21:20:10,836 - INFO - Lock acquired: /tmp/tmpzjluagny/new_file.txt.lock
+2025-05-02 21:20:10,836 - INFO - Lock released: /tmp/tmpzjluagny/new_file.txt.lock
+2025-05-02 21:20:20,472 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:20,493 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:20,494 - INFO - Lock acquired: /tmp/backup_test_u8lingx2/test_file.csv.lock
+2025-05-02 21:20:20,494 - INFO - Created backup: test_file_20250502_212020.csv
+2025-05-02 21:20:20,494 - INFO - Lock released: /tmp/backup_test_u8lingx2/test_file.csv.lock
+2025-05-02 21:20:20,496 - INFO - Lock acquired: /tmp/backup_test_4xfeoazs/test_file.csv.lock
+2025-05-02 21:20:20,496 - INFO - Created backup: test_file_20250502_212020.csv
+2025-05-02 21:20:20,496 - INFO - Lock released: /tmp/backup_test_4xfeoazs/test_file.csv.lock
+2025-05-02 21:20:20,497 - INFO - Restored from backup (target did not exist): test_file_20250502_212020.csv
+2025-05-02 21:20:20,498 - INFO - Lock acquired: /tmp/backup_test_f_a1y9nd/test_file.csv.lock
+2025-05-02 21:20:20,498 - INFO - Created backup: test_file_20250502_212020.csv
+2025-05-02 21:20:20,498 - INFO - Lock released: /tmp/backup_test_f_a1y9nd/test_file.csv.lock
+2025-05-02 21:20:20,499 - INFO - Lock acquired: /tmp/backup_test_f_a1y9nd/test_file.csv.lock
+2025-05-02 21:20:20,499 - INFO - Created safety backup before restore: test_file_prerestore_20250502_212020.csv
+2025-05-02 21:20:20,499 - INFO - Restored from backup: test_file_20250502_212020.csv
+2025-05-02 21:20:20,499 - INFO - Lock released: /tmp/backup_test_f_a1y9nd/test_file.csv.lock
+2025-05-02 21:20:21,506 - INFO - Removed old backup: test_1.csv
+2025-05-02 21:20:21,506 - INFO - Removed old backup: test_0.csv
+2025-05-02 21:20:21,509 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:21,509 - INFO - DrillingExtractor initialized
+2025-05-02 21:20:21,510 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:20:21,511 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,511 - INFO - Attempting to load DXF file: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/TestData/DXF/Bottom_2_f0.dxf
+2025-05-02 21:20:21,533 - INFO - creating ACAD_COLOR dictionary
+2025-05-02 21:20:21,533 - INFO - creating ACAD_LAYOUT dictionary
+2025-05-02 21:20:21,534 - INFO - creating ACAD_MATERIAL dictionary
+2025-05-02 21:20:21,534 - INFO - creating ACAD_MLEADERSTYLE dictionary
+2025-05-02 21:20:21,535 - INFO - creating ACAD_PLOTSETTINGS dictionary
+2025-05-02 21:20:21,536 - INFO - creating ACAD_PLOTSTYLENAME dictionary
+2025-05-02 21:20:21,537 - INFO - creating ACAD_SCALELIST dictionary
+2025-05-02 21:20:21,537 - INFO - creating ACAD_TABLESTYLE dictionary
+2025-05-02 21:20:21,538 - INFO - creating ACAD_VISUALSTYLE dictionary
+2025-05-02 21:20:21,540 - INFO - Successfully loaded DXF file: Bottom_2_f0.dxf
+2025-05-02 21:20:21,541 - INFO - Extracting complete drilling information
+2025-05-02 21:20:21,541 - INFO - Finding drilling points
+2025-05-02 21:20:21,541 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,542 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,542 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,542 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,543 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,543 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,543 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,544 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,544 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,544 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,544 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,544 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,545 - INFO - Found 12 drilling points
+2025-05-02 21:20:21,545 - INFO - Extracting drilling parameters
+2025-05-02 21:20:21,545 - INFO - Drilling parameters extracted successfully
+2025-05-02 21:20:21,545 - INFO - Drilling information extracted successfully: found 12 drilling points
+2025-05-02 21:20:21,547 - INFO - Finding drilling points
+2025-05-02 21:20:21,547 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,547 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,547 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,547 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,548 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,548 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,548 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,548 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,549 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,549 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,549 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,549 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,549 - INFO - Found 12 drilling points
+2025-05-02 21:20:21,550 - INFO - Extracting DXF file information
+2025-05-02 21:20:21,551 - INFO - Extracted information from DXF file with 14 total entities
+2025-05-02 21:20:21,551 - INFO - Finding drilling points
+2025-05-02 21:20:21,551 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,551 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,552 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,552 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,552 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,552 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,552 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,553 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,553 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,553 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,553 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,553 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,553 - INFO - Found 12 drilling points
+2025-05-02 21:20:21,554 - INFO - Finding drilling points
+2025-05-02 21:20:21,554 - INFO - Found drilling point at (33.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,554 - INFO - Found drilling point at (33.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,554 - INFO - Found drilling point at (520.999, 509.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,555 - INFO - Found drilling point at (520.999, 59.999, 0.0) on layer: V.DRILL_D15.0_P14.0_F1
+2025-05-02 21:20:21,555 - INFO - Found drilling point at (541.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,555 - INFO - Found drilling point at (91.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,555 - INFO - Found drilling point at (-541.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,556 - INFO - Found drilling point at (-91.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P21.5
+2025-05-02 21:20:21,556 - INFO - Found drilling point at (509.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,556 - INFO - Found drilling point at (59.999, -9.5, 0.0) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,556 - INFO - Found drilling point at (-509.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,557 - INFO - Found drilling point at (-59.999, -9.5, -554.998) on layer: EDGE.DRILL_D8.0_P28.0
+2025-05-02 21:20:21,557 - INFO - Found 12 drilling points
+2025-05-02 21:20:21,561 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,566 - INFO - Attempting to load DXF file: /tmp/tmpais6eu3b/valid_test.dxf
+2025-05-02 21:20:21,569 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:20:21,570 - INFO - Extracting DXF file information
+2025-05-02 21:20:21,570 - INFO - Extracted information from DXF file with 3 total entities
+2025-05-02 21:20:21,572 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,573 - INFO - Validating DXF file: /tmp/tmp89koarmr/valid_test.dxf
+2025-05-02 21:20:21,574 - ERROR - DXF file contains no entities in modelspace
+2025-05-02 21:20:21,576 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,576 - INFO - Validating DXF file: /tmp/tmprrg8zsav/test.txt
+2025-05-02 21:20:21,576 - ERROR - File does not have .dxf extension: /tmp/tmprrg8zsav/test.txt
+2025-05-02 21:20:21,577 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,578 - INFO - Validating DXF file: nonexistent_file.dxf
+2025-05-02 21:20:21,578 - ERROR - File not found: nonexistent_file.dxf
+2025-05-02 21:20:21,579 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,580 - INFO - Attempting to load DXF file: /tmp/tmpck7jvlyx/invalid_test.dxf
+2025-05-02 21:20:21,582 - ERROR - Error loading DXF file: Invalid DXF format: DXFError - Invalid DXF format
+2025-05-02 21:20:21,583 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,586 - INFO - Attempting to load DXF file: /tmp/tmpusf1_r_8/valid_test.dxf
+2025-05-02 21:20:21,586 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:20:21,588 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,590 - INFO - Using terminal interface for DXF selection
+2025-05-02 21:20:21,591 - INFO - Selected file: /path/to/test/data/dir/test1.dxf
+2025-05-02 21:20:21,593 - INFO - DxfLoader initialized
+2025-05-02 21:20:21,595 - INFO - Using Windows file dialog for DXF selection
+2025-05-02 21:20:21,885 - INFO - Selected file: C:/Path/to/selected.dxf
+2025-05-02 21:20:21,887 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,888 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,889 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,891 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,891 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,892 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,893 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,894 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,896 - INFO - Removed stale lock: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,896 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,897 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:20:21,898 - INFO - Lock acquired: /tmp/tmpp3l41ww8/test_file.txt.lock
+2025-05-02 21:20:21,899 - INFO - Lock released: /tmp/tmpp3l41ww8/test_file.txt.lock
+2025-05-02 21:20:21,900 - INFO - Lock acquired: /tmp/tmps5zlhr1o/test_file.txt.lock
+2025-05-02 21:20:21,901 - INFO - Lock released: /tmp/tmps5zlhr1o/test_file.txt.lock
+2025-05-02 21:20:21,902 - INFO - Lock acquired: /tmp/tmp1rmq28jm/test_file.txt.lock
+2025-05-02 21:20:21,903 - INFO - Lock file exists and is still valid: /tmp/tmp1rmq28jm/test_file.txt.lock
+2025-05-02 21:20:21,903 - INFO - Lock released: /tmp/tmp1rmq28jm/test_file.txt.lock
+2025-05-02 21:20:21,903 - INFO - Lock acquired: /tmp/tmp1rmq28jm/test_file.txt.lock
+2025-05-02 21:20:21,904 - INFO - Lock released: /tmp/tmp1rmq28jm/test_file.txt.lock
+2025-05-02 21:20:21,905 - INFO - Removed stale lock: /tmp/tmp0ac_ks10/test_file.txt.lock
+2025-05-02 21:20:21,906 - INFO - Lock acquired: /tmp/tmp0ac_ks10/test_file.txt.lock
+2025-05-02 21:20:21,906 - INFO - Lock released: /tmp/tmp0ac_ks10/test_file.txt.lock
+2025-05-02 21:20:21,908 - INFO - Lock acquired: /tmp/tmpvwiyz_tf/test_file.txt.lock
+2025-05-02 21:20:21,909 - INFO - Lock released: /tmp/tmpvwiyz_tf/test_file.txt.lock
+2025-05-02 21:20:22,176 - INFO - Lock acquired: /tmp/tmp96g88i1w/test_binary.bin.lock
+2025-05-02 21:20:22,176 - INFO - Lock released: /tmp/tmp96g88i1w/test_binary.bin.lock
+2025-05-02 21:20:22,177 - INFO - Lock acquired: /tmp/tmpkjihs7p2/test_data.csv.lock
+2025-05-02 21:20:22,178 - INFO - Lock released: /tmp/tmpkjihs7p2/test_data.csv.lock
+2025-05-02 21:20:22,180 - INFO - Lock acquired: /tmp/tmpk6zhawrg/test_file.txt.lock
+2025-05-02 21:20:22,180 - INFO - Lock released: /tmp/tmpk6zhawrg/test_file.txt.lock
+2025-05-02 21:20:22,181 - INFO - Lock acquired: /tmp/tmpy75i77j8/new_binary.bin.lock
+2025-05-02 21:20:22,182 - INFO - Lock released: /tmp/tmpy75i77j8/new_binary.bin.lock
+2025-05-02 21:20:22,183 - INFO - Lock acquired: /tmp/tmphpqgg0y3/new_data.csv.lock
+2025-05-02 21:20:22,183 - INFO - Lock released: /tmp/tmphpqgg0y3/new_data.csv.lock
+2025-05-02 21:20:22,184 - INFO - Lock acquired: /tmp/tmp8opkcbur/new_file.txt.lock
+2025-05-02 21:20:22,184 - INFO - Lock released: /tmp/tmp8opkcbur/new_file.txt.lock
+2025-05-02 21:20:22,185 - INFO - Lock acquired: /tmp/tmp8opkcbur/new_file.txt.lock
+2025-05-02 21:20:22,185 - INFO - Lock released: /tmp/tmp8opkcbur/new_file.txt.lock
+2025-05-02 21:41:15,961 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:16,025 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:16,027 - INFO - Lock acquired: /tmp/backup_test_vnrynu6n/test_file.csv.lock
+2025-05-02 21:41:16,028 - INFO - Created backup: test_file_20250502_214116.csv
+2025-05-02 21:41:16,029 - INFO - Lock released: /tmp/backup_test_vnrynu6n/test_file.csv.lock
+2025-05-02 21:41:16,039 - INFO - Lock acquired: /tmp/backup_test_lj0vnctc/test_file.csv.lock
+2025-05-02 21:41:16,040 - INFO - Created backup: test_file_20250502_214116.csv
+2025-05-02 21:41:16,041 - INFO - Lock released: /tmp/backup_test_lj0vnctc/test_file.csv.lock
+2025-05-02 21:41:16,041 - INFO - Restored from backup (target did not exist): test_file_20250502_214116.csv
+2025-05-02 21:41:16,044 - INFO - Lock acquired: /tmp/backup_test_qauenvvq/test_file.csv.lock
+2025-05-02 21:41:16,044 - INFO - Created backup: test_file_20250502_214116.csv
+2025-05-02 21:41:16,044 - INFO - Lock released: /tmp/backup_test_qauenvvq/test_file.csv.lock
+2025-05-02 21:41:16,045 - INFO - Lock acquired: /tmp/backup_test_qauenvvq/test_file.csv.lock
+2025-05-02 21:41:16,045 - INFO - Created safety backup before restore: test_file_prerestore_20250502_214116.csv
+2025-05-02 21:41:16,046 - INFO - Restored from backup: test_file_20250502_214116.csv
+2025-05-02 21:41:16,046 - INFO - Lock released: /tmp/backup_test_qauenvvq/test_file.csv.lock
+2025-05-02 21:41:17,058 - INFO - Removed old backup: test_1.csv
+2025-05-02 21:41:17,058 - INFO - Removed old backup: test_0.csv
+2025-05-02 21:41:17,059 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:17,059 - INFO - DrillingExtractor initialized
+2025-05-02 21:41:17,059 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:17,059 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,060 - INFO - Attempting to load DXF file: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/TestData/DXF/Bottom_2_f0.dxf
+2025-05-02 21:41:17,066 - INFO - creating ACAD_COLOR dictionary
+2025-05-02 21:41:17,067 - INFO - creating ACAD_LAYOUT dictionary
+2025-05-02 21:41:17,067 - INFO - creating ACAD_MATERIAL dictionary
+2025-05-02 21:41:17,067 - INFO - creating ACAD_MLEADERSTYLE dictionary
+2025-05-02 21:41:17,068 - INFO - creating ACAD_PLOTSETTINGS dictionary
+2025-05-02 21:41:17,068 - INFO - creating ACAD_PLOTSTYLENAME dictionary
+2025-05-02 21:41:17,068 - INFO - creating ACAD_SCALELIST dictionary
+2025-05-02 21:41:17,068 - INFO - creating ACAD_TABLESTYLE dictionary
+2025-05-02 21:41:17,068 - INFO - creating ACAD_VISUALSTYLE dictionary
+2025-05-02 21:41:17,070 - INFO - Successfully loaded DXF file: Bottom_2_f0.dxf
+2025-05-02 21:41:17,073 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,079 - INFO - Attempting to load DXF file: /tmp/tmpn_q53etp/valid_test.dxf
+2025-05-02 21:41:17,080 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:41:17,087 - INFO - Extracting DXF file information
+2025-05-02 21:41:17,093 - ERROR - Error extracting DXF information: 'str' object has no attribute 'modelspace': AttributeError - 'str' object has no attribute 'modelspace'
+2025-05-02 21:41:17,096 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,101 - INFO - Validating DXF file: /tmp/tmp_w3tr7fs/valid_test.dxf
+2025-05-02 21:41:17,102 - ERROR - DXF file contains no entities in modelspace
+2025-05-02 21:41:17,104 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,105 - INFO - Validating DXF file: /tmp/tmprdtqoju0/test.txt
+2025-05-02 21:41:17,106 - ERROR - File does not have .dxf extension: /tmp/tmprdtqoju0/test.txt
+2025-05-02 21:41:17,108 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,109 - INFO - Validating DXF file: nonexistent_file.dxf
+2025-05-02 21:41:17,109 - ERROR - File not found: nonexistent_file.dxf
+2025-05-02 21:41:17,118 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,119 - INFO - Attempting to load DXF file: /tmp/tmph63uxrb6/invalid_test.dxf
+2025-05-02 21:41:17,121 - ERROR - Error loading DXF file: Invalid DXF format: DXFError - Invalid DXF format
+2025-05-02 21:41:17,123 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,127 - INFO - Attempting to load DXF file: /tmp/tmp9skdk7jx/valid_test.dxf
+2025-05-02 21:41:17,129 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:41:17,132 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,137 - INFO - Using terminal interface for DXF selection
+2025-05-02 21:41:17,140 - INFO - Selected file: /path/to/test/data/dir/test1.dxf
+2025-05-02 21:41:17,150 - INFO - DxfLoader initialized
+2025-05-02 21:41:17,152 - INFO - Using Windows file dialog for DXF selection
+2025-05-02 21:41:17,615 - INFO - Selected file: C:/Path/to/selected.dxf
+2025-05-02 21:41:17,617 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,617 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,619 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,620 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,621 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,621 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,628 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,628 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,629 - INFO - Removed stale lock: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,630 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,630 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:17,631 - INFO - Lock acquired: /tmp/tmpld8w92sj/test_file.txt.lock
+2025-05-02 21:41:17,631 - INFO - Lock released: /tmp/tmpld8w92sj/test_file.txt.lock
+2025-05-02 21:41:17,632 - INFO - Lock acquired: /tmp/tmp_c240x11/test_file.txt.lock
+2025-05-02 21:41:17,633 - INFO - Lock released: /tmp/tmp_c240x11/test_file.txt.lock
+2025-05-02 21:41:17,633 - INFO - Lock acquired: /tmp/tmp8wfja60s/test_file.txt.lock
+2025-05-02 21:41:17,634 - INFO - Lock file exists and is still valid: /tmp/tmp8wfja60s/test_file.txt.lock
+2025-05-02 21:41:17,634 - INFO - Lock released: /tmp/tmp8wfja60s/test_file.txt.lock
+2025-05-02 21:41:17,634 - INFO - Lock acquired: /tmp/tmp8wfja60s/test_file.txt.lock
+2025-05-02 21:41:17,635 - INFO - Lock released: /tmp/tmp8wfja60s/test_file.txt.lock
+2025-05-02 21:41:17,635 - INFO - Removed stale lock: /tmp/tmp0oaf1t0r/test_file.txt.lock
+2025-05-02 21:41:17,636 - INFO - Lock acquired: /tmp/tmp0oaf1t0r/test_file.txt.lock
+2025-05-02 21:41:17,636 - INFO - Lock released: /tmp/tmp0oaf1t0r/test_file.txt.lock
+2025-05-02 21:41:17,637 - INFO - Lock acquired: /tmp/tmpiu8f82rn/test_file.txt.lock
+2025-05-02 21:41:17,638 - INFO - Lock released: /tmp/tmpiu8f82rn/test_file.txt.lock
+2025-05-02 21:41:17,934 - INFO - Lock acquired: /tmp/tmppqfk735c/test_binary.bin.lock
+2025-05-02 21:41:17,945 - INFO - Lock released: /tmp/tmppqfk735c/test_binary.bin.lock
+2025-05-02 21:41:17,946 - INFO - Lock acquired: /tmp/tmpyk9gyd_r/test_data.csv.lock
+2025-05-02 21:41:17,947 - INFO - Lock released: /tmp/tmpyk9gyd_r/test_data.csv.lock
+2025-05-02 21:41:17,948 - INFO - Lock acquired: /tmp/tmp_hkyqeut/test_file.txt.lock
+2025-05-02 21:41:17,948 - INFO - Lock released: /tmp/tmp_hkyqeut/test_file.txt.lock
+2025-05-02 21:41:17,949 - INFO - Lock acquired: /tmp/tmp44phn8nd/new_binary.bin.lock
+2025-05-02 21:41:17,950 - INFO - Lock released: /tmp/tmp44phn8nd/new_binary.bin.lock
+2025-05-02 21:41:17,951 - INFO - Lock acquired: /tmp/tmpenegg7j9/new_data.csv.lock
+2025-05-02 21:41:17,958 - INFO - Lock released: /tmp/tmpenegg7j9/new_data.csv.lock
+2025-05-02 21:41:17,960 - INFO - Lock acquired: /tmp/tmpd5cjdc1z/new_file.txt.lock
+2025-05-02 21:41:17,960 - INFO - Lock released: /tmp/tmpd5cjdc1z/new_file.txt.lock
+2025-05-02 21:41:17,961 - INFO - Lock acquired: /tmp/tmpd5cjdc1z/new_file.txt.lock
+2025-05-02 21:41:17,961 - INFO - Lock released: /tmp/tmpd5cjdc1z/new_file.txt.lock
+2025-05-02 21:41:35,130 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:35,152 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:35,152 - INFO - Lock acquired: /tmp/backup_test_c4yuwxd1/test_file.csv.lock
+2025-05-02 21:41:35,153 - INFO - Created backup: test_file_20250502_214135.csv
+2025-05-02 21:41:35,153 - INFO - Lock released: /tmp/backup_test_c4yuwxd1/test_file.csv.lock
+2025-05-02 21:41:35,155 - INFO - Lock acquired: /tmp/backup_test_avfyctc4/test_file.csv.lock
+2025-05-02 21:41:35,155 - INFO - Created backup: test_file_20250502_214135.csv
+2025-05-02 21:41:35,155 - INFO - Lock released: /tmp/backup_test_avfyctc4/test_file.csv.lock
+2025-05-02 21:41:35,156 - INFO - Restored from backup (target did not exist): test_file_20250502_214135.csv
+2025-05-02 21:41:35,157 - INFO - Lock acquired: /tmp/backup_test_2gkp1h1i/test_file.csv.lock
+2025-05-02 21:41:35,157 - INFO - Created backup: test_file_20250502_214135.csv
+2025-05-02 21:41:35,158 - INFO - Lock released: /tmp/backup_test_2gkp1h1i/test_file.csv.lock
+2025-05-02 21:41:35,158 - INFO - Lock acquired: /tmp/backup_test_2gkp1h1i/test_file.csv.lock
+2025-05-02 21:41:35,158 - INFO - Created safety backup before restore: test_file_prerestore_20250502_214135.csv
+2025-05-02 21:41:35,159 - INFO - Restored from backup: test_file_20250502_214135.csv
+2025-05-02 21:41:35,159 - INFO - Lock released: /tmp/backup_test_2gkp1h1i/test_file.csv.lock
+2025-05-02 21:41:36,166 - INFO - Removed old backup: test_1.csv
+2025-05-02 21:41:36,166 - INFO - Removed old backup: test_0.csv
+2025-05-02 21:41:36,169 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:36,169 - INFO - DrillingExtractor initialized
+2025-05-02 21:41:36,170 - INFO - Logger initialized - Linux 6.11.0-25-generic
+2025-05-02 21:41:36,170 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,171 - INFO - Attempting to load DXF file: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/TestData/DXF/Bottom_2_f0.dxf
+2025-05-02 21:41:36,192 - INFO - creating ACAD_COLOR dictionary
+2025-05-02 21:41:36,193 - INFO - creating ACAD_LAYOUT dictionary
+2025-05-02 21:41:36,193 - INFO - creating ACAD_MATERIAL dictionary
+2025-05-02 21:41:36,194 - INFO - creating ACAD_MLEADERSTYLE dictionary
+2025-05-02 21:41:36,194 - INFO - creating ACAD_PLOTSETTINGS dictionary
+2025-05-02 21:41:36,195 - INFO - creating ACAD_PLOTSTYLENAME dictionary
+2025-05-02 21:41:36,196 - INFO - creating ACAD_SCALELIST dictionary
+2025-05-02 21:41:36,197 - INFO - creating ACAD_TABLESTYLE dictionary
+2025-05-02 21:41:36,197 - INFO - creating ACAD_VISUALSTYLE dictionary
+2025-05-02 21:41:36,202 - INFO - Successfully loaded DXF file: Bottom_2_f0.dxf
+2025-05-02 21:41:36,211 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,216 - INFO - Attempting to load DXF file: /tmp/tmp0219kbz5/valid_test.dxf
+2025-05-02 21:41:36,218 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:41:36,218 - INFO - Extracting DXF file information
+2025-05-02 21:41:36,224 - ERROR - Error extracting DXF information: 'str' object has no attribute 'modelspace': AttributeError - 'str' object has no attribute 'modelspace'
+2025-05-02 21:41:36,228 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,232 - INFO - Validating DXF file: /tmp/tmpmyzcfmnk/valid_test.dxf
+2025-05-02 21:41:36,233 - ERROR - DXF file contains no entities in modelspace
+2025-05-02 21:41:36,236 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,236 - INFO - Validating DXF file: /tmp/tmp6p6hvj0h/test.txt
+2025-05-02 21:41:36,236 - ERROR - File does not have .dxf extension: /tmp/tmp6p6hvj0h/test.txt
+2025-05-02 21:41:36,238 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,239 - INFO - Validating DXF file: nonexistent_file.dxf
+2025-05-02 21:41:36,239 - ERROR - File not found: nonexistent_file.dxf
+2025-05-02 21:41:36,241 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,241 - INFO - Attempting to load DXF file: /tmp/tmpcvl_gzmi/invalid_test.dxf
+2025-05-02 21:41:36,242 - ERROR - Error loading DXF file: Invalid DXF format: DXFError - Invalid DXF format
+2025-05-02 21:41:36,244 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,247 - INFO - Attempting to load DXF file: /tmp/tmpyg_44vkh/valid_test.dxf
+2025-05-02 21:41:36,248 - INFO - Successfully loaded DXF file: valid_test.dxf
+2025-05-02 21:41:36,250 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,252 - INFO - Using terminal interface for DXF selection
+2025-05-02 21:41:36,253 - INFO - Selected file: /path/to/test/data/dir/test1.dxf
+2025-05-02 21:41:36,254 - INFO - DxfLoader initialized
+2025-05-02 21:41:36,254 - INFO - Using Windows file dialog for DXF selection
+2025-05-02 21:41:36,585 - INFO - Selected file: C:/Path/to/selected.dxf
+2025-05-02 21:41:36,587 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,587 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,589 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,590 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,590 - INFO - Lock file exists and is still valid: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,591 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,592 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,592 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,594 - INFO - Removed stale lock: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,595 - INFO - Lock acquired: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,595 - INFO - Lock released: /home/d0021/kool/mach3-shared/Mach3/ToolManagement/Scripts/Tests/UnitTests/test_files/test_lock_file.txt.lock
+2025-05-02 21:41:36,596 - INFO - Lock acquired: /tmp/tmp64zfttl9/test_file.txt.lock
+2025-05-02 21:41:36,597 - INFO - Lock released: /tmp/tmp64zfttl9/test_file.txt.lock
+2025-05-02 21:41:36,598 - INFO - Lock acquired: /tmp/tmp7imfsvv8/test_file.txt.lock
+2025-05-02 21:41:36,599 - INFO - Lock released: /tmp/tmp7imfsvv8/test_file.txt.lock
+2025-05-02 21:41:36,600 - INFO - Lock acquired: /tmp/tmp7pkq7746/test_file.txt.lock
+2025-05-02 21:41:36,600 - INFO - Lock file exists and is still valid: /tmp/tmp7pkq7746/test_file.txt.lock
+2025-05-02 21:41:36,600 - INFO - Lock released: /tmp/tmp7pkq7746/test_file.txt.lock
+2025-05-02 21:41:36,601 - INFO - Lock acquired: /tmp/tmp7pkq7746/test_file.txt.lock
+2025-05-02 21:41:36,601 - INFO - Lock released: /tmp/tmp7pkq7746/test_file.txt.lock
+2025-05-02 21:41:36,602 - INFO - Removed stale lock: /tmp/tmpjiwwvy8m/test_file.txt.lock
+2025-05-02 21:41:36,603 - INFO - Lock acquired: /tmp/tmpjiwwvy8m/test_file.txt.lock
+2025-05-02 21:41:36,603 - INFO - Lock released: /tmp/tmpjiwwvy8m/test_file.txt.lock
+2025-05-02 21:41:36,604 - INFO - Lock acquired: /tmp/tmpt5dv68sw/test_file.txt.lock
+2025-05-02 21:41:36,605 - INFO - Lock released: /tmp/tmpt5dv68sw/test_file.txt.lock
+2025-05-02 21:41:36,880 - INFO - Lock acquired: /tmp/tmp0xj51kxq/test_binary.bin.lock
+2025-05-02 21:41:36,881 - INFO - Lock released: /tmp/tmp0xj51kxq/test_binary.bin.lock
+2025-05-02 21:41:36,883 - INFO - Lock acquired: /tmp/tmp7ydvyhnz/test_data.csv.lock
+2025-05-02 21:41:36,884 - INFO - Lock released: /tmp/tmp7ydvyhnz/test_data.csv.lock
+2025-05-02 21:41:36,887 - INFO - Lock acquired: /tmp/tmp248bsunj/test_file.txt.lock
+2025-05-02 21:41:36,888 - INFO - Lock released: /tmp/tmp248bsunj/test_file.txt.lock
+2025-05-02 21:41:36,892 - INFO - Lock acquired: /tmp/tmpf78ahugm/new_binary.bin.lock
+2025-05-02 21:41:36,894 - INFO - Lock released: /tmp/tmpf78ahugm/new_binary.bin.lock
+2025-05-02 21:41:36,898 - INFO - Lock acquired: /tmp/tmpe8o5qir5/new_data.csv.lock
+2025-05-02 21:41:36,898 - INFO - Lock released: /tmp/tmpe8o5qir5/new_data.csv.lock
+2025-05-02 21:41:36,901 - INFO - Lock acquired: /tmp/tmp3sa2bzfr/new_file.txt.lock
+2025-05-02 21:41:36,902 - INFO - Lock released: /tmp/tmp3sa2bzfr/new_file.txt.lock
+2025-05-02 21:41:36,903 - INFO - Lock acquired: /tmp/tmp3sa2bzfr/new_file.txt.lock
+2025-05-02 21:41:36,904 - INFO - Lock released: /tmp/tmp3sa2bzfr/new_file.txt.lock

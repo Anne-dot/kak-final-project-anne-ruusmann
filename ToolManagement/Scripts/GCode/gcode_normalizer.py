@@ -17,11 +17,13 @@ from pathlib import Path
 from typing import Tuple, Dict, Any, Optional, List
 
 # Import from Utils package - centralized utility functions
-from Utils.logging_utils import setup_logger
+from Utils.logging_utils import setup_logger, log_exception
 from Utils.path_utils import PathUtils
-
-# Set up logger
-logger = setup_logger(__name__)
+from Utils.error_utils import (
+    ErrorHandler, BaseError, FileError, ValidationError,
+    ErrorSeverity, ErrorCategory
+)
+from Utils.config import AppConfig
 
 
 class GCodeNormalizer:
@@ -40,8 +42,11 @@ class GCodeNormalizer:
     
     def __init__(self):
         """Initialize the GCodeNormalizer with state tracking."""
+        # Set up logger for this class
+        self.logger = setup_logger(__name__)
         self._reset_state()
         self.current_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.logger.info("GCodeNormalizer initialized")
         
     def _reset_state(self):
         """Reset the internal state tracking."""
@@ -51,10 +56,10 @@ class GCodeNormalizer:
         # Modal state tracking (G-codes are modal and remain active until changed)
         self.current_modal_state = {
             "motion": None,  # G00, G01, G02, G03
-            "plane": "G17",  # Default XY plane
-            "units": "G21",  # Default mm
-            "distance": "G90",  # Default absolute positioning
-            "feedrate": "G94"  # Default units per minute
+            "plane": AppConfig.gcode.DEFAULT_PLANE,  # Default XY plane
+            "units": AppConfig.gcode.DEFAULT_UNITS,  # Default mm
+            "distance": AppConfig.gcode.DEFAULT_POSITIONING,  # Default absolute positioning
+            "feedrate": AppConfig.gcode.DEFAULT_FEEDRATE_MODE  # Default units per minute
         }
     
     def normalize_file(self, input_file, output_file=None):
@@ -72,7 +77,7 @@ class GCodeNormalizer:
         try:
             # Normalize and validate paths
             input_path = PathUtils.normalize_path(input_file)
-            logger.info(f"Processing file: {input_path}")
+            self.logger.info(f"Processing file: {input_path}")
             
             # Generate output filename if not provided
             if output_file is None:
@@ -82,54 +87,107 @@ class GCodeNormalizer:
             else:
                 output_path = PathUtils.normalize_path(output_file)
             
-            logger.info(f"Output will be written to: {output_path}")
+            self.logger.info(f"Output will be written to: {output_path}")
             
             # Ensure output directory exists
             output_dir = os.path.dirname(output_path)
             os.makedirs(output_dir, exist_ok=True)
             
             # Read input file
-            logger.info("Reading input file...")
+            self.logger.info("Reading input file...")
             try:
                 with open(input_path, 'r') as f:
                     content = f.read()
-                logger.info(f"Successfully read file: {len(content)} characters")
+                self.logger.info(f"Successfully read file: {len(content)} characters")
+            except FileNotFoundError:
+                self.logger.error(f"Input file not found: {input_path}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Input file not found: {input_path}",
+                        file_path=input_path,
+                        severity=ErrorSeverity.ERROR
+                    )
+                )
+            except PermissionError:
+                self.logger.error(f"Permission denied reading input file: {input_path}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Permission denied reading input file: {input_path}",
+                        file_path=input_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error": "permission_denied"}
+                    )
+                )
             except Exception as e:
-                logger.error(f"Failed to read input file: {str(e)}")
-                return False, f"Failed to read input file: {str(e)}", {}
+                self.logger.error(f"Failed to read input file: {str(e)}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Failed to read input file: {str(e)}",
+                        file_path=input_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error_type": type(e).__name__}
+                    )
+                )
             
             # Process content
-            logger.info("Normalizing G-code content...")
+            self.logger.info("Normalizing G-code content...")
             filename = os.path.basename(input_path)
             result = self._normalize_content(content, filename)
-            logger.info(f"Normalization complete.")
-            logger.info(f"Statistics: {result['g_codes_normalized']} G-codes normalized, "
+            self.logger.info(f"Normalization complete.")
+            self.logger.info(f"Statistics: {result['g_codes_normalized']} G-codes normalized, "
                         f"{result['coordinates_removed']} coordinates removed, "
                         f"{result['g01_commands_added']} G01 commands added")
             
             # Write output file
-            logger.info(f"Writing output file: {output_path}")
+            self.logger.info(f"Writing output file: {output_path}")
             try:
                 with open(output_path, 'w') as f:
                     f.write(result["processed_content"])
-                logger.info(f"Successfully wrote output file: {len(result['processed_content'])} characters")
+                self.logger.info(f"Successfully wrote output file: {len(result['processed_content'])} characters")
+            except PermissionError:
+                self.logger.error(f"Permission denied writing output file: {output_path}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Permission denied writing output file: {output_path}",
+                        file_path=output_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error": "permission_denied"}
+                    )
+                )
             except Exception as e:
-                logger.error(f"Failed to write output file: {str(e)}")
-                return False, f"Failed to write output file: {str(e)}", {}
+                self.logger.error(f"Failed to write output file: {str(e)}")
+                return ErrorHandler.from_exception(
+                    FileError(
+                        message=f"Failed to write output file: {str(e)}",
+                        file_path=output_path,
+                        severity=ErrorSeverity.ERROR,
+                        details={"error_type": type(e).__name__}
+                    )
+                )
             
-            logger.info(f"Successfully processed {result['line_count']} lines")
-            return True, "G-code normalization completed successfully", {
-                "input_file": input_path,
-                "output_file": output_path,
-                "lines_processed": result["line_count"],
-                "g_codes_normalized": result["g_codes_normalized"],
-                "coordinates_removed": result["coordinates_removed"],
-                "g01_commands_added": result["g01_commands_added"]
-            }
+            self.logger.info(f"Successfully processed {result['line_count']} lines")
+            return ErrorHandler.create_success_response(
+                message="G-code normalization completed successfully",
+                data={
+                    "input_file": input_path,
+                    "output_file": output_path,
+                    "lines_processed": result["line_count"],
+                    "g_codes_normalized": result["g_codes_normalized"],
+                    "coordinates_removed": result["coordinates_removed"],
+                    "g01_commands_added": result["g01_commands_added"]
+                }
+            )
             
         except Exception as e:
-            logger.error(f"Error normalizing G-code: {str(e)}")
-            return False, f"Error normalizing G-code: {str(e)}", {}
+            log_exception(self.logger, f"Error normalizing G-code: {str(e)}")
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=f"Error normalizing G-code: {str(e)}",
+                    category=ErrorCategory.PROCESSING,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error_type": type(e).__name__}
+                )
+            )
     
     def _normalize_content(self, content, filename):
         """
@@ -198,7 +256,7 @@ class GCodeNormalizer:
             
             # Log progress for large files
             if line_count % 1000 == 0:
-                logger.info(f"Processed {line_count} lines")
+                self.logger.info(f"Processed {line_count} lines")
         
         # Add footer with statistics
         result_lines.append("\n")
@@ -255,7 +313,7 @@ class GCodeNormalizer:
             
         # Check if any changes were made
         if normalized_line != line:
-            logger.debug(f"Normalized line: '{line.strip()}' -> '{normalized_line.strip()}'")
+            self.logger.debug(f"Normalized line: '{line.strip()}' -> '{normalized_line.strip()}'")
             
         return normalized_line
     
@@ -284,7 +342,7 @@ class GCodeNormalizer:
             
         # Log if changes were made
         if result != line:
-            logger.debug(f"Normalized G-code format: '{line}' -> '{result}'")
+            self.logger.debug(f"Normalized G-code format: '{line}' -> '{result}'")
             
         return result
     
@@ -322,7 +380,7 @@ class GCodeNormalizer:
         # Log found coordinates for debugging
         if coordinates:
             coord_str = ', '.join([f"{k}={v}" for k, v in coordinates.items()])
-            logger.debug(f"Extracted coordinates: {coord_str}")
+            self.logger.debug(f"Extracted coordinates: {coord_str}")
             
         return coordinates
     
@@ -351,7 +409,7 @@ class GCodeNormalizer:
                 prev_motion = self.current_modal_state["motion"]
                 self.current_modal_state["motion"] = command
                 modal_updated = True
-                logger.debug(f"Modal motion update: {prev_motion} -> {command}")
+                self.logger.debug(f"Modal motion update: {prev_motion} -> {command}")
                 break
         
         # Check for plane selection (G17, G18, G19)
@@ -408,7 +466,7 @@ class GCodeNormalizer:
         if tool_change:
             # Reset position tracking after tool change
             self.current_position = {"X": None, "Y": None, "Z": None}
-            logger.debug("Tool change detected, position tracking reset")
+            self.logger.debug("Tool change detected, position tracking reset")
             
         return modal_updated
     
@@ -437,14 +495,14 @@ class GCodeNormalizer:
                 if axis in coordinates:
                     # Check if coordinate is redundant (hasn't changed from previous position)
                     if (self.current_position[axis] is not None and 
-                        abs(coordinates[axis] - self.current_position[axis]) < 0.0001):
+                        abs(coordinates[axis] - self.current_position[axis]) < AppConfig.limits.COORDINATE_TOLERANCE):
                         # Remove the axis and value from the line
                         old_str = modified_line
                         modified_line = re.sub(f'{axis}[+-]?[0-9]*\.?[0-9]+', '', modified_line)
                         
                         if old_str != modified_line:
                             coordinates_removed.append(axis)
-                            logger.debug(f"Removed redundant {axis} coordinate: {self.current_position[axis]}")
+                            self.logger.debug(f"Removed redundant {axis} coordinate: {self.current_position[axis]}")
         
         # Add explicit G command if needed
         if not modal_updated and coordinates:
@@ -468,7 +526,7 @@ class GCodeNormalizer:
                     # Add motion command at the beginning
                     modified_line = f"{motion_command}{modified_line}"
                 
-                logger.debug(f"Added explicit {motion_command} command: '{line}' -> '{modified_line}'")
+                self.logger.debug(f"Added explicit {motion_command} command: '{line}' -> '{modified_line}'")
         
         # Update current position with all valid coordinates
         for axis, value in coordinates.items():
@@ -477,6 +535,6 @@ class GCodeNormalizer:
         # Log the overall changes
         if coordinates_removed:
             axes_str = ', '.join(coordinates_removed)
-            logger.debug(f"Removed redundant coordinates: {axes_str}")
+            self.logger.debug(f"Removed redundant coordinates: {axes_str}")
         
         return modified_line

@@ -42,9 +42,9 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
         
         if cls.dxf_files:
             cls.dxf_file = os.path.join(cls.test_dir, cls.dxf_files[0])
-            success, doc, message = cls.loader.load_dxf(cls.dxf_file)
+            success, message, details = cls.loader.load_dxf(cls.dxf_file)
             if success:
-                cls.doc = doc
+                cls.doc = details.get('document')
             else:
                 print(f"Failed to load test file: {message}")
     
@@ -60,7 +60,9 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
         self.assertTrue(self.dxf_file.endswith('.dxf'))
         
         # Print file info for debugging
-        info = self.loader.get_dxf_info(self.doc)
+        success, message, info = self.loader.get_dxf_info(self.doc)
+        self.assertTrue(success, f"Failed to get DXF info: {message}")
+        
         print(f"\nLoaded test file: {os.path.basename(self.dxf_file)}")
         print(f"  Version: {info['dxf_version']}")
         print(f"  Total entities: {info['total_entities']}")
@@ -78,13 +80,14 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
     def test_extract_workpiece_boundaries(self):
         """Test extraction of workpiece boundaries from the test file."""
         # Extract boundaries
-        success, boundaries, message = self.extractor.extract_workpiece_boundaries(self.doc)
+        success, message, details = self.extractor.extract_workpiece_boundaries(self.doc)
         
         # Print results for debugging
         print(f"\nWorkpiece boundary extraction: {'Success' if success else 'Failed'}")
         print(f"Message: {message}")
         
         if success:
+            boundaries = details.get('boundaries', [])
             print(f"Number of boundaries found: {len(boundaries)}")
             
             # Print information about each boundary
@@ -92,21 +95,28 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
                 print(f"\nBoundary {i+1}:")
                 print(f"  Type: {boundary.dxftype()}")
                 print(f"  Layer: {boundary.dxf.layer}")
+        else:
+            print(f"Error details: {details}")
         
         # Basic assertions
-        self.assertTrue(success)
-        self.assertIsNotNone(boundaries)
-        self.assertGreater(len(boundaries), 0)
+        self.assertTrue(success, f"Failed to extract boundaries: {message}")
+        self.assertIsNotNone(details)
+        if success:
+            self.assertIn('boundaries', details)
+            boundaries = details.get('boundaries', [])
+            self.assertGreater(len(boundaries), 0)
     
     def test_calculate_dimensions(self):
         """Test calculation of workpiece dimensions."""
         # First get boundaries
-        success, boundaries, _ = self.extractor.extract_workpiece_boundaries(self.doc)
+        success, message, details = self.extractor.extract_workpiece_boundaries(self.doc)
         if not success:
-            self.skipTest("Could not extract workpiece boundaries")
+            self.skipTest(f"Could not extract workpiece boundaries: {message}")
+        
+        boundaries = details.get('boundaries', [])
         
         # Calculate dimensions
-        success, dimensions, message = self.extractor.calculate_dimensions(boundaries)
+        success, message, dimensions = self.extractor.calculate_dimensions(boundaries)
         
         # Print results for debugging
         print(f"\nDimension calculation: {'Success' if success else 'Failed'}")
@@ -119,25 +129,30 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
             print(f"  Depth: {dimensions['depth']:.2f}mm")
             print(f"  Origin: ({dimensions['min_x']:.2f}, {dimensions['min_y']:.2f})")
             print(f"  Max point: ({dimensions['max_x']:.2f}, {dimensions['max_y']:.2f})")
+        else:
+            print(f"Error details: {dimensions}")
         
         # Basic assertions
-        self.assertTrue(success)
+        self.assertTrue(success, f"Failed to calculate dimensions: {message}")
         self.assertIsNotNone(dimensions)
-        self.assertIn('width', dimensions)
-        self.assertIn('height', dimensions)
-        self.assertIn('depth', dimensions)
-        self.assertGreater(dimensions['width'], 0)
-        self.assertGreater(dimensions['height'], 0)
+        if success:
+            self.assertIn('width', dimensions)
+            self.assertIn('height', dimensions)
+            self.assertIn('depth', dimensions)
+            self.assertGreater(dimensions['width'], 0)
+            self.assertGreater(dimensions['height'], 0)
     
     def test_identify_orientation(self):
         """Test identification of workpiece orientation."""
         # Get boundaries first
-        success, boundaries, _ = self.extractor.extract_workpiece_boundaries(self.doc)
+        success, message, details = self.extractor.extract_workpiece_boundaries(self.doc)
         if not success:
-            self.skipTest("Could not extract workpiece boundaries")
+            self.skipTest(f"Could not extract workpiece boundaries: {message}")
+        
+        boundaries = details.get('boundaries', [])
         
         # Identify orientation
-        success, orientation, message = self.extractor.identify_orientation(self.doc, boundaries)
+        success, message, orientation = self.extractor.identify_orientation(self.doc, boundaries)
         
         # Print results for debugging
         print(f"\nOrientation identification: {'Success' if success else 'Failed'}")
@@ -149,22 +164,27 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
             print(f"  Aligned with axes: {orientation['axis_aligned']}")
             print(f"  Angle to X-axis: {orientation['angle_to_x_axis']}")
             print(f"  Origin offset: ({orientation['origin_offset_x']:.2f}, {orientation['origin_offset_y']:.2f})")
+        else:
+            print(f"Error details: {orientation}")
         
         # Basic assertions
-        self.assertTrue(success)
+        self.assertTrue(success, f"Failed to identify orientation: {message}")
         self.assertIsNotNone(orientation)
-        self.assertIn('origin_aligned', orientation)
-        self.assertIn('axis_aligned', orientation)
+        if success:
+            self.assertIn('origin_aligned', orientation)
+            self.assertIn('axis_aligned', orientation)
     
     def test_get_reference_points(self):
         """Test extraction of reference points."""
         # Get boundaries first
-        success, boundaries, _ = self.extractor.extract_workpiece_boundaries(self.doc)
+        success, message, details = self.extractor.extract_workpiece_boundaries(self.doc)
         if not success:
-            self.skipTest("Could not extract workpiece boundaries")
+            self.skipTest(f"Could not extract workpiece boundaries: {message}")
+        
+        boundaries = details.get('boundaries', [])
         
         # Get reference points
-        success, points, message = self.extractor.get_reference_points(self.doc, boundaries)
+        success, message, points = self.extractor.get_reference_points(self.doc, boundaries)
         
         # Print results for debugging
         print(f"\nReference point extraction: {'Success' if success else 'Failed'}")
@@ -174,19 +194,22 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
             print("Reference points:")
             for point_name, coordinates in points.items():
                 print(f"  {point_name}: ({coordinates[0]:.2f}, {coordinates[1]:.2f})")
+        else:
+            print(f"Error details: {points}")
         
         # Basic assertions
-        self.assertTrue(success)
+        self.assertTrue(success, f"Failed to get reference points: {message}")
         self.assertIsNotNone(points)
-        self.assertIn('origin', points)
-        self.assertIn('center', points)
-        self.assertIn('corner_bl', points)
-        self.assertIn('corner_tr', points)
+        if success:
+            self.assertIn('origin', points)
+            self.assertIn('center', points)
+            self.assertIn('corner_bl', points)
+            self.assertIn('corner_tr', points)
     
     def test_extract_workpiece_info(self):
         """Test complete extraction of workpiece info."""
         # Extract all info in one call
-        success, info, message = self.extractor.extract_workpiece_info(self.doc)
+        success, message, info = self.extractor.extract_workpiece_info(self.doc)
         
         # Print results for debugging
         print(f"\nComplete workpiece info extraction: {'Success' if success else 'Failed'}")
@@ -199,14 +222,17 @@ class TestWorkpieceExtractorSimple(unittest.TestCase):
             print(f"  Aligned with axes: {info['orientation']['axis_aligned']}")
             print(f"  Boundary count: {info['boundary_count']}")
             print(f"  Material thickness: {info['material_thickness']:.2f}mm")
+        else:
+            print(f"Error details: {info}")
         
         # Basic assertions
-        self.assertTrue(success)
+        self.assertTrue(success, f"Failed to extract workpiece info: {message}")
         self.assertIsNotNone(info)
-        self.assertIn('dimensions', info)
-        self.assertIn('orientation', info)
-        self.assertIn('reference_points', info)
-        self.assertIn('boundary_count', info)
+        if success:
+            self.assertIn('dimensions', info)
+            self.assertIn('orientation', info)
+            self.assertIn('reference_points', info)
+            self.assertIn('boundary_count', info)
 
 if __name__ == '__main__':
     unittest.main()

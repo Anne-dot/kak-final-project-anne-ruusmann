@@ -14,6 +14,7 @@ Modules:
 - drilling_operations.py: Specialized horizontal drilling code generation
 - preprocessor.py: G-code preprocessing and enhancement
 - formatter.py: G-code formatting and organization
+- gcode_normalizer.py: G-code standardization and normalization
 
 References:
 - MRFP-80: DXF to G-code Generation Epic
@@ -21,16 +22,19 @@ References:
 - DRO to G-Code Variables Mapping (knowledge base)
 """
 
-# Imports and exports will be added as the modules are implemented
 # Import key items to make them available at package level
-# These will be uncommented as the modules are implemented
-# from .code_generator import generate_gcode, create_header, create_footer
-# from .safety_checker import add_safety_checks, validate_movement
-# from .tool_validator import validate_tool_for_operation
-# from .path_planner import plan_drilling_sequence, optimize_path
-# from .drilling_operations import generate_horizontal_drill
-# from .preprocessor import preprocess_gcode, insert_safety_checks
-# from .formatter import format_gcode, add_section_comments
+from .code_generator import GcodeGenerator
+from .gcode_normalizer import GCodeNormalizer
+from .safety_checker import SafetyChecker
+from .file_loader import GCodeLoader
 
-# Define publicly available items - will expand as modules are implemented
-__all__ = []
+# Define publicly available items
+__all__ = [
+    'GcodeGenerator',
+    'GCodeNormalizer',
+    'SafetyChecker',
+    'GCodeLoader'
+]
+
+# Note: Additional classes and functions will be added to exports
+# as they are implemented in their respective modules

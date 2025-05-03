@@ -14,6 +14,10 @@ import sys
 import platform
 from pathlib import Path
 
+# Import configuration settings - defer actual import to methods
+# to avoid circular import issues
+from .config import AppConfig
+
 
 class PathUtils:
     """
@@ -49,10 +53,10 @@ class PathUtils:
         if platform.system() == 'Windows':
             # Check if we're in the expected Mach3 directory structure
             # C:\Mach3\ToolManagement\Scripts\Utils\path_utils.py
-            if 'Mach3' in current_dir.parts:
+            if AppConfig.paths.MACH3_DIR_NAME in current_dir.parts:
                 # Find Mach3 in the path and return its parent
                 for i, part in enumerate(current_dir.parts):
-                    if part == 'Mach3':
+                    if part == AppConfig.paths.MACH3_DIR_NAME:
                         return Path(*current_dir.parts[:i+1])
         
         # Default fallback - go up two levels 
@@ -70,7 +74,7 @@ class PathUtils:
         
         if platform.system() == 'Windows' and 'Mach3' in root_dir.parts:
             # In Mach3 production environment
-            data_dir = root_dir / "ToolManagement" / "Data"
+            data_dir = root_dir / AppConfig.paths.TOOL_MANAGEMENT_DIR_NAME / AppConfig.paths.DATA_DIR_NAME
         else:
             # In development environment
             data_dir = root_dir / "data"
@@ -91,7 +95,7 @@ class PathUtils:
         
         if platform.system() == 'Windows' and 'Mach3' in root_dir.parts:
             # In Mach3 production environment
-            logs_dir = root_dir / "ToolManagement" / "Logs"
+            logs_dir = root_dir / AppConfig.paths.TOOL_MANAGEMENT_DIR_NAME / AppConfig.paths.LOGS_DIR_NAME
         else:
             # In development environment
             logs_dir = root_dir / "logs"
@@ -112,7 +116,7 @@ class PathUtils:
         
         if platform.system() == 'Windows' and 'Mach3' in root_dir.parts:
             # In Mach3 production environment
-            test_data_dir = root_dir / "ToolManagement" / "Scripts" / "Tests" / "TestData"
+            test_data_dir = root_dir / AppConfig.paths.TOOL_MANAGEMENT_DIR_NAME / AppConfig.paths.SCRIPTS_DIR_NAME / AppConfig.paths.TESTS_DIR_NAME / AppConfig.paths.TEST_DATA_DIR_NAME
         else:
             # In development environment
             test_data_dir = root_dir / "tests" / "data"
