@@ -1,6 +1,10 @@
 """
 Module for transforming coordinates from DXF to machine coordinates.
 
+[DEPRECATED] This module is being replaced by horizontal_drill_transformer.py.
+Please use the new HorizontalDrillTransformer class for better boundary checking
+and more focused horizontal drilling coordinate transformation.
+
 This module handles the transformation of coordinates from DXF file format to CNC machine 
 coordinates, including horizontal drilling points and workpiece rotation operations.
 It also provides functionality to offset coordinates to match machine origin.

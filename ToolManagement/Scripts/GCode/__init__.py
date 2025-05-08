@@ -15,6 +15,7 @@ Modules:
 - preprocessor.py: G-code preprocessing and enhancement
 - formatter.py: G-code formatting and organization
 - gcode_normalizer.py: G-code standardization and normalization
+- tool_matcher.py: Matches drilling operations to tools in the database
 
 References:
 - MRFP-80: DXF to G-code Generation Epic
@@ -27,13 +28,15 @@ from .code_generator import GcodeGenerator
 from .gcode_normalizer import GCodeNormalizer
 from .safety_checker import SafetyChecker
 from .file_loader import GCodeLoader
+from .tool_matcher import ToolSelector
 
 # Define publicly available items
 __all__ = [
     'GcodeGenerator',
     'GCodeNormalizer',
     'SafetyChecker',
-    'GCodeLoader'
+    'GCodeLoader',
+    'ToolSelector'
 ]
 
 # Note: Additional classes and functions will be added to exports

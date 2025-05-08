@@ -10,7 +10,6 @@ Modules:
 - workpiece_extractor.py: Extracting workpiece geometry
 - drilling_extractor.py: Finding drilling points and parameters
 - drilling_analyzer.py: Analyzing drilling point patterns
-- tool_extractor.py: Identifying tool requirements
 - entity_processor.py: Processing different entity types
 - geometry.py: Geometric calculations
 - coordinate_transformer.py: Coordinate transformations
@@ -31,7 +30,6 @@ from .file_loader import DxfLoader
 from .workpiece_extractor import WorkpieceExtractor
 from .drilling_extractor import DrillingExtractor
 from .drilling_analyzer import DrillPointAnalyzer, DrillPointClassifier
-from .tool_extractor import ToolRequirementExtractor, ToolSelector
 from .coordinate_transformer import CoordinateTransformer
 from .tool_path_generator import ToolPathGenerator
 
@@ -42,8 +40,6 @@ __all__ = [
     'DrillingExtractor',
     'DrillPointAnalyzer',
     'DrillPointClassifier',
-    'ToolRequirementExtractor',
-    'ToolSelector',
     'CoordinateTransformer',
     'ToolPathGenerator'
 ]

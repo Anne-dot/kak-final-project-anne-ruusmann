@@ -39,10 +39,9 @@ class TestPackageImports(unittest.TestCase):
             "DXF.file_loader", 
             "DXF.workpiece_extractor",
             "DXF.drilling_extractor",
-            "DXF.tool_extractor",
             "DXF.entity_processor",
-            "DXF.geometry"
-            # "DXF.coordinate_transformer" - Module still in development
+            "DXF.geometry",
+            "DXF.coordinate_transformer"
         ]
         
         for module in dxf_modules:
@@ -61,7 +60,8 @@ class TestPackageImports(unittest.TestCase):
             "GCode.path_planner",
             "GCode.drilling_operations",
             "GCode.preprocessor",
-            "GCode.formatter"
+            "GCode.formatter",
+            "GCode.tool_matcher"
         ]
         
         for module in gcode_modules:

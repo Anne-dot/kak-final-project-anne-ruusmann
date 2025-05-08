@@ -1,13 +1,12 @@
 """
-Module for extracting tool requirements from DXF files.
+Module for matching drilling operations to tools from the tool database.
 
-This module identifies and extracts tool requirements from DXF files,
-focusing on the tools needed for drilling operations. It translates
-drilling information into tool requirements without duplicating analysis.
+This module handles the selection of appropriate tools from the database
+based on drilling operation requirements. It matches tool diameter and
+direction requirements to actual tools available in the CSV database.
 
-References:
-    - MRFP-80: DXF to G-code Generation Epic
-    - MRFP-128: Implement DXF Package Modules
+Classes:
+    ToolSelector: Matches drilling operations to tools in the database
 """
 
 import os
@@ -18,364 +17,12 @@ from Utils.logging_utils import setup_logger, log_exception
 from Utils.file_utils import FileUtils
 from Utils.error_utils import ErrorHandler, BaseError, ValidationError, FileError, ErrorSeverity, ErrorCategory
 
-# Import from DXF package
-from DXF.drilling_extractor import DrillingExtractor
-
-
-class ToolRequirementExtractor:
-    """
-    Class for extracting tool requirements from DXF files.
-    
-    This class analyzes DXF files to determine what tools are needed
-    for machining operations, particularly focusing on drilling.
-    """
-    
-    def __init__(self):
-        """Initialize the tool requirement extractor."""
-        # Set up logger for this class
-        self.logger = setup_logger(__name__)
-        
-        # Tolerance for grouping similar diameters (in mm)
-        self.diameter_tolerance = 0.1
-        
-        # Dictionary to store requirements
-        self.requirements = {
-            'vertical_drills': [],
-            'horizontal_drills': [],
-            'all_diameters': set()
-        }
-        
-        self.logger.info("ToolRequirementExtractor initialized")
-    
-    def extract_tool_requirements(self, dxf_doc, drilling_info=None) -> Tuple[bool, str, Dict]:
-        """
-        Extract all tool requirements from a DXF document.
-        
-        Args:
-            dxf_doc: ezdxf document object
-            drilling_info: Optional pre-extracted drilling information
-            
-        Returns:
-            Tuple of (success, message, details)
-        """
-        if dxf_doc is None:
-            error_msg = "No DXF document provided"
-            self.logger.error(error_msg)
-            return ErrorHandler.from_exception(
-                ValidationError(
-                    message=error_msg,
-                    severity=ErrorSeverity.ERROR,
-                    details={"error": "missing_document"}
-                )
-            )
-        
-        self.logger.info("Extracting tool requirements")
-        
-        try:
-            # If drilling_info not provided, we need to get it
-            if drilling_info is None:
-                drilling_extractor = DrillingExtractor()
-                success, message, drilling_details = drilling_extractor.extract_all_drilling_info(dxf_doc)
-                
-                if not success:
-                    error_msg = f"Failed to extract drilling information: {message}"
-                    self.logger.error(error_msg)
-                    return ErrorHandler.from_exception(
-                        BaseError(
-                            message=error_msg,
-                            severity=ErrorSeverity.ERROR,
-                            category=ErrorCategory.PROCESSING,
-                            details={"error_source": "drilling_extractor", "original_message": message}
-                        )
-                    )
-                    
-                drilling_info = drilling_details
-            
-            # Reset requirements dictionary
-            self.requirements = {
-                'vertical_drills': [],
-                'horizontal_drills': [],
-                'all_diameters': set()
-            }
-            
-            # Convert drilling info into tool requirements
-            success, message, result_details = self._convert_drilling_to_requirements(drilling_info)
-            if not success:
-                return ErrorHandler.from_exception(
-                    BaseError(
-                        message=message,
-                        severity=ErrorSeverity.ERROR,
-                        category=ErrorCategory.PROCESSING,
-                        details={"error_source": "convert_drilling_to_requirements", "error": message}
-                    )
-                )
-            
-            # Group requirements by operation
-            success, message, grouped_details = self._group_requirements_by_operation()
-            if not success:
-                self.logger.warning(f"Warning grouping requirements: {message}")
-            else:
-                self.requirements['grouped'] = grouped_details
-            
-            # Add summary information
-            self.requirements['summary'] = {
-                'vertical_drill_count': len(self.requirements['vertical_drills']),
-                'horizontal_drill_count': len(self.requirements['horizontal_drills']),
-                'total_drill_count': len(self.requirements['vertical_drills']) + len(self.requirements['horizontal_drills']),
-                'unique_diameters': len(self.requirements['all_diameters']),
-                'diameter_list': sorted(list(self.requirements['all_diameters']))
-            }
-            
-            # Create human-readable summary
-            success, message, summary_details = self._format_requirements_summary()
-            if success and summary_details:
-                self.requirements['readable_summary'] = summary_details
-            
-            success_msg = "Tool requirements extracted successfully"
-            self.logger.info(success_msg)
-            
-            return ErrorHandler.create_success_response(
-                message=success_msg,
-                data=self.requirements
-            )
-            
-        except Exception as e:
-            error_msg = f"Error extracting tool requirements: {str(e)}"
-            log_exception(self.logger, error_msg)
-            return ErrorHandler.from_exception(
-                BaseError(
-                    message=error_msg,
-                    severity=ErrorSeverity.ERROR,
-                    category=ErrorCategory.PROCESSING,
-                    details={"error_type": "Exception", "error": str(e)}
-                )
-            )
-    
-    def _convert_drilling_to_requirements(self, drilling_info) -> Tuple[bool, str, Dict]:
-        """
-        Convert drilling information into tool requirements.
-        
-        Args:
-            drilling_info: Dict containing drilling information from DrillingExtractor
-            
-        Returns:
-            Tuple of (success, message, details)
-        """
-        if not drilling_info:
-            error_msg = "No drilling information provided"
-            self.logger.error(error_msg)
-            return ErrorHandler.from_exception(
-                ValidationError(
-                    message=error_msg,
-                    severity=ErrorSeverity.ERROR,
-                    details={"error": "missing_drilling_info"}
-                )
-            )
-        
-        self.logger.info("Converting drilling info to tool requirements")
-        
-        try:
-            # Process vertical drilling points
-            vertical_parameters = drilling_info.get('parameters', {}).get('vertical', [])
-            for params in vertical_parameters:
-                requirement = {
-                    'type': 'vertical_drill',
-                    'diameter': params.get('diameter', 0.0),
-                    'depth': params.get('depth', 0.0),
-                    'position': params.get('position', (0, 0, 0)),
-                    'layer': params.get('layer', '')
-                }
-                
-                self.requirements['vertical_drills'].append(requirement)
-                
-                # Add to all diameters set (rounded to 1 decimal place for grouping)
-                if requirement['diameter'] > 0:
-                    self.requirements['all_diameters'].add(round(requirement['diameter'], 1))
-            
-            # Process horizontal drilling points
-            horizontal_parameters = drilling_info.get('parameters', {}).get('horizontal', [])
-            for params in horizontal_parameters:
-                requirement = {
-                    'type': 'horizontal_drill',
-                    'diameter': params.get('diameter', 0.0),
-                    'depth': params.get('depth', 0.0),
-                    'edge': params.get('edge', 'UNKNOWN'),
-                    'direction': params.get('direction', (0, 0, 0)),
-                    'position': params.get('position', (0, 0, 0)),
-                    'layer': params.get('layer', '')
-                }
-                
-                self.requirements['horizontal_drills'].append(requirement)
-                
-                # Add to all diameters set (rounded to 1 decimal place for grouping)
-                if requirement['diameter'] > 0:
-                    self.requirements['all_diameters'].add(round(requirement['diameter'], 1))
-            
-            success_msg = f"Converted {len(vertical_parameters)} vertical and {len(horizontal_parameters)} horizontal drilling points to tool requirements"
-            self.logger.info(success_msg)
-            
-            return ErrorHandler.create_success_response(
-                message=success_msg,
-                data={
-                    "vertical_count": len(vertical_parameters),
-                    "horizontal_count": len(horizontal_parameters),
-                    "requirements": self.requirements
-                }
-            )
-            
-        except Exception as e:
-            error_msg = f"Error converting drilling info to requirements: {str(e)}"
-            log_exception(self.logger, error_msg)
-            return ErrorHandler.from_exception(
-                BaseError(
-                    message=error_msg,
-                    severity=ErrorSeverity.ERROR,
-                    category=ErrorCategory.PROCESSING,
-                    details={"error_type": "Exception", "error": str(e)}
-                )
-            )
-    
-    def _group_requirements_by_operation(self) -> Tuple[bool, str, Dict]:
-        """
-        Group similar requirements by operation type.
-        
-        Returns:
-            Tuple of (success, message, details)
-        """
-        self.logger.info("Grouping requirements by operation")
-        
-        try:
-            # Create grouped requirements dictionary
-            grouped = {
-                'vertical_drills': {},  # Grouped by diameter
-                'horizontal_drills': {}  # Grouped by diameter and edge
-            }
-            
-            # Group vertical drilling operations by diameter
-            for req in self.requirements.get('vertical_drills', []):
-                diameter = round(req.get('diameter', 0.0), 1)
-                if diameter <= 0:
-                    continue
-                
-                diameter_key = f"D{diameter:.1f}"
-                
-                if diameter_key not in grouped['vertical_drills']:
-                    grouped['vertical_drills'][diameter_key] = []
-                
-                grouped['vertical_drills'][diameter_key].append(req)
-            
-            # Group horizontal drilling operations by diameter and edge
-            for req in self.requirements.get('horizontal_drills', []):
-                diameter = round(req.get('diameter', 0.0), 1)
-                edge = req.get('edge', 'UNKNOWN')
-                if diameter <= 0:
-                    continue
-                
-                group_key = f"D{diameter:.1f}_{edge}"
-                
-                if group_key not in grouped['horizontal_drills']:
-                    grouped['horizontal_drills'][group_key] = []
-                
-                grouped['horizontal_drills'][group_key].append(req)
-            
-            # Calculate statistics
-            stats = {
-                "vertical_groups": len(grouped['vertical_drills']),
-                "horizontal_groups": len(grouped['horizontal_drills']),
-                "total_groups": len(grouped['vertical_drills']) + len(grouped['horizontal_drills'])
-            }
-            
-            success_msg = f"Grouped requirements into {stats['vertical_groups']} vertical and {stats['horizontal_groups']} horizontal operation types"
-            self.logger.info(success_msg)
-            
-            return ErrorHandler.create_success_response(
-                message=success_msg,
-                data=grouped
-            )
-            
-        except Exception as e:
-            error_msg = f"Error grouping requirements: {str(e)}"
-            log_exception(self.logger, error_msg)
-            return ErrorHandler.from_exception(
-                BaseError(
-                    message=error_msg,
-                    severity=ErrorSeverity.ERROR,
-                    category=ErrorCategory.PROCESSING,
-                    details={"error_type": "Exception", "error": str(e)}
-                )
-            )
-    
-    def _format_requirements_summary(self) -> Tuple[bool, str, str]:
-        """
-        Create a human-readable summary of tool requirements.
-        
-        Returns:
-            Tuple of (success, message, summary)
-        """
-        self.logger.info("Creating human-readable requirements summary")
-        
-        try:
-            # Create summary lines
-            summary_lines = []
-            
-            # Add header
-            summary_lines.append("TOOL REQUIREMENTS SUMMARY")
-            summary_lines.append("=========================")
-            
-            # Add vertical drill information
-            vertical_count = len(self.requirements.get('vertical_drills', []))
-            summary_lines.append(f"\nVertical Drilling: {vertical_count} operations")
-            
-            vert_groups = self.requirements.get('grouped', {}).get('vertical_drills', {})
-            for group_key, operations in vert_groups.items():
-                summary_lines.append(f"  {group_key}: {len(operations)} holes")
-            
-            # Add horizontal drill information
-            horizontal_count = len(self.requirements.get('horizontal_drills', []))
-            summary_lines.append(f"\nHorizontal Drilling: {horizontal_count} operations")
-            
-            horz_groups = self.requirements.get('grouped', {}).get('horizontal_drills', {})
-            for group_key, operations in horz_groups.items():
-                summary_lines.append(f"  {group_key}: {len(operations)} holes")
-            
-            # Add required diameter summary
-            all_diameters = sorted(list(self.requirements.get('all_diameters', set())))
-            summary_lines.append(f"\nRequired Tool Diameters: {len(all_diameters)} unique sizes")
-            
-            # Format diameters in clean groups of 5
-            diameter_chunks = [all_diameters[i:i+5] for i in range(0, len(all_diameters), 5)]
-            for chunk in diameter_chunks:
-                summary_lines.append(f"  {', '.join([f'{d:.1f}mm' for d in chunk])}")
-            
-            # Join all lines into a single string
-            summary = "\n".join(summary_lines)
-            
-            success_msg = "Created human-readable requirements summary"
-            self.logger.info(success_msg)
-            
-            return ErrorHandler.create_success_response(
-                message=success_msg,
-                data=summary
-            )
-            
-        except Exception as e:
-            error_msg = f"Error creating requirements summary: {str(e)}"
-            log_exception(self.logger, error_msg)
-            return ErrorHandler.from_exception(
-                BaseError(
-                    message=error_msg,
-                    severity=ErrorSeverity.ERROR,
-                    category=ErrorCategory.PROCESSING,
-                    details={"error_type": "Exception", "error": str(e)}
-                )
-            )
-
 
 class ToolSelector:
     """
-    Class for selecting appropriate tools based on requirements.
+    Class for selecting appropriate tools based on drilling requirements.
     
-    This class matches tool requirements to available tools in the
+    This class matches drilling operations to available tools in the
     tool database, selecting the best tools for each operation.
     It handles direction-specific tool selection for horizontal drilling.
     """
@@ -410,6 +57,105 @@ class ToolSelector:
         self.tool_data = None
         
         self.logger.info("ToolSelector initialized")
+    
+    def select_tools_for_drilling_points(self, drilling_points, tool_data_path=None) -> Tuple[bool, str, Dict]:
+        """
+        Select appropriate tools for drilling operations directly from drilling points.
+        
+        Args:
+            drilling_points: List of drilling point objects (from drilling_extractor)
+            tool_data_path: Optional path to tool data CSV file
+            
+        Returns:
+            Tuple of (success, message, details)
+        """
+        if not drilling_points:
+            error_msg = "No drilling points provided"
+            self.logger.error(error_msg)
+            return ErrorHandler.from_exception(
+                ValidationError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    details={"error": "missing_drilling_points"}
+                )
+            )
+        
+        self.logger.info(f"Selecting tools for {len(drilling_points)} drilling points")
+        
+        try:
+            # Group drilling points by edge and diameter for efficient selection
+            edge_diameter_groups = {}
+            
+            for point in drilling_points:
+                # Determine edge from point's edge property or analysis
+                edge = getattr(point, 'edge', "UNKNOWN")
+                if edge == "UNKNOWN" and hasattr(point, 'extrusion_vector'):
+                    # Try to determine edge from extrusion vector
+                    from DXF.drilling_analyzer import DrillPointAnalyzer
+                    analyzer = DrillPointAnalyzer()
+                    edge = analyzer.detect_edge(point.extrusion_vector)
+                
+                # Get diameter (round to 1 decimal place for matching)
+                diameter = round(getattr(point, 'diameter', 0.0), 1)
+                
+                # Skip points with unknown edge or invalid diameter
+                if edge == "UNKNOWN" or diameter <= 0:
+                    continue
+                
+                # Create group key
+                group_key = f"{edge}_{diameter}"
+                
+                # Add point to appropriate group
+                if group_key not in edge_diameter_groups:
+                    edge_diameter_groups[group_key] = {
+                        'edge': edge,
+                        'diameter': diameter,
+                        'points': []
+                    }
+                
+                edge_diameter_groups[group_key]['points'].append(point)
+            
+            # Format the drilling groups into requirements format
+            vertical_drilling = []
+            horizontal_drilling = []
+            
+            for group_key, group in edge_diameter_groups.items():
+                edge = group['edge']
+                diameter = group['diameter']
+                
+                if edge == "VERTICAL":
+                    vertical_drilling.append({
+                        'type': 'vertical_drill',
+                        'diameter': diameter,
+                        'operations': len(group['points'])
+                    })
+                elif edge in ["FRONT", "BACK", "LEFT", "RIGHT"]:
+                    horizontal_drilling.append({
+                        'type': 'horizontal_drill',
+                        'diameter': diameter,
+                        'edge': edge,
+                        'operations': len(group['points'])
+                    })
+            
+            # Now use the select_tools method to match to the tool database
+            requirements = {
+                'vertical_drills': vertical_drilling,
+                'horizontal_drills': horizontal_drilling
+            }
+            
+            return self.select_tools(requirements, tool_data_path)
+            
+        except Exception as e:
+            error_msg = f"Error selecting tools for drilling points: {str(e)}"
+            log_exception(self.logger, error_msg)
+            return ErrorHandler.from_exception(
+                BaseError(
+                    message=error_msg,
+                    severity=ErrorSeverity.ERROR,
+                    category=ErrorCategory.PROCESSING,
+                    details={"error_type": "Exception", "error": str(e)}
+                )
+            )
     
     def select_tools(self, requirements, tool_data_path=None) -> Tuple[bool, str, Dict]:
         """
@@ -910,11 +656,16 @@ if __name__ == "__main__":
     import sys
     from DXF.file_loader import DxfLoader
     from DXF.drilling_extractor import DrillingExtractor
+    from DXF.drilling_analyzer import DrillPointAnalyzer, DrillPointClassifier
+    from Utils.ui_utils import UIUtils
     
-    extractor = ToolRequirementExtractor()
-    drill_extractor = DrillingExtractor()
+    selector = ToolSelector()
     loader = DxfLoader()
+    extractor = DrillingExtractor()
+    analyzer = DrillPointAnalyzer()
+    classifier = DrillPointClassifier()
     
+    # Let user select a DXF file
     success, message, details = loader.load_dxf()
     
     if success:
@@ -923,23 +674,29 @@ if __name__ == "__main__":
         # Get document from details
         doc = details.get('document')
         
-        # Extract drilling information first
-        drill_success, drill_message, drilling_details = drill_extractor.extract_all_drilling_info(doc)
+        # Extract drilling points
+        success, message, drilling_details = extractor.extract_all_drilling_info(doc)
         
-        if drill_success:
-            # Extract tool requirements based on drilling info
-            tool_success, tool_message, tool_details = extractor.extract_tool_requirements(doc, drilling_details)
+        if success:
+            print(f"\nDrilling extraction: {message}")
             
-            print(f"\nTool requirements extraction: {'Succeeded' if tool_success else 'Failed'}")
-            print(f"Message: {tool_message}")
+            # Get drilling points from details
+            drilling_points = drilling_details.get('points', [])
             
-            if tool_success and 'readable_summary' in tool_details:
-                print("\n" + tool_details['readable_summary'])
+            # Classify drilling points
+            success, message, classification_details = classifier.classify_points(drilling_points)
+            
+            if success:
+                print(f"\nDrilling classification: {message}")
+                
+                # Select tools directly from drilling points
+                success, message, tool_details = selector.select_tools_for_drilling_points(drilling_points)
+                
+                if success:
+                    print(f"\nTool selection: {message}")
+                    if 'readable_summary' in tool_details:
+                        print("\n" + tool_details['readable_summary'])
         else:
-            print(f"Error extracting drilling info: {drill_message}")
-            if 'details' in drilling_details:
-                print(f"Details: {drilling_details.get('details')}")
+            print(f"Error extracting drilling info: {message}")
     else:
-        print(f"Error: {message}")
-        if 'details' in details:
-            print(f"Details: {details.get('details')}")
+        print(f"Error loading DXF: {message}")
