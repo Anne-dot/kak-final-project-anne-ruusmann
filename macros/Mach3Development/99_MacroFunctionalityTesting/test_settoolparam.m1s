@@ -1,0 +1,52 @@
+' settoolparam_test.m1s
+' Purpose: Test updating tool table with SetToolParam approach
+' Based on working example updating a single tool
+
+' Display start message
+Message("TEST: SetToolParam Single Tool Update")
+Sleep(200)
+
+' Define tool parameters for Tool #2
+Dim toolNumber, toolDiameter, toolLength
+toolNumber = 2
+toolDiameter = 9.5    ' 9.5mm diameter (different from CSV to verify update)
+toolLength = 75       ' 75mm length (different from CSV to verify update)
+
+' Update the tool parameters in Mach3 native tool table
+On Error Resume Next
+SetToolParam toolNumber, 1, toolDiameter    ' Parameter 1 is diameter
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set diameter - " & Err.Description)
+    Sleep(200)
+    Err.Clear
+    Exit Sub
+End If
+
+' Add a brief delay between operations
+Sleep(100)
+
+On Error Resume Next
+SetToolParam toolNumber, 2, toolLength      ' Parameter 2 is length
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set length - " & Err.Description)
+    Sleep(200)
+    Err.Clear
+    Exit Sub
+End If
+
+' Display success message
+Message("Tool #" & toolNumber & " updated: D=" & toolDiameter & " L=" & toolLength)
+Sleep(200)
+
+' Optional: Save the tool table
+On Error Resume Next
+DoOEMButton(316)    ' OEM Button 316 is Tool Table Save
+If Err.Number <> 0 Then
+    Message("WARNING: Could not save tool table - " & Err.Description)
+    Sleep(200)
+    Err.Clear
+End If
+
+' Final confirmation
+Message("TEST COMPLETED: Check Mach3 tool table to verify Tool #2 was updated")
+Sleep(200)

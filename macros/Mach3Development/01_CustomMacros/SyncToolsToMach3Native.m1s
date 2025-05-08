@@ -1,0 +1,107 @@
+' SyncToolsToMach3Native.m1s
+' Purpose: Synchronize CSV/DRO tool data to Mach3 native tool table using SetToolParam
+' IMPORTANT: Only updates diameter and length fields
+'
+' NOTE: All variables in this script use the '_sync' suffix to avoid conflicts
+' with variables in LoadToolData.m1s when this script is expanded into it
+' using the #expand directive.
+
+' Variables with _sync suffix to avoid conflicts with LoadToolData.m1s
+Dim toolNum_sync, diameter_sync, length_sync
+Dim maxTools_sync, successCount_sync, errorCount_sync, startTime_sync
+
+' Define maximum number of tools to process
+maxTools_sync = 40
+successCount_sync = 0
+errorCount_sync = 0
+startTime_sync = Timer()
+
+' Display start message
+Message("SYSTEM: Starting tool data synchronization to Mach3 native table...")
+Sleep(100)
+
+' Process each tool
+For toolNum_sync = 1 To maxTools_sync
+    ' Calculate DRO addresses directly
+    Dim diameterDRO_sync, lengthDRO_sync
+    diameterDRO_sync = 1000 + ((toolNum_sync - 1) * 20) + 4  ' Diameter is at +4 offset
+    lengthDRO_sync = 1000 + ((toolNum_sync - 1) * 20) + 5    ' Length is at +5 offset
+    
+    ' Get diameter and length from DROs
+    On Error Resume Next
+    diameter_sync = GetUserDRO(diameterDRO_sync)
+    length_sync = GetUserDRO(lengthDRO_sync)
+    
+    If Err.Number <> 0 Then
+        Message("ERROR: Could not read DRO values for tool #" & toolNum_sync)
+        Sleep(50)
+        Err.Clear
+        errorCount_sync = errorCount_sync + 1
+        GoTo NextTool
+    End If
+    
+    ' Skip empty tools
+    If diameter_sync <= 0 Or length_sync <= 0 Then
+        GoTo NextTool
+    End If
+    
+    ' Debug output for current tool
+    Message("DEBUG: Tool #" & toolNum_sync & " - Diameter: " & diameter_sync & ", Length: " & length_sync)
+    Sleep(50)
+    
+    ' Update the tool diameter
+    On Error Resume Next
+    SetToolParam toolNum_sync, 1, diameter_sync    ' Parameter 1 is diameter
+    If Err.Number <> 0 Then
+        Message("ERROR: Tool #" & toolNum_sync & " - Failed to set diameter")
+        Sleep(50)
+        Err.Clear
+        errorCount_sync = errorCount_sync + 1
+        GoTo NextTool
+    End If
+    
+    ' Add a brief delay
+    Sleep(50)
+    
+    ' Update the tool length
+    On Error Resume Next
+    SetToolParam toolNum_sync, 2, length_sync      ' Parameter 2 is length
+    If Err.Number <> 0 Then
+        Message("ERROR: Tool #" & toolNum_sync & " - Failed to set length")
+        Sleep(50)
+        Err.Clear
+        errorCount_sync = errorCount_sync + 1
+        GoTo NextTool
+    End If
+    
+    ' Increment success counter
+    successCount_sync = successCount_sync + 1
+    
+NextTool:
+Next
+
+' Calculate elapsed time
+Dim elapsedTime_sync
+elapsedTime_sync = Timer() - startTime_sync
+If elapsedTime_sync < 0 Then
+    ' Handle day boundary crossing
+    elapsedTime_sync = elapsedTime_sync + 86400
+End If
+
+' Format completion message
+If successCount_sync > 0 Then
+    Message("SUCCESS: Synchronized " & successCount_sync & " tools in " & FormatNumber(elapsedTime_sync, 2) & " seconds")
+    Sleep(100)
+    
+    ' Save the tool table
+    On Error Resume Next
+    DoOEMButton(316)    ' OEM Button 316 is Tool Table Save
+    If Err.Number <> 0 Then
+        Message("WARNING: Could not save tool table")
+        Sleep(100)
+        Err.Clear
+    End If
+Else
+    Message("ERROR: No tools were synchronized to Mach3 native table")
+    Sleep(100)
+End If

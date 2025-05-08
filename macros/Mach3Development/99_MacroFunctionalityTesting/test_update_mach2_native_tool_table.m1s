@@ -1,0 +1,23 @@
+' Update Tool 2 Diameter and Length
+' This macro updates tool #2 in the Mach3 native tool table
+
+' Define tool parameters
+Dim toolNumber, toolDiameter, toolLength
+toolNumber = 2
+toolDiameter = 5.2    ' 5.2mm diameter
+toolLength = 30       ' 30mm length
+
+' Update the tool parameters in Mach3 native tool table
+SetToolParam(toolNumber, 1, toolDiameter)    ' Parameter 1 is diameter
+SetToolParam(toolNumber, 2, toolLength)      ' Parameter 2 is length
+
+' Display confirmation message
+Message("Tool #" & toolNumber & " updated: D=" & toolDiameter & " L=" & toolLength)
+Sleep(100)
+
+' Save the tool table
+DoOEMButton(316)    ' OEM Button 316 is Tool Table Save
+
+' Final confirmation
+Message("Tool #" & toolNumber & " updated and tool table saved")
+Sleep(100)
