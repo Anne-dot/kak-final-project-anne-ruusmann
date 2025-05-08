@@ -6,6 +6,10 @@
 ' with variables in LoadToolData.m1s when this script is expanded into it
 ' using the #expand directive.
 
+' DEBUG CONFIGURATION
+' Set this to False to reduce debug messages and speed up operation
+Const DEBUG_MODE_SYNC = False
+
 ' Variables with _sync suffix to avoid conflicts with LoadToolData.m1s
 Dim toolNum_sync, diameter_sync, length_sync
 Dim maxTools_sync, successCount_sync, errorCount_sync, startTime_sync
@@ -16,9 +20,11 @@ successCount_sync = 0
 errorCount_sync = 0
 startTime_sync = Timer()
 
-' Display start message
-Message("SYSTEM: Starting tool data synchronization to Mach3 native table...")
-Sleep(100)
+' Display start message (only in debug mode)
+If DEBUG_MODE_SYNC Then
+    Message("SYSTEM: Starting tool data synchronization to Mach3 native table...")
+    Sleep(100)
+End If
 
 ' Process each tool
 For toolNum_sync = 1 To maxTools_sync
@@ -45,30 +51,40 @@ For toolNum_sync = 1 To maxTools_sync
         GoTo NextTool
     End If
     
-    ' Debug output for current tool
-    Message("DEBUG: Tool #" & toolNum_sync & " - Diameter: " & diameter_sync & ", Length: " & length_sync)
-    Sleep(50)
+    ' Debug output for current tool (only if debug mode is enabled)
+    If DEBUG_MODE_SYNC Then
+        Message("DEBUG: Tool #" & toolNum_sync & " - Diameter: " & diameter_sync & ", Length: " & length_sync)
+        Sleep(50)
+    End If
     
     ' Update the tool diameter
     On Error Resume Next
     SetToolParam toolNum_sync, 1, diameter_sync    ' Parameter 1 is diameter
     If Err.Number <> 0 Then
-        Message("ERROR: Tool #" & toolNum_sync & " - Failed to set diameter")
-        Sleep(50)
+        If DEBUG_MODE_SYNC Then
+            Message("ERROR: Tool #" & toolNum_sync & " - Failed to set diameter")
+            Sleep(50)
+        End If
         Err.Clear
         errorCount_sync = errorCount_sync + 1
         GoTo NextTool
     End If
     
-    ' Add a brief delay
-    Sleep(50)
+    ' Add a brief delay - reduced when not in debug mode
+    If DEBUG_MODE_SYNC Then
+        Sleep(50)
+    Else
+        Sleep(10)
+    End If
     
     ' Update the tool length
     On Error Resume Next
     SetToolParam toolNum_sync, 2, length_sync      ' Parameter 2 is length
     If Err.Number <> 0 Then
-        Message("ERROR: Tool #" & toolNum_sync & " - Failed to set length")
-        Sleep(50)
+        If DEBUG_MODE_SYNC Then
+            Message("ERROR: Tool #" & toolNum_sync & " - Failed to set length")
+            Sleep(50)
+        End If
         Err.Clear
         errorCount_sync = errorCount_sync + 1
         GoTo NextTool
@@ -90,18 +106,22 @@ End If
 
 ' Format completion message
 If successCount_sync > 0 Then
-    Message("SUCCESS: Synchronized " & successCount_sync & " tools in " & FormatNumber(elapsedTime_sync, 2) & " seconds")
-    Sleep(100)
+    ' Only show detailed success message in debug mode
+    If DEBUG_MODE_SYNC Then
+        Message("SUCCESS: Synchronized " & successCount_sync & " tools in " & FormatNumber(elapsedTime_sync, 2) & " seconds")
+        Sleep(100)
+    End If
     
     ' Save the tool table
     On Error Resume Next
     DoOEMButton(316)    ' OEM Button 316 is Tool Table Save
-    If Err.Number <> 0 Then
+    If Err.Number <> 0 And DEBUG_MODE_SYNC Then
         Message("WARNING: Could not save tool table")
         Sleep(100)
         Err.Clear
     End If
 Else
+    ' Always show error if no tools were synchronized
     Message("ERROR: No tools were synchronized to Mach3 native table")
     Sleep(100)
 End If

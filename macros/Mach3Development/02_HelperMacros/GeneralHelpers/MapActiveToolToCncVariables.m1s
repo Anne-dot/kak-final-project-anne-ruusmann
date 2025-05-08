@@ -5,28 +5,43 @@
 ' Note: No constants defined here since this file is #expanded by the tool change macro
 ' and would cause duplicate constant definitions errors
 
+' DEBUG CONFIGURATION
+' Set to True to enable detailed diagnostic messages, False for production use
+Const DEBUG_MODE_MAP = False
+
 ' Get the tool number passed from M6 for consistency checking
 Dim passedToolNum
 passedToolNum = GetUserDRO(1899) ' PASSING_TOOL_DRO = 1899
 
 ' Check validation flag first
 If GetUserDRO(1821) <> 1 Then  ' VALIDATION_FLAG_DRO = 1821
+    ' Always show critical warnings
     Message("WARNING: Tool data not validated!")
-    Message("Validation Flag: " & CStr(GetUserDRO(1821)))
-    Message("Expected Tool: " & CStr(passedToolNum))
-    Sleep(200)
+    
+    ' Only show details in debug mode
+    If DEBUG_MODE_MAP Then
+        Message("Validation Flag: " & CStr(GetUserDRO(1821)))
+        Message("Expected Tool: " & CStr(passedToolNum))
+        Sleep(200)
+    Else
+        Sleep(50)
+    End If
+    
     Exit Sub
 End If
 
-' Detailed diagnostic logging
-Message("Mapping Macro Diagnostics:")
-Message("Validation Flag (1821): " & CStr(GetUserDRO(1821)))
-Message("Active Tool DRO (1800): " & CStr(GetUserDRO(1800)))
-Message("Passed Tool Num (1899): " & CStr(passedToolNum))
-Message("Tool Type DRO (1801): " & CStr(GetUserDRO(1801)))
-Message("Tool Direction DRO (1802): " & CStr(GetUserDRO(1802)))
-Message("Rotation Direction DRO (1803): " & CStr(GetUserDRO(1803)))
-Message("Diameter DRO (1804): " & CStr(GetUserDRO(1804)))
+' Detailed diagnostic logging (only in debug mode)
+If DEBUG_MODE_MAP Then
+    Message("Mapping Macro Diagnostics:")
+    Message("Validation Flag (1821): " & CStr(GetUserDRO(1821)))
+    Message("Active Tool DRO (1800): " & CStr(GetUserDRO(1800)))
+    Message("Passed Tool Num (1899): " & CStr(passedToolNum))
+    Message("Tool Type DRO (1801): " & CStr(GetUserDRO(1801)))
+    Message("Tool Direction DRO (1802): " & CStr(GetUserDRO(1802)))
+    Message("Rotation Direction DRO (1803): " & CStr(GetUserDRO(1803)))
+    Message("Diameter DRO (1804): " & CStr(GetUserDRO(1804)))
+    Sleep(50)
+End If
 
 ' Get the active tool number from DRO 1800
 Dim toolNum
@@ -34,10 +49,15 @@ toolNum = GetUserDRO(1800)
 
 ' Consistency check - compare with the passed tool number
 If toolNum <> passedToolNum Then
-    Message("WARNING: Tool number mismatch! Active=" & CStr(toolNum) & " Expected=" & CStr(passedToolNum))
-    Sleep(200)
-    ' Use the passed tool number as authoritative if there's a mismatch
-    Message("NOTE: Using passed tool number for variables")
+    ' Only show mismatch warning in debug mode
+    If DEBUG_MODE_MAP Then
+        Message("WARNING: Tool number mismatch! Active=" & CStr(toolNum) & " Expected=" & CStr(passedToolNum))
+        Sleep(200)
+        Message("NOTE: Using passed tool number for variables")
+        Sleep(50)
+    End If
+    
+    ' Always use the passed tool number as authoritative if there's a mismatch
     toolNum = passedToolNum
 End If
 
@@ -48,13 +68,22 @@ Code "#102 = " & CStr(GetUserDRO(1802))            ' Tool direction
 Code "#103 = " & CStr(GetUserDRO(1803))            ' Rotation direction
 Code "#104 = " & CStr(GetUserDRO(1804))            ' Diameter
 
-' Alternative approach for variable display
-Message("Tool " & CStr(toolNum) & " mapped to G-code variables")
-Sleep(150)
-Message("Tool #" & CStr(toolNum) & ": Type=" & CStr(GetUserDRO(1801)) & " Dir=" & CStr(GetUserDRO(1802)) & " Diam=" & CStr(GetUserDRO(1804)))
-Sleep(150)
+' Show confirmation message (minimal in production mode)
+If DEBUG_MODE_MAP Then
+    Message("Tool " & CStr(toolNum) & " mapped to G-code variables")
+    Sleep(150)
+    Message("Tool #" & CStr(toolNum) & ": Type=" & CStr(GetUserDRO(1801)) & " Dir=" & CStr(GetUserDRO(1802)) & " Diam=" & CStr(GetUserDRO(1804)))
+    Sleep(150)
+Else
+    ' Brief message in production mode
+    Message("Tool #" & CStr(toolNum) & " mapped")
+    Sleep(50)
+End If
 
 ' Clear the passing DRO to avoid confusion in future tool changes
 SetUserDRO(1899, 0)  ' PASSING_TOOL_DRO = 1899
-Message("Passing DRO cleared")
-Sleep(50)
+
+If DEBUG_MODE_MAP Then
+    Message("Passing DRO cleared")
+    Sleep(50)
+End If
