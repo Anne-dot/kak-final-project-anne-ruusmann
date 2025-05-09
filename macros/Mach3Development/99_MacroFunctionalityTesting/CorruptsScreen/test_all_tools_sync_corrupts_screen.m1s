@@ -1,0 +1,15 @@
+' Test script for verifying SyncToolsToMach3Native.m1s
+' Syncs all tools from DRO system to Mach3 native tool table
+' IMPORTANT: This script tests syncing all tools, not just tool #2
+
+' Define constants needed for the sync script
+Const TOOL_DATA_START = 1000
+Const TOOLS_PER_BLOCK = 20
+Const MAX_TOOLS = 40
+
+' Import the sync script to test it
+#expand "C:\Mach3\macros\Mach3Development\02_HelperMacros\GeneralHelpers\SyncToolsToMach3Native.m1s"
+
+' Display completion message
+Message("Test complete: All tools synchronized")
+Sleep(500)

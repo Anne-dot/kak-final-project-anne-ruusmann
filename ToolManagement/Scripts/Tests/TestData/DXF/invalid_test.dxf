@@ -1,0 +1,13 @@
+This is not a valid DXF file.
+It's just a text file with a .dxf extension.
+It should trigger proper error handling in the parser.
+
+AC1027
+NOT A REAL DXF HEADER
+SECTION
+  0
+HEADER
+  0
+ENDSEC
+  0
+EOF

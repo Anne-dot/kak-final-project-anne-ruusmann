@@ -1,0 +1,19 @@
+' test_button_only.m1s
+' Purpose: Test if just pressing DoOEMButton breaks the screen
+' Only presses button, no tool operations
+
+' Single message at start
+Message("Testing DoOEMButton only...")
+Sleep(500)
+
+' Only press the button (no tool operations)
+On Error Resume Next
+DoOEMButton(42)  ' Save Settings button in Mach3
+If Err.Number <> 0 Then
+    Err.Clear
+End If
+Sleep(200)
+
+' Done
+Message("Button press complete")
+Sleep(500)

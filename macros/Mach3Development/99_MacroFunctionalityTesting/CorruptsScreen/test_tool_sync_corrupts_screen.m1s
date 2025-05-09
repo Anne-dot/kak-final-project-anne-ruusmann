@@ -1,0 +1,28 @@
+' test_tool_sync.m1s
+' Purpose: Minimal test for tool synchronization that avoids screen breakage
+' Status: Testing - MINIMAL VERSION
+
+' Setup essential constants from LoadToolData.m1s
+Const TOOL_DATA_START = 1000
+Const TOOLS_PER_BLOCK = 20
+Const MAX_TOOLS = 40
+
+' Test parameters
+Dim testToolNumber
+testToolNumber = 2  ' Just test a single tool to minimize operations
+
+' Initialize required variables for sync helper
+Dim toolCount, criticalErrorsExist
+toolCount = 1  ' At least one tool loaded (required by sync script)
+criticalErrorsExist = False  ' No critical errors
+
+' Single status message
+Message("Starting minimal tool sync test...")
+Sleep(500)  ' Longer sleep to ensure message is visible
+
+' Call the sync helper script
+#expand "C:\Mach3\macros\Mach3Development\02_HelperMacros\GeneralHelpers\SyncToolsToMach3Native.m1s"
+
+' Done - very simple completion message
+Message("Tool sync test complete")
+Sleep(500)  ' Longer sleep at the end

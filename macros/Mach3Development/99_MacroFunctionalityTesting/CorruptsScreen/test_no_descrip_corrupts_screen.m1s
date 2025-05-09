@@ -1,0 +1,51 @@
+' test_no_descrip.m1s
+' Purpose: Test if GetToolDesc specifically is causing issues
+' Does everything except calling GetToolDesc
+
+' Setup parameters
+Dim toolNum, dia, len
+
+' Single message at start
+Message("Testing without GetToolDesc...")
+Sleep(500)
+
+' Do everything except GetToolDesc
+toolNum = 2
+On Error Resume Next
+
+' Read parameters
+dia = GetToolParam(toolNum, 1)
+If Err.Number <> 0 Then
+    Err.Clear
+End If
+Sleep(200)
+
+len = GetToolParam(toolNum, 2)
+If Err.Number <> 0 Then
+    Err.Clear
+End If
+Sleep(200)
+
+' Write parameters
+SetToolParam toolNum, 1, dia
+If Err.Number <> 0 Then
+    Err.Clear
+End If
+Sleep(200)
+
+SetToolParam toolNum, 2, len
+If Err.Number <> 0 Then
+    Err.Clear
+End If
+Sleep(200)
+
+' Press button
+DoOEMButton(42)
+If Err.Number <> 0 Then
+    Err.Clear
+End If
+Sleep(200)
+
+' Done
+Message("Test without GetToolDesc complete")
+Sleep(500)

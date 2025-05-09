@@ -182,6 +182,10 @@ If GetOEMDRO(824) > 0 Then  ' Check if tool change was successful
     #expand "C:\Mach3\macros\Mach3Development\01_CustomMacros\LoadToolData.m1s"
     Sleep(200)
     
+    ' Synchronize DRO data to Mach3 native tool table
+    #expand "C:\Mach3\macros\Mach3Development\01_CustomMacros\SyncToolsToMach3Native.m1s"
+    Sleep(200)
+    
     ' Map DRO data to G-code variables
-    #expand "C:\Mach3\macros\Mach3Development\M1000.m1s"
+    #expand "C:\Mach3\macros\Mach3Development\02_HelperMacros\GeneralHelpers\MapActiveToolToCncVariables.m1s"
 End If
