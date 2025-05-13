@@ -74,6 +74,9 @@ class WorkpieceRotator:
             # Get position coordinates
             x, y, z = point['position']
             
+            # Store original position
+            point['original_position'] = (x, y, z)
+            
             # Rotate position coordinates
             new_x, new_y = self.rotate_coordinates_90(x, y)
             
@@ -83,6 +86,9 @@ class WorkpieceRotator:
             # If point has extrusion vector, rotate it too
             if 'extrusion_vector' in point:
                 ex, ey, ez = point['extrusion_vector']
+                
+                # Store original extrusion vector
+                point['original_extrusion_vector'] = (ex, ey, ez)
                 
                 # Rotate extrusion vector coordinates
                 new_ex, new_ey = self.rotate_coordinates_90(ex, ey)
@@ -342,6 +348,15 @@ if __name__ == "__main__":
               f"{result['rotated_dimensions']['height']}")
         print(f"Orientation: {result['orientation']}")
         
-        print("\nDrill Points:")
+        print("\nDrill Points (Original → Rotated):")
         for i, point in enumerate(test_data['drill_points']):
-            print(f"Point {i+1}: {point['position']}")
+            original = point.get('original_position', 'Unknown')
+            rotated = point['position']
+            print(f"Point {i+1}: {original} → {rotated}")
+            
+        print("\nExtrusion Vectors (Original → Rotated):")
+        for i, point in enumerate(test_data['drill_points']):
+            if 'extrusion_vector' in point:
+                original_vector = point.get('original_extrusion_vector', 'Unknown')
+                rotated_vector = point['extrusion_vector']
+                print(f"Vector {i+1}: {original_vector} → {rotated_vector}")
