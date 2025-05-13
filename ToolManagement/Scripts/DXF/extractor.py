@@ -434,7 +434,7 @@ class WorkpieceExtractor:
         Extract workpiece from POLYLINE entities in the modelspace.
         
         Specifically targets layers named 'PANEL_*' or 'OUTLINE_*' as identified
-        in the test DXF files.
+        in the test DXF files. Prioritizes 'OUTLINE_T*' layers for thickness info.
         
         Args:
             modelspace: The modelspace of the DXF document
@@ -443,23 +443,32 @@ class WorkpieceExtractor:
             dict or None: Workpiece data if found, None otherwise
         """
         # Look for all polylines
-        polylines = []
+        outline_t_polylines = []  # Priority: OUTLINE_T* layers
+        other_polylines = []      # Fallback: other workpiece layers
         
         # Try first for new-style LWPOLYLINE
         for entity in modelspace:
             if entity.dxftype() in ['LWPOLYLINE', 'POLYLINE']:
                 if hasattr(entity.dxf, 'layer'):
                     layer = entity.dxf.layer
-                    # Check if it's on a workpiece layer
-                    if 'PANEL_' in layer or 'OUTLINE_' in layer:
-                        polylines.append(entity)
+                    # Prioritize OUTLINE_T* layers over others
+                    if 'OUTLINE_T' in layer:
+                        outline_t_polylines.append(entity)
+                    # Other workpiece layers as fallback
+                    elif 'PANEL_' in layer or 'OUTLINE_' in layer:
+                        other_polylines.append(entity)
         
-        if not polylines:
+        # Prioritize OUTLINE_T* polylines if found
+        if outline_t_polylines:
+            workpiece_polyline = outline_t_polylines[0]
+            self.logger.info(f"Using prioritized OUTLINE_T* layer: {workpiece_polyline.dxf.layer}")
+        elif other_polylines:
+            workpiece_polyline = other_polylines[0]
+            self.logger.info(f"Using fallback layer: {workpiece_polyline.dxf.layer}")
+        else:
             self.logger.warning("No workpiece polylines found on PANEL_* or OUTLINE_* layers")
             return None
         
-        # Use the first workpiece polyline found (typically there's only one)
-        workpiece_polyline = polylines[0]
         layer = workpiece_polyline.dxf.layer
         
         # Extract corner points
