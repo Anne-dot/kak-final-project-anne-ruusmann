@@ -15,13 +15,18 @@ The ProcessingEngine is responsible for:
 ### Key Modules & Functions
 
 #### 1️⃣ `transformer.py`
-- **rotate_clockwise_90(x, y)**
-  - Simple 90° clockwise rotation: (x, y) → (y, -x)
-  - Used for both point coordinates and extrusion vectors
+- **Transformer** class
+  - Stateless coordinate transformation
+  - Derives orientation from point C position
 
-- **rotate_point_with_extrusion(point)**
+- **rotate_coordinates_90(x, y)**
+  - Simple 90° clockwise rotation: (x, y) → (y, -x)
+  - Used for corner points, drill points, and extrusion vectors
+
+- **rotate_point_90(point)**
   - Rotates both position and extrusion vector
   - Preserves all other point properties
+  - Uses rotate_coordinates_90 internally
 
 #### 2️⃣ `machine_positioner.py`
 - **position_for_top_left_machine(points, point_c)**
@@ -48,18 +53,28 @@ The ProcessingEngine is responsible for:
    }
    ```
 
-2. **Rotation** via `rotate_clockwise_90()` or multiple rotations
+2. **Rotation** via `Transformer.rotate_point_90()`
    ```
+   # Initialize transformer
+   transformer = Transformer()
+   
+   # Track corner point C (opposite to origin)
+   point_c = workpiece["corner_points"][2]  # Initially (600, 400, 0)
+   
    # Apply 90° clockwise rotation to all points
    for point in points:
-       x, y, z = point["position"]
-       ex, ey, ez = point["extrusion_vector"]
-
-       # Rotate position
-       point["position"] = (y, -x, z)
-
-       # Rotate extrusion
-       point["extrusion_vector"] = (ey, -ex, ez)
+       # Rotate the point (updates both position and extrusion)
+       transformer.rotate_point_90(point)
+   
+   # Rotate corner point C
+   point_c_x, point_c_y, point_c_z = point_c
+   point_c_rotated_x, point_c_rotated_y = transformer.rotate_coordinates_90(point_c_x, point_c_y)
+   point_c = (point_c_rotated_x, point_c_rotated_y, point_c_z)  # Now (400, -600, 0)
+   
+   # Update workpiece dimensions based on point C
+   # Width and height can be derived from point C's position
+   workpiece["machine_width"] = abs(point_c[0])   # 400
+   workpiece["machine_height"] = abs(point_c[1])  # 600
    ```
 
 3. **Machine Positioning** via `position_for_top_left_machine()`
@@ -112,9 +127,10 @@ The ProcessingEngine is responsible for:
 While keeping the simple function logic above, the MVP will use these OOP patterns:
 
 - **Transformer** class
-  - Encapsulates rotation logic
-  - Maintains stateless transformation operations
+  - Encapsulates rotation logic with ADHD-friendly organization
+  - Maintains stateless transformation operations (derives state from geometry)
   - Provides helper methods for coordinate manipulation
+  - Uses point C's position to determine orientation
 
 - **MachinePositioner** class
   - Handles positioning logic
