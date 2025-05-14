@@ -78,8 +78,8 @@ def print_json_summary(data: Dict, title: str = None) -> None:
         drill_points = data["drill_points"]
         print(f"\nDrill Points: {len(drill_points)} points")
         
-        # Print first 3 points (with more info if available)
-        for i, point in enumerate(drill_points[:3], 1):
+        # Print all points with full information
+        for i, point in enumerate(drill_points, 1):
             position = point.get("position", "N/A")
             diameter = point.get("diameter", "N/A")
             direction = point.get("extrusion_vector", point.get("direction", "N/A"))
@@ -101,9 +101,6 @@ def print_json_summary(data: Dict, title: str = None) -> None:
             # Print group key if available
             if "group_key" in point:
                 print(f"    Group Key: {point['group_key']}")
-        
-        if len(drill_points) > 3:
-            print(f"\n  ... and {len(drill_points) - 3} more points")
     
     # Check for grouped points
     if "grouped_points" in data:
