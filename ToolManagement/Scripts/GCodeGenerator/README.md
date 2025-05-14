@@ -13,31 +13,35 @@ The GCodeGenerator is responsible for:
 - Formatting G-code for Mach3 compatibility
 - Utilizing GCodeProcessor to add safety checks with safety variables and M150 calls
 
-## Initial Module Structure
+## Module Structure
 
-### `generator.py`
+### `tool_matcher.py` (Implemented)
+- Match drilling operations to appropriate tools based on diameter and direction
+- Find exact diameter matches for drilling tools from CSV
+- Select first matching tool for each drill operation
+- Map direction vectors (e.g., (1.0, 0.0, 0.0)) to machine-specific direction codes
+- Return complete tool information for G-code generation
+- Support horizontal drilling directions (X+, X-, Y+, Y-)
+
+### `machine_settings.py` (Implemented)
+- Manage machine-specific settings for G-code generation
+- Generate G-code headers and footers with appropriate comments
+- Support coordinate system selection based on workpiece dimensions
+- Format coordinates and apply machine conventions
+- Provide M-code references for specialized positioning operations
+- Support 1-decimal precision for woodworking operations
+
+### `drilling_operations.py` (Planned)
+- Generate G-code for horizontal drilling operations
+- Calculate appropriate approach, drilling, and retraction movements
+- Handle feed rates for different drilling phases
+- Coordinate with VBScript macros for specialized positioning
+
+### `generator.py` (Planned)
 - Orchestrate the G-code generation process
 - Apply machine-specific settings
 - Handle overall program structure
 - Integrate with GCodeProcessor for safety enhancements
-
-### `drilling_operations.py`
-- Generate G-code for different drilling operations
-- Support different drilling directions
-- Handle depth parameters and feed rates
-
-### `tool_matcher.py`
-- Match drilling operations to appropriate tools based on diameter and direction
-- Find exact diameter matches for drilling tools from CSV
-- Select first matching tool for each drill operation
-- Map direction vectors (e.g., (0,0,1)) to machine-specific direction codes
-- Return complete tool information for G-code generation
-- Support both vertical and horizontal drilling directions
-
-### `machine_settings.py`
-- Apply machine-specific G-code dialects
-- Configure default parameters
-- Handle machine-specific requirements
 
 ## Data Flow Example
 
@@ -45,9 +49,9 @@ Input from ProcessingEngine:
 ```python
 {
     "workpiece": {
-        "machine_width": 400.0,      # Width after processing
-        "machine_height": 600.0,     # Height after processing
-        "thickness": 18.0            # Material thickness
+        "width": 400.0,      # Width after processing
+        "height": 600.0,     # Height after processing
+        "thickness": 18.0    # Material thickness
     },
     "drill_points": [
         {
@@ -61,22 +65,29 @@ Input from ProcessingEngine:
 }
 ```
 
-Basic G-code Generation:
+Expected G-code Output (Horizontal Drilling):
 ```
-G21 (Set units to mm)
-G90 (Set absolute positioning)
-G00Z50.000 (Move to safe height)
-M03S1000 (Start spindle)
+N1 (Program name: workpiece_123.nc)
+N2 (Workpiece dimensions: 400.0 x 600.0 x 18.0 mm)
+N3 G21 (Set units to mm)
+N4 G90 (Set absolute positioning)
+N5 G17 (Set XY plane)
+N6 G94 (Set feed rate mode to units/min)
+N7 G56 (Use fixture offset 3 for workpiece height <= 600.0mm)
+N8 M00 (WORKPIECE 400.0x600.0x18.0mm - Confirm in G56 position)
 
-(8mm horizontal X+ drilling)
-T1M06 (Load 8mm bit)
-G00X85.300Y479.500Z5.000 (Rapid to position)
-G01X100.300F100 (Drill 15mm in X+ direction)
-G00X85.300 (Retract)
+N9 T1M6 (Load 8mm horizontal drill)
+N10 M03S1000 (Start spindle)
+N11 G00 X85.3 Y479.5 Z5.0 (Rapid to position)
+N12 M151 (Position Z for horizontal drilling)
+N13 G00 X75.3 (Approach position)
+N14 G01 X100.3 F120.0 (Drill 15mm in X+ direction)
+N15 G00 X75.3 (Retract)
 
-G00Z50.000 (Move to safe height)
-M09 (Coolant off)
-M30 (Program end)
+N16 M09 (Coolant off)
+N17 M05 (Spindle off)
+N18 T0 (Select tool 0 (no tool))
+N19 M30 (Program end)
 ```
 
 Safety-Enhanced Output (after GCodeProcessor processing):
@@ -111,20 +122,27 @@ M30 (Program end)
 ## MVP Focus
 
 For the initial implementation, the focus will be on:
-- Basic G-code generation for drilling operations
-- Support for different drilling directions (vertical, horizontal)
-- Simple tool selection and changes
-- Safety enhancements through GCodeProcessor including:
-  - Adding safety variables (#600-#603) before drilling movements
-  - Adding M150 calls for safety macro execution
-  - Proper movement type tracking (G00/G01)
-  - Tracking axis movements (X,Y,Z)
-- Proper commenting and formatting for Mach3
+- Basic G-code generation for horizontal drilling operations only
+- Support for 4 horizontal drilling directions (X+, X-, Y+, Y-)
+- Simple tool selection and changes via M6 macro
+- Machine-specific coordinate systems based on workpiece dimensions
+- User-friendly prompts for operator verification
+- Specialized positioning via M-code macros
+- Proper G-code formatting with line numbers and comments
+
+### Current Implementation Status
+- [DONE] Tool matching for horizontal drilling tools
+- [DONE] Machine settings management with coordinate system selection
+- [DONE] G-code header/footer generation with operator prompts
+- [TODO] Horizontal drilling operations generator
+- [TODO] M-code macros for specialized positioning
+- [TODO] Complete G-code generator
 
 ## Boundaries
 
 This package:
 - Generates G-code from scratch using ProcessingEngine data
-- Uses GCodeProcessor to add safety enhancements to generated code
-- Focuses on drilling operations specifically
+- Supports horizontal drilling operations only (no vertical drilling in MVP)
+- Requires specific M-code macros for specialized positioning
 - Targets Mach3 controller compatibility
+- Uses 1-decimal precision for woodworking operations
