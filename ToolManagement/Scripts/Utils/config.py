@@ -148,6 +148,27 @@ class GCodeConfig:
     DEFAULT_UNITS = "G21"  # millimeters
     DEFAULT_POSITIONING = "G90"  # absolute
     DEFAULT_FEEDRATE_MODE = "G94"  # units per minute
+    
+    # Feed rates for horizontal drilling operations (mm/min)
+    DRILLING_FEED_RATE = 120.0  # For kitchen cupboard materials with 8mm bit
+    RAPID_POSITIONING_FEED_RATE = 1000.0  # For G00 movements
+    RETRACTION_FEED_RATE = 300.0  # For pulling out after drilling
+    
+    # Safety parameters for drilling operations (mm)
+    SAFE_APPROACH_DISTANCE = 10.0  # Distance before workpiece to start drilling
+    SAFE_CLEARANCE_DISTANCE = 10.0  # Distance to retract after drilling
+    SAFE_Z_HEIGHT_MARGIN = 5.0  # Additional clearance above workpiece for safe Z height calculation
+    
+    # Machine-specific coordinate system thresholds
+    WORKPIECE_HEIGHT_THRESHOLD = 600.0  # Height threshold for coordinate system selection
+    COORDINATE_SYSTEM_LARGE = "G55"  # Coordinate system for workpiece height > threshold
+    COORDINATE_SYSTEM_SMALL = "G56"  # Coordinate system for workpiece height <= threshold
+    
+    # G-code formatting
+    DECIMAL_PRECISION = 3  # Number of decimal places for coordinates
+    COMMENT_STYLE = "parentheses"  # Use (comments) rather than ;comments
+    USE_LINE_NUMBERS = True  # Include line numbers (N1, N2, etc.)
+    LINE_NUMBER_INCREMENT = 1  # Increment between line numbers
 
 
 class ToolConfig:
