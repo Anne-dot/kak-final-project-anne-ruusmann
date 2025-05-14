@@ -6,4 +6,6 @@ of extracted DXF data to prepare it for G-code generation.
 """
 
 # Import key components to make them available at package level
-# These will be added as modules are implemented
+from .workpiece_rotator import WorkpieceRotator
+from .machine_positioner import MachinePositioner
+from .drill_point_grouper import DrillPointGrouper

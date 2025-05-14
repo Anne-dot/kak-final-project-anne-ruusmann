@@ -12,142 +12,70 @@ The ProcessingEngine is responsible for:
 
 ## MVP Components & Pipeline
 
-### Key Modules & Functions
+### Key Modules & Classes
 
-#### 1️⃣ `transformer.py`
-- **Transformer** class
+#### 1️⃣ `workpiece_rotator.py`
+- **WorkpieceRotator** class
+  - Handles rotation of workpieces and drilling points
   - Stateless coordinate transformation
   - Derives orientation from point C position
-
-- **rotate_coordinates_90(x, y)**
-  - Simple 90° clockwise rotation: (x, y) → (y, -x)
-  - Used for corner points, drill points, and extrusion vectors
-
-- **rotate_point_90(point)**
-  - Rotates both position and extrusion vector
-  - Preserves all other point properties
-  - Uses rotate_coordinates_90 internally
+  - Methods:
+    - `rotate_coordinates_90(x, y)` - Rotates a single coordinate pair
+    - `rotate_point_90(point)` - Rotates a drill point's position and extrusion vector
+    - `transform_drilling_data(data)` - Processes complete drilling data
 
 #### 2️⃣ `machine_positioner.py`
-- **position_for_top_left_machine(points, point_c)**
+- **MachinePositioner** class
   - Positions workpiece with top-left corner at machine origin
-  - Determines offset based on point C's quadrant:
-    - Q1 (x>0, y>0): offset (0, -y_c)
-    - Q2 (x<0, y>0): offset (-x_c, -y_c)
-    - Q3 (x<0, y<0): offset (-x_c, 0)
-    - Q4 (x>0, y<0): offset (0, 0)
+  - Calculates offsets based on point C's quadrant
+  - Stores original points alongside machine-positioned points
+  - Methods:
+    - `position_for_top_left_machine(data)` - Main positioning method
+    - `_determine_offset(x_c, y_c)` - Calculates offset based on quadrant rules:
+      - If x_c < 0: Apply -x_c offset in X direction
+      - If y_c > 0: Apply -y_c offset in Y direction
 
 #### 3️⃣ `drill_point_grouper.py`
-- **group_drilling_points(points)**
+- **DrillPointGrouper** class
   - Simple grouping by diameter and direction
   - Creates a dictionary with (diameter, direction) keys
   - Adds a group_key property to each point
+  - Methods:
+    - `group_drilling_points(data)` - Main grouping method
 
-### Data Flow
+### Pipeline Architecture
 
-1. **Input**: Data from DXF package
-   ```
-   {
-     "drill_points": [...],
-     "workpiece": {...}
-   }
-   ```
+The ProcessingEngine modules form a straightforward pipeline:
 
-2. **Rotation** via `Transformer.rotate_point_90()`
-   ```
-   # Initialize transformer
-   transformer = Transformer()
-   
-   # Track corner point C (opposite to origin)
-   point_c = workpiece["corner_points"][2]  # Initially (600, 400, 0)
-   
-   # Apply 90° clockwise rotation to all points
-   for point in points:
-       # Rotate the point (updates both position and extrusion)
-       transformer.rotate_point_90(point)
-   
-   # Rotate corner point C
-   point_c_x, point_c_y, point_c_z = point_c
-   point_c_rotated_x, point_c_rotated_y = transformer.rotate_coordinates_90(point_c_x, point_c_y)
-   point_c = (point_c_rotated_x, point_c_rotated_y, point_c_z)  # Now (400, -600, 0)
-   
-   # Update workpiece dimensions based on point C
-   # Width and height can be derived from point C's position
-   workpiece["machine_width"] = abs(point_c[0])   # 400
-   workpiece["machine_height"] = abs(point_c[1])  # 600
-   ```
-
-3. **Machine Positioning** via `position_for_top_left_machine()`
-   ```
-   # Get point C (opposite corner)
-   x_c, y_c = workpiece["corner_points"][2][:2]
-
-   # Determine offset based on quadrant
-   if x_c > 0 and y_c > 0:      # Q1
-       offset = (0, -y_c)
-   elif x_c < 0 and y_c > 0:    # Q2
-       offset = (-x_c, -y_c)
-   elif x_c < 0 and y_c < 0:    # Q3
-       offset = (-x_c, 0)
-   else:                        # Q4
-       offset = (0, 0)
-
-   # Apply offset to all points
-   for point in points:
-       x, y, z = point["position"]
-       point["machine_position"] = (x + offset[0], y + offset[1], z)
-   ```
-
-4. **Grouping** via `group_drilling_points()`
-   ```
-   # Group by diameter and direction
-   groups = {}
-
-   for point in points:
-       key = (point["diameter"], point["extrusion_vector"])
-
-       if key not in groups:
-           groups[key] = []
-
-       groups[key].append(point)
-       point["group_key"] = key
-   ```
-
+1. **Input**: Data from DXF package with visual coordinates
+2. **Rotation** (optional): Apply rotation via `WorkpieceRotator`
+3. **Positioning**: Apply machine offsets via `MachinePositioner`
+4. **Grouping**: Group drill points via `DrillPointGrouper`
 5. **Output**: Processed data ready for GCodeGenerator
-   ```
-   {
-     "workpiece": {...},
-     "drill_points": [...],  # With machine_position and group_key added
-     "grouped_points": {...}  # Points organized by diameter and direction
-   }
-   ```
 
-### OOP Implementation
+### Key Design Decisions
 
-While keeping the simple function logic above, the MVP will use these OOP patterns:
+1. **Modular, Stateless Design**
+   - All modules operate independently without internal state
+   - Modules can be used individually or in a pipeline
+   - All modules follow the same interface pattern with `(success, message, data)` return values
 
-- **Transformer** class
-  - Encapsulates rotation logic with ADHD-friendly organization
-  - Maintains stateless transformation operations (derives state from geometry)
-  - Provides helper methods for coordinate manipulation
-  - Uses point C's position to determine orientation
+2. **Consistent Data Flow**
+   - All data passes through each module in the same structure
+   - Each module enriches the data without destroying previous information
+   - Original coordinates preserved alongside transformed coordinates
 
-- **MachinePositioner** class
-  - Handles positioning logic
-  - Calculates offsets based on workpiece orientation
-  - Transforms all corner points consistently
+3. **Strict Validation**
+   - All modules perform strict validation of inputs
+   - Missing required data causes immediate failure with clear messages
+   - No skipping of invalid points - fails fast to prevent incorrect machining
 
-- **DrillPointGrouper** class
-  - Manages grouping operations
-  - Creates standardized group keys
-  - Maintains group metadata
+4. **ADHD-Friendly Implementation**
+   - Simple, focused methods with clear visual separation
+   - Methods kept under 50 lines for readability
+   - Descriptive naming indicating purpose
 
-- **ProcessEngine** class
-  - Orchestrates the complete process
-  - Validates input and output data
-  - Provides a clean public API
-
-## Data Flow Example
+### Data Flow Example
 
 Input from DXF package:
 ```python
@@ -165,7 +93,6 @@ Input from DXF package:
     },
     "drill_points": [
         {
-            "type": "drill_point",
             "position": (120.5, 85.3, 0.0),      # Visual coordinates
             "diameter": 8.0,                     # Drill bit diameter
             "depth": 15.0,                       # Drilling depth
@@ -184,37 +111,38 @@ Output to GCode package:
         "width": 600.0,           # Original width (mm)
         "height": 400.0,          # Original height (mm)
         "thickness": 18.0,        # Thickness (mm)
-        "machine_width": 400.0,   # Width after rotation (mm)
-        "machine_height": 600.0,  # Height after rotation (mm)
+        "width_after_rotation": 400.0,   # Width after rotation (mm)
+        "height_after_rotation": 600.0,  # Height after rotation (mm)
         "corner_points": [        # Original corner coordinates
             (0, 0, 0),            # Origin point
-            (600, 0, 0),          # Width edge
-            (600, 400, 0),        # Point C
-            (0, 400, 0)           # Height edge
+            (0, 400, 0),          # Rotated width edge
+            (600, 400, 0),        # Point C (opposite corner)
+            (600, 0, 0)           # Height edge
         ],
         "machine_corner_points": [ # Transformed corner coordinates
             (0, 0, 0),             # Machine origin point
-            (0, 600, 0),           # Rotated width edge
-            (400, 600, 0),         # Rotated point C
-            (400, 0, 0)            # Rotated height edge
-        ]
+            (0, 400, 0),           # Corner point
+            (600, 400, 0),         # Corner point
+            (600, 0, 0)            # Corner point
+        ],
+        "machine_offset": (0, 0)   # Applied offset
     },
     "drill_points": [
         {
-            "type": "drill_point",
-            "position": (120.5, 85.3, 0.0),      # Original visual coordinates
-            "machine_position": (85.3, 479.5, 0.0), # Machine coordinates
-            "diameter": 8.0,                     # Drill bit diameter
-            "depth": 15.0,                       # Drilling depth
-            "extrusion_vector": (1.0, 0.0, 0.0), # Rotated direction of drilling
-            "layer": "DRILL",                    # Layer from DXF
-            "group_key": (8.0, (1.0, 0.0, 0.0))  # Grouping identifier
+            "position": (120.5, 85.3, 0.0),       # Original visual coordinates
+            "original_position": (120.5, 85.3, 0.0), # Original position after rotation
+            "machine_position": (120.5, 85.3, 0.0),  # Machine coordinates
+            "diameter": 8.0,                      # Drill bit diameter
+            "depth": 15.0,                        # Drilling depth
+            "extrusion_vector": (0.0, 0.0, 1.0),  # Direction of drilling
+            "layer": "DRILL",                     # Layer from DXF
+            "group_key": (8.0, (0.0, 0.0, 1.0))   # Grouping identifier
         }
         # ... more points
     ],
     "grouped_points": {
-        (8.0, (1.0, 0.0, 0.0)): [  # Group by (diameter, extrusion_vector)
-            # Points with 8mm diameter and X+ direction
+        (8.0, (0.0, 0.0, 1.0)): [  # Group by (diameter, extrusion_vector)
+            # Points with 8mm diameter and Z+ direction
         ],
         # ... more groups
     }
@@ -227,6 +155,7 @@ This package:
 - Only handles coordinate transformations, not G-code generation
 - Takes data from the DXF package and prepares it for the GCode package
 - Focuses on drilling operations for CNC machining
+- Supports only rectangular workpieces in the MVP
 
 ## Future Enhancements (Post-MVP)
 
@@ -234,3 +163,4 @@ This package:
 - Advanced pattern recognition for drilling operations
 - Safety validation for machine constraints
 - Support for different machine configurations
+- Support for non-rectangular workpieces
