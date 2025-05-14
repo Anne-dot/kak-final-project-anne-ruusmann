@@ -20,6 +20,7 @@ Classes:
 
 import os
 import platform
+import sys
 from enum import Enum
 from pathlib import Path
 from typing import Dict, List, Optional, Union, Any
@@ -46,12 +47,24 @@ class PathConfig:
     TOOL_DATA_FILENAME = "tool-data.csv"
     TOOL_DATA_BACKUP_FILENAME = "tool-data.csv.bak"
     
-    # Default paths
+    # Default paths based on script location
     if platform.system() == "Windows":
         DEFAULT_MACH3_ROOT = Path("C:/Mach3")
     else:
-        # For Linux/Mac, use a relative path from current directory
-        DEFAULT_MACH3_ROOT = Path(os.getcwd()).parent.parent
+        # Use script location to determine Mach3 root directory
+        # Start with current file's directory (Utils)
+        current_dir = Path(__file__).resolve().parent
+        
+        # If in Utils directory, go up to Scripts then to Mach3 root
+        if current_dir.name.lower() == 'utils':
+            scripts_dir = current_dir.parent
+            if scripts_dir.name.lower() == 'scripts':
+                DEFAULT_MACH3_ROOT = scripts_dir.parent.parent
+            else:
+                DEFAULT_MACH3_ROOT = scripts_dir.parent
+        else:
+            # Fallback to parent of parent
+            DEFAULT_MACH3_ROOT = current_dir.parent.parent
     
     @classmethod
     def get_tool_management_dir(cls) -> Path:
@@ -137,6 +150,32 @@ class GCodeConfig:
     DEFAULT_FEEDRATE_MODE = "G94"  # units per minute
 
 
+class ToolConfig:
+    """Configuration for tool management and matching."""
+    
+    # Tool types
+    TOOL_TYPE_MILL = "Mill"
+    TOOL_TYPE_SAW = "Saw"
+    TOOL_TYPE_VERTICAL_DRILL = "VerticalDrill"
+    TOOL_TYPE_HORIZONTAL_DRILL = "HorizontalDrill"
+    
+    # Tool direction codes from CSV
+    DIRECTION_LEFT_TO_RIGHT = 1  # X+ (Left to Right)
+    DIRECTION_RIGHT_TO_LEFT = 2  # X- (Right to Left)
+    DIRECTION_FRONT_TO_BACK = 3  # Y+ (Front to Back)
+    DIRECTION_BACK_TO_FRONT = 4  # Y- (Back to Front)
+    DIRECTION_VERTICAL = 5       # Z+ (Vertical, Top to Bottom)
+    
+    # Direction vector to tool_direction code mapping
+    DIRECTION_VECTOR_MAPPING = {
+        (1.0, 0.0, 0.0): DIRECTION_LEFT_TO_RIGHT,   # X+
+        (-1.0, 0.0, 0.0): DIRECTION_RIGHT_TO_LEFT,  # X-
+        (0.0, 1.0, 0.0): DIRECTION_FRONT_TO_BACK,   # Y+
+        (0.0, -1.0, 0.0): DIRECTION_BACK_TO_FRONT,  # Y-
+        (0.0, 0.0, 1.0): DIRECTION_VERTICAL         # Z+
+    }
+
+
 class UIConfig:
     """Configuration for user interface elements."""
     
@@ -173,6 +212,7 @@ class AppConfig:
     limits = LimitConfig
     file_patterns = FilePatternConfig
     gcode = GCodeConfig
+    tool = ToolConfig
     ui = UIConfig
     logging = LoggingConfig
     

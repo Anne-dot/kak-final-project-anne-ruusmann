@@ -26,10 +26,13 @@ The GCodeGenerator is responsible for:
 - Support different drilling directions
 - Handle depth parameters and feed rates
 
-### `tool_management.py`
-- Select appropriate tools for operations
-- Generate tool change commands
-- Track tool usage and positions
+### `tool_matcher.py`
+- Match drilling operations to appropriate tools based on diameter and direction
+- Find exact diameter matches for drilling tools from CSV
+- Select first matching tool for each drill operation
+- Map direction vectors (e.g., (0,0,1)) to machine-specific direction codes
+- Return complete tool information for G-code generation
+- Support both vertical and horizontal drilling directions
 
 ### `machine_settings.py`
 - Apply machine-specific G-code dialects
