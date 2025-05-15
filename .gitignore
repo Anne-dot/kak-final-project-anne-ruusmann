@@ -1,18 +1,43 @@
+# Development Environment
 DevelopmentEnvironment/logs
 DevelopmentEnvironment/sync-tests
 DevelopmentEnvironment/test_logs
 DevelopmentEnvironment/windows-sync
 
+# Tool Management
 ToolManagement/Backups/ToolData
-
 ToolManagement/Logs
-
 ToolManagement/Scripts/Logs
+C:\Mach3\ToolManagement\logs
 
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Backup files
+*.bak
+*~
+*.swp
+*.swo
+
+# Windows specific files
+*:Zone.Identifier:$DATA
+*:Zone.Identifier
+
+# Logs and error files
+*.log
 LastErrors.txt
 
+# Local settings
 **/.claude/settings.local.json
+
+# Documentation
 atlassian-docs/
 scientific-articles
 
-C:\Mach3\ToolManagement\logs
+# Cache files
+.page_cache.json
+
+# Miscellaneous
+.xml
