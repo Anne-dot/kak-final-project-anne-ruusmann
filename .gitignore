@@ -5,7 +5,10 @@ DevelopmentEnvironment/
 ToolManagement/Backups/ToolData
 ToolManagement/Logs
 ToolManagement/Scripts/Logs
-C:\Mach3\ToolManagement\
+C:\\Mach3\\ToolManagement\\
+"C:\\Mach3\\ToolManagement\\Logs/"
+"ToolManagement/Scripts/C:\\Mach3\\ToolManagement\\Logs/"
+"ToolManagement/Scripts/Tests/C:\\Mach3\\ToolManagement\\Logs/"
 
 # Python bytecode and cache
 __pycache__/
@@ -38,3 +41,4 @@ scientific-articles
 
 # Miscellaneous
 .xml
+cleanup_script.sh
