@@ -1,14 +1,11 @@
 # Development Environment
-DevelopmentEnvironment/logs
-DevelopmentEnvironment/sync-tests
-DevelopmentEnvironment/test_logs
-DevelopmentEnvironment/windows-sync
+DevelopmentEnvironment/
 
 # Tool Management
 ToolManagement/Backups/ToolData
 ToolManagement/Logs
 ToolManagement/Scripts/Logs
-C:\Mach3\ToolManagement\logs
+C:\Mach3\ToolManagement\
 
 # Python bytecode and cache
 __pycache__/
