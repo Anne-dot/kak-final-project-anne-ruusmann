@@ -9,6 +9,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run manual test: `python3 ToolManagement/Scripts/Tests/ManualTests/test_file_name.py`
 - Install dependencies: `pip3 install -r ToolManagement/Scripts/requirements.txt`
 
+## Project Documentation
+
+### Jira Tasks and Confluence Documentation
+- Jira tasks are stored in `atlassian-docs/jira_tasks/` folder
+- Confluence documentation is stored in `atlassian-docs/confluence_all/` folder
+- Epic MRFP-80 "DXF to G-code Generation" contains the main development tasks
+- Use these files to understand current task status and requirements
+- Tasks are organized by epics with individual task files containing detailed requirements
+
 ## Code Style Guidelines
 
 ### Python

@@ -32,8 +32,6 @@ from Utils.error_utils import ErrorHandler, BaseError, ErrorCategory, ErrorSever
 from Utils.file_utils import FileUtils
 from Utils.path_utils import PathUtils
 
-# Import the normalizer
-from GCode.gcode_normalizer import GCodeNormalizer
 
 # Import file errors
 from Utils.error_utils import FileError
@@ -397,39 +395,9 @@ def main():
         input_path_obj = Path(input_file)
         output_file = str(input_path_obj.with_stem(f"{input_path_obj.stem}_safe").with_suffix(input_path_obj.suffix))
     
-    # Step 1: Normalize the G-code file (unless skipped)
-    if not args.skip_normalize:
-        print(f"Step 1: Normalizing {input_file}...")
-        normalizer = GCodeNormalizer()
-        
-        # Create temporary file for normalized output
-        normalized_file = str(Path(input_file).with_stem(f"{Path(input_file).stem}_normalized").with_suffix(Path(input_file).suffix))
-        
-        norm_success, norm_message, norm_details = normalizer.normalize_file(input_file, normalized_file)
-        
-        if not norm_success:
-            print(f"Error in normalization step: {norm_message}")
-            print("Proceeding with original file for safety preprocessing.")
-            file_for_safety = input_file
-        else:
-            print(f"Normalization successful:")
-            print(f"- G-codes normalized: {norm_details.get('g_codes_normalized', 0)}")
-            print(f"- Redundant coordinates removed: {norm_details.get('coordinates_removed', 0)}")
-            print(f"- Explicit G-commands added: {norm_details.get('g01_commands_added', 0)}")
-            print(f"- Normalized file: {normalized_file}")
-            file_for_safety = normalized_file
-            
-            # Add note about parametric G-code limitation
-            logger.info("⚠️ Note: Parametric G-code using variables (e.g., X#100) is not supported in the "
-                        "current implementation of normalization and safety checks. These codes are "
-                        "left unmodified. See future task \"Variable-aware G-code Normalization\" for "
-                        "planned enhancements.")
-    else:
-        print("Normalization step skipped.")
-        file_for_safety = input_file
+    file_for_safety = input_file
     
-    # Step 2: Add safety checks
-    print(f"\nStep 2: Adding safety checks to {os.path.basename(file_for_safety)}...")
+    print(f"Adding safety checks to {os.path.basename(file_for_safety)}...")
     preprocessor = GCodePreprocessor()
     safety_success, safety_message, safety_details = preprocessor.preprocess_file(file_for_safety, output_file)
     

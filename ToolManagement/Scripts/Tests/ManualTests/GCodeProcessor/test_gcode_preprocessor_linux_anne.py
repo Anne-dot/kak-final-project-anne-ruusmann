@@ -2,12 +2,16 @@ import os
 import sys
 import re
 import time
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from GCode.preprocessor import GCodePreprocessor
-from GCode.gcode_normalizer import GCodeNormalizer
+from pathlib import Path
 
-# Set up paths
-test_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "TestData")
+scripts_dir = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(scripts_dir))
+
+from GCodeProcessor.preprocessor import GCodePreprocessor
+from GCodeProcessor.gcode_normalizer import GCodeNormalizer
+
+# Set up paths  
+test_data_dir = Path(__file__).parent.parent.parent / "TestData"
 gcode_file_path = os.path.join(test_data_dir, "Gcode", "001.txt")
 
 # File selection logic

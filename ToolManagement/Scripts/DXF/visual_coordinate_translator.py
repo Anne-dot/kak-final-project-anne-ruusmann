@@ -248,6 +248,24 @@ class VisualCoordinateTranslator:
             return (x == 0.0 and abs(y) == 1.0 and z == 0.0)
         except (ValueError, TypeError, AttributeError):
             return False
+
+    def _is_z_direction_drilling(self, direction) -> bool:
+        """
+        Check if direction vector indicates Z-direction drilling (vertical).
+
+        Args:
+            direction: Direction vector (x, y, z)
+
+        Returns:
+            bool: True if Z-direction drilling
+        """
+        try:
+            x, y, z = direction
+            # Check if this is a Z-direction vector with exact equality
+            return (x == 0.0 and y == 0.0 and abs(z) == 1.0)
+        except (ValueError, TypeError, AttributeError):
+            return False
+
     
     def _translate_x_direction(
         self, 
@@ -272,7 +290,7 @@ class VisualCoordinateTranslator:
         
         # Apply X-direction translation formulas
         translated_x = round(abs(original_z), 1)
-        translated_y = round(workpiece_height - abs(original_x), 1)
+        translated_y = round(abs(original_x), 1)
         translated_z = round(workpiece_thickness + original_y, 1)
         
         # Create translated point
@@ -314,61 +332,5 @@ class VisualCoordinateTranslator:
         translated_point["original_position"] = original_coords
         
         return translated_point
+    
 
-
-# Example usage if run directly
-if __name__ == "__main__":
-    # Sample data for testing
-    workpiece_data = {
-        "width": 545.5,
-        "height": 555.0,
-        "thickness": 22.5,
-        "corner_points": [(0,0,0), (545.5,0,0), (545.5,555.0,0), (0,555.0,0)]
-    }
-    
-    # Mix of X and Y direction drilling points
-    drill_points_data = [
-        # X-direction
-        {
-            "position": (542.0, -9.5, 0.0),
-            "diameter": 8.0,
-            "depth": 21.5,
-            "direction": (1.0, 0.0, 0.0),
-            "layer": "EDGE.DRILL_D8.0_P21.5"
-        },
-        {
-            "position": (-542.0, -9.5, -555.0),
-            "diameter": 8.0,
-            "depth": 21.5,
-            "direction": (-1.0, 0.0, 0.0),
-            "layer": "EDGE.DRILL_D8.0_P21.5"
-        },
-        # Y-direction
-        {
-            "position": (-517.5, -9.5, 0.0),
-            "diameter": 8.0,
-            "depth": 21.5,
-            "direction": (0.0, 1.0, 0.0),
-            "layer": "EDGE.DRILL_D8.0_P21.5"
-        },
-        {
-            "position": (517.5, -9.5, -555.0),
-            "diameter": 8.0,
-            "depth": 21.5,
-            "direction": (0.0, -1.0, 0.0),
-            "layer": "EDGE.DRILL_D8.0_P21.5"
-        }
-    ]
-    
-    # Translate the points
-    translator = VisualCoordinateTranslator()
-    success, message, result = translator.translate_coordinates(drill_points_data, workpiece_data)
-    
-    # Print results
-    print(f"Translation result: {message}")
-    if success:
-        for i, point in enumerate(result["drill_points"]):
-            orig = point["original_position"]
-            new = point["position"]
-            direction = point["direction"]
-            print(f"Point {i+1}: {orig} → {new} direction {direction}")

@@ -68,7 +68,7 @@ def print_direction_vector_diagnostics(drill_points: List[Dict]) -> None:
     print("\nDirection Vector Diagnostics:")
     print("-" * 50)
     print("{:<4} {:<15} {:<20} {:<40}".format(
-        "#", "Direction", "Type", "Is Horizontal?"
+        "#", "Direction", "Type", "Drilling Type"
     ))
     print("-" * 80)
 
@@ -76,9 +76,10 @@ def print_direction_vector_diagnostics(drill_points: List[Dict]) -> None:
         direction = point.get("direction", None)
         direction_type = type(direction).__name__
 
-        # Check if it's a horizontal drilling vector
+        # Check drilling direction
         is_x_direction = False
         is_y_direction = False
+        is_z_direction = False
 
         # Extract vector components for analysis
         try:
@@ -89,42 +90,129 @@ def print_direction_vector_diagnostics(drill_points: List[Dict]) -> None:
 
             is_x_direction = (abs(x) == 1.0 and y == 0.0 and z == 0.0)
             is_y_direction = (x == 0.0 and abs(y) == 1.0 and z == 0.0)
+            is_z_direction = (x == 0.0 and y == 0.0 and abs(z) == 1.0)
         except (TypeError, ValueError) as e:
             print(f"  Error unpacking direction: {str(e)}")
 
         if is_x_direction:
-            horizontal_str = "Yes (X-direction)"
+            drilling_str = "X-direction (horizontal)"
         elif is_y_direction:
-            horizontal_str = "Yes (Y-direction)"
+            drilling_str = "Y-direction (horizontal)"
+        elif is_z_direction:
+            drilling_str = "Z-direction (vertical)"
         else:
-            horizontal_str = "No"
+            drilling_str = "Unsupported"
 
         print("{:<4} {:<15} {:<20} {:<40}".format(
-            i, str(direction), direction_type, horizontal_str
+            i, str(direction), direction_type, drilling_str
         ))
 
     print("-" * 80)
 
 
 def print_translated_points_table(original_points: List[Dict], translated_points: List[Dict]) -> None:
-    """Print a formatted comparison table of original and translated points."""
-    # Print header
+    """Print unified table showing all original points with their translation status."""
+    
+    # Create a mapping of translated points by their original position
+    translated_map = {}
+    if translated_points:
+        # Map translated points back to originals by matching position
+        translated_originals = []
+        for orig_point in original_points:
+            direction = orig_point.get("direction", (0, 0, 0))
+            try:
+                x, y, z = direction
+                is_x_direction = (abs(x) == 1.0 and y == 0.0 and z == 0.0)
+                is_y_direction = (x == 0.0 and abs(y) == 1.0 and z == 0.0)
+                
+                if is_x_direction or is_y_direction:
+                    translated_originals.append(orig_point)
+            except (ValueError, TypeError):
+                pass
+        
+        # Map by index position
+        for i, trans_point in enumerate(translated_points):
+            if i < len(translated_originals):
+                orig_pos = translated_originals[i].get("position", (0, 0, 0))
+                translated_map[orig_pos] = trans_point.get("position", (0, 0, 0))
+    
+    print("\nCoordinate Translation Results:")
     print("{:<4} {:<30} {:<30} {:<15}".format(
         "#", "Original Position", "Translated Position", "Direction"
     ))
     print("-" * 85)
     
-    # Print each point pair
-    for i, (orig, trans) in enumerate(zip(original_points, translated_points), 1):
-        orig_pos = orig.get("position", (0, 0, 0))
-        trans_pos = trans.get("position", (0, 0, 0))
-        direction = orig.get("direction", (0, 0, 0))
+    for i, point in enumerate(original_points, 1):
+        orig_pos = point.get("position", (0, 0, 0))
+        direction = point.get("direction", (0, 0, 0))
         
         orig_pos_str = "({:.2f}, {:.2f}, {:.2f})".format(*orig_pos)
-        trans_pos_str = "({:.2f}, {:.2f}, {:.2f})".format(*trans_pos)
+        
+        # Check if this point was translated
+        if orig_pos in translated_map:
+            trans_pos = translated_map[orig_pos]
+            trans_pos_str = "({:.2f}, {:.2f}, {:.2f})".format(*trans_pos)
+        else:
+            trans_pos_str = "SKIPPED"
         
         print("{:<4} {:<30} {:<30} {:<15}".format(
             i, orig_pos_str, trans_pos_str, str(direction)
+        ))
+    
+    print("-" * 85)
+
+
+def verify_z_direction_translations(original_points: List[Dict], translated_points: List[Dict], workpiece: Dict) -> None:
+    """Verify Z-direction translation formula: x'=width-x, y'=y, z'=thickness."""
+    # Filter for Z-direction points
+    z_original = []
+    z_translated = []
+    
+    for orig, trans in zip(original_points, translated_points):
+        direction = orig.get("direction", (0, 0, 0))
+        if direction in [(0.0, 0.0, 1.0), (0.0, 0.0, -1.0)]:
+            z_original.append(orig)
+            z_translated.append(trans)
+    
+    if not z_original:
+        print("\nNo Z-direction points found for formula verification.")
+        return
+    
+    print(f"\nZ-Direction Translation Formula Verification ({len(z_original)} points):")
+    print("Formula: x' = width - x, y' = y, z' = thickness")
+    print("{:<4} {:<25} {:<25} {:<15} {:<6}".format(
+        "#", "Original (x,y,z)", "Translated (x,y,z)", "Expected", "Status"
+    ))
+    print("-" * 85)
+    
+    workpiece_width = workpiece.get('width', 0)
+    workpiece_thickness = workpiece.get('thickness', 0)
+    
+    for i, (orig, trans) in enumerate(zip(z_original, z_translated), 1):
+        orig_pos = orig.get("position", (0, 0, 0))
+        trans_pos = trans.get("position", (0, 0, 0))
+        
+        # Calculate expected translation
+        orig_x, orig_y, orig_z = orig_pos
+        expected_x = workpiece_width - orig_x
+        expected_y = orig_y
+        expected_z = workpiece_thickness
+        
+        trans_x, trans_y, trans_z = trans_pos
+        
+        # Check if translation is correct (within 0.1mm tolerance)
+        x_correct = abs(trans_x - expected_x) < 0.1
+        y_correct = abs(trans_y - expected_y) < 0.1
+        z_correct = abs(trans_z - expected_z) < 0.1
+        all_correct = x_correct and y_correct and z_correct
+        
+        orig_str = "({:.1f}, {:.1f}, {:.1f})".format(*orig_pos)
+        trans_str = "({:.1f}, {:.1f}, {:.1f})".format(*trans_pos)
+        expected_str = "({:.1f}, {:.1f}, {:.1f})".format(expected_x, expected_y, expected_z)
+        status = "OK" if all_correct else "FAIL"
+        
+        print("{:<4} {:<25} {:<25} {:<15} {:<6}".format(
+            i, orig_str, trans_str, expected_str, status
         ))
     
     print("-" * 85)
@@ -202,19 +290,8 @@ def select_file() -> str:
     dxf_files = [f for f in os.listdir(test_data_dir) if f.endswith('.dxf')]
     dxf_files.sort()
     
-    # Valid files for testing horizontal drilling
-    valid_test_files = [
-        "Bottom_2_f0.dxf",
-        "Back_5_f0.dxf",
-        "Left Side_3_f1.dxf",
-        "Right Side_4_f0.dxf",
-        "complex_case.dxf"
-    ]
-    
-    # Filter to valid test files if they exist
-    test_files = [f for f in dxf_files if f in valid_test_files]
-    if not test_files:
-        test_files = dxf_files
+    # Show all available DXF files
+    test_files = dxf_files
     
     # Print selection menu
     print("\nAvailable DXF test files:")

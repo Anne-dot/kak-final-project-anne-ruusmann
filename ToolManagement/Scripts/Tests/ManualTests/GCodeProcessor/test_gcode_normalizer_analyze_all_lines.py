@@ -8,10 +8,12 @@ with sample G-code files and view the changes made by each normalization step.
 
 import os
 import sys
-# Add the Scripts directory to the path (parent of GCode)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-# Import from GCode module
-from GCode.gcode_normalizer import GCodeNormalizer
+from pathlib import Path
+
+scripts_dir = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(scripts_dir))
+
+from GCodeProcessor.gcode_normalizer import GCodeNormalizer
 import re
 
 
@@ -298,26 +300,31 @@ if __name__ == "__main__":
         gcode_file = sys.argv[1]
     else:
         # Look for G-code files in the correct test data directory
-        test_data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "TestData", "Gcode")
-        if not os.path.exists(test_data_dir):
+        test_data_dir = Path(__file__).parent.parent.parent / "TestData" / "Gcode"
+        if not test_data_dir.exists():
             print(f"Test data directory not found: {test_data_dir}")
-            test_data_dir = os.path.dirname(__file__)  # Fallback to current directory
+            test_data_dir = Path(__file__).parent
         else:
             print(f"Found test data directory: {test_data_dir}")
             
         gcode_files = []
-        for root, dirs, files in os.walk(test_data_dir):
-            for file in files:
-                if file.endswith('.txt') or file.endswith('.nc') or file.endswith('.gcode'):
-                    if "001" in file:  # Prioritize the files we've seen in your examples
-                        gcode_files.insert(0, os.path.join(root, file))
-                    else:
-                        gcode_files.append(os.path.join(root, file))
+        for file_path in test_data_dir.glob("*.txt"):
+            if not any(suffix in file_path.name for suffix in ["_normalized", "_safe", "_test"]):
+                if "001" in file_path.name:
+                    gcode_files.insert(0, str(file_path))
+                else:
+                    gcode_files.append(str(file_path))
+        
+        # Also check for .nc and .gcode files
+        for ext in ["*.nc", "*.gcode"]:
+            for file_path in test_data_dir.glob(ext):
+                if not any(suffix in file_path.name for suffix in ["_normalized", "_safe", "_test"]):
+                    gcode_files.append(str(file_path))
             
         if gcode_files:
             print("Available G-code files:")
             for i, file in enumerate(gcode_files):
-                print(f"{i+1}. {os.path.basename(file)} ({file})")
+                print(f"{i+1}. {os.path.basename(file)}")
             
             choice = input("Enter file number to test (or press Enter for first file): ")
             if choice and choice.isdigit() and 1 <= int(choice) <= len(gcode_files):

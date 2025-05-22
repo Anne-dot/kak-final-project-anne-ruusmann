@@ -1,9 +1,18 @@
 """
-GCodeProcessor package for processing existing G-code files.
+GCodeProcessor package for processing and enhancing existing G-code.
 
-This package handles processing, validating, and enhancing G-code
-from various sources (Vectric, manual) to ensure safety and proper formatting.
+This package contains modules for normalizing G-code format and adding
+safety checks to movement commands.
+
+Modules:
+- gcode_normalizer: Standardizes G-code format and removes redundant coordinates  
+- preprocessor: Adds safety checks and variable assignments to G-code movements
 """
 
-# Import key components to make them available at package level
-# These will be added as modules are implemented
+from .gcode_normalizer import GCodeNormalizer
+from .preprocessor import GCodePreprocessor
+
+__all__ = [
+    'GCodeNormalizer',
+    'GCodePreprocessor'
+]
