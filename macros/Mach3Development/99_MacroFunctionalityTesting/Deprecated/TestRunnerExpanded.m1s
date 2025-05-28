@@ -1,0 +1,1265 @@
+' TestRunnerExpanded.m1s - Complete test runner using #expand with modified test files
+' Purpose: Automated test runner for Mach3 VBScript functionality testing
+' Created: 2025-05-24
+' Status: Production
+' Note: All test files have been modified with suffixed variables to avoid conflicts
+
+' Configuration
+Const START_TEST = 1
+Const TEST_DELAY = 1000  ' Reduced from 5000ms to speed up testing
+Const MESSAGE_DELAY = 100
+Const ERROR_DELAY = 150
+
+' Test runner variables
+Dim testNumber, executedCount, skippedCount, failedCount
+testNumber = 0
+executedCount = 0
+skippedCount = 0
+failedCount = 0
+
+Message("INFO: Test Runner starting expanded test execution...")
+Sleep(MESSAGE_DELAY)
+Message("INFO: Starting from test " & START_TEST & " of 53")
+Sleep(MESSAGE_DELAY)
+
+' TEST 1: test_01_dim_variable
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_01_dim_variable.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_01_dim_variable"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 1 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 2: test_02_multiple_dim
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_02_multiple_dim.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_02_multiple_dim"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 2 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 3: test_03_constants
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_03_constants.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_03_constants"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 3 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 4: test_04_variant_type
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_04_variant_type.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_04_variant_type"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 4 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 5: test_05_if_then
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_05_if_then.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_05_if_then"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 5 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 6: test_06_select_case
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_06_select_case.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_06_select_case"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 6 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 7: test_07_for_next
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_07_for_next.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_07_for_next"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 7 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 8: test_08_while_wend
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_08_while_wend.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_08_while_wend"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 8 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 9: test_09_do_loop
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_09_do_loop.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_09_do_loop"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 9 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 10: test_10_exit_for
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_10_exit_for.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_10_exit_for"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 10 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 11: test_11_string_len
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_11_string_len.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_11_string_len"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 11 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 12: test_12_string_left_right
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_12_string_left_right.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_12_string_left_right"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 12 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 13: test_13_string_mid
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_13_string_mid.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_13_string_mid"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 13 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 14: test_14_string_instr
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_14_string_instr.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_14_string_instr"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 14 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 15: test_15_string_replace
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_15_string_replace.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_15_string_replace"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 15 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 16: test_16_array_static
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_16_array_static.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_16_array_static"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 16 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 17: test_17_array_redim
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_17_array_redim.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_17_array_redim"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 17 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 18: test_18_split_function
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_18_split_function.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_18_split_function"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 18 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 19: test_19_error_handling
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_19_error_handling.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_19_error_handling"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 19 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 20: test_20_user_function
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_20_user_function.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    ' SKIPPED: This test contains Function definition syntax that causes parse errors
+    Message("WARNING: TEST 20 SKIPPED - Contains syntax errors (Function keyword)")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: This test validates that user-defined functions don't work in Mach3")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: Run manually to see syntax error")
+    Sleep(MESSAGE_DELAY)
+    
+    skippedCount = skippedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 21: test_21_user_sub
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_21_user_sub.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    ' SKIPPED: This test contains Sub definition syntax that causes parse errors
+    Message("WARNING: TEST 21 SKIPPED - Contains syntax errors (Sub keyword)")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: This test validates that user-defined subs don't work in Mach3")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: Run manually to see syntax error")
+    Sleep(MESSAGE_DELAY)
+    
+    skippedCount = skippedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 22: test_22_exit_sub
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_22_exit_sub.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    ' SKIPPED: Exit Sub exits the entire macro when expanded
+    Message("WARNING: TEST 22 SKIPPED - Exit Sub would terminate test runner")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: This test validates Exit Sub statement")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: Run manually to see it exit the macro")
+    Sleep(MESSAGE_DELAY)
+    
+    skippedCount = skippedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 23: test_23_create_object
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_23_create_object.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_23_create_object"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 23 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 24: test_24_set_keyword
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_24_set_keyword.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_24_set_keyword"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 24 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 25: test_25_file_exists
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_25_file_exists.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_25_file_exists"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 25 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 26: test_26_create_text_file
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_26_create_text_file.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_26_create_text_file"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 26 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 27: test_27_getmainfolder
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_27_getmainfolder.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_27_getmainfolder"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 27 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 28: test_28_open_text_file
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_28_open_text_file.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_28_open_text_file"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 28 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 29: test_29_read_all
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_29_read_all.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_29_read_all"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 29 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 30: test_30_atendofstream
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_30_atendofstream.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    ' SKIPPED: Temporarily skipping to debug test runner issues
+    Message("WARNING: TEST 30 SKIPPED - Debugging test runner")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: This test validates AtEndOfStream property")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: Run manually if needed")
+    Sleep(MESSAGE_DELAY)
+    
+    skippedCount = skippedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 31: test_31_append_file
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_31_append_file.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_31_append_file"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 31 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 32: test_32_folder_exists
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_32_folder_exists.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_32_folder_exists"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 32 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 33: test_33_math_functions
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_33_math_functions.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_33_math_functions"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 33 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 34: test_34_type_checking
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_34_type_checking.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_34_type_checking"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 34 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 35: test_35_type_conversion
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_35_type_conversion.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_35_type_conversion"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 35 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 36: test_36_timer_function
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_36_timer_function.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_36_timer_function"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 36 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 37: test_37_settimer_gettimer
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_37_settimer_gettimer.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_37_settimer_gettimer"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 37 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 38: test_38_msgbox
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_38_msgbox.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    ' SKIPPED: MsgBox creates popup dialogs requiring user interaction
+    Message("WARNING: TEST 38 SKIPPED - MsgBox creates blocking popups")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: This test validates MsgBox dialog function")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: Run manually to interact with dialog boxes")
+    Sleep(MESSAGE_DELAY)
+    
+    skippedCount = skippedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 39: test_39_expand_directive
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_39_expand_directive.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_39_expand_directive"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 39 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 40: test_40_getoemdro
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_40_getoemdro.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_40_getoemdro"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 40 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 41: test_41_setuserdro
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_41_setuserdro.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_41_setuserdro"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 41 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 42: test_42_code_function
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_42_code_function.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_42_code_function"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 42 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 43: test_43_ismoving
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_43_ismoving.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_43_ismoving"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 43 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 44: test_44_sleep_after_message
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_44_sleep_after_message.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_44_sleep_after_message"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 44 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 45: test_code_gcode
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_code_gcode.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_code_gcode"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 45 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 46: test_getcurrenttool
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_getcurrenttool.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_getcurrenttool"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 46 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 47: test_gettoolparam
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_gettoolparam.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_gettoolparam"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 47 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 48: test_message_display
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_message_display.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_message_display"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 48 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 49: test_setcurrenttool
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_setcurrenttool.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_setcurrenttool"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 49 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 50: test_settoolparam
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_settoolparam.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "InitialTests\test_settoolparam"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 50 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 51: check_dro
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: check_dro.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "check_dro"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 51 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 52: test_settoolparam
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_settoolparam.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "test_settoolparam"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 52 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' TEST 53: test_update_mach2_native_tool_table
+testNumber = testNumber + 1
+If testNumber >= START_TEST Then
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    Message("INFO: TEST " & testNumber & "/53: test_update_mach2_native_tool_table.m1s")
+    Sleep(MESSAGE_DELAY)
+    Message("==========================================")
+    Sleep(MESSAGE_DELAY)
+    
+    On Error Resume Next
+    Err.Clear
+    #expand "test_update_mach2_native_tool_table"
+    If Err.Number <> 0 Then
+        Message("ERROR: TEST 53 - " & Err.Description)
+        Sleep(ERROR_DELAY)
+        Err.Clear
+        failedCount = failedCount + 1
+    End If
+    executedCount = executedCount + 1
+    Sleep(TEST_DELAY)
+End If
+
+' Summary
+Message("==========================================")
+Sleep(MESSAGE_DELAY)
+Message("SUCCESS: Test Runner execution complete!")
+Sleep(MESSAGE_DELAY)
+Message("==========================================")
+Sleep(MESSAGE_DELAY)
+
+Message("INFO: Tests executed: " & executedCount)
+Sleep(MESSAGE_DELAY)
+Message("INFO: Tests failed: " & failedCount)
+Sleep(MESSAGE_DELAY)
+Message("INFO: Tests skipped: " & skippedCount)
+Sleep(MESSAGE_DELAY)
+
+' Calculate success rate using Round() which is listed as working
+If executedCount > 0 Then
+    Dim successRate
+    successRate = Round(((executedCount - failedCount) / executedCount) * 100, 2)
+    Message("INFO: Success rate: " & successRate & "%")
+    Sleep(MESSAGE_DELAY)
+End If
+
+Message("==========================================")
+Sleep(MESSAGE_DELAY)
+Message("INFO: To resume: Set START_TEST = " & (testNumber + 1))
+Sleep(MESSAGE_DELAY)

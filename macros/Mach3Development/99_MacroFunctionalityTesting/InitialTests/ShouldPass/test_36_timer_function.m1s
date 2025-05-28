@@ -1,0 +1,18 @@
+' Filename: test_36_timer_function.m1s
+' Purpose: Test Timer() function
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Timer function
+Dim startTime_36, endTime_36, elapsed_36
+
+startTime_36 = Timer()
+Sleep(100)  ' Wait 100ms
+endTime_36 = Timer()
+
+elapsed_36 = endTime_36 - startTime_36
+
+Message("TEST 36 PASSED: Timer works")
+Sleep(100)
+Message("Elapsed time: " & Round(elapsed_36, 2) & " seconds")
+Sleep(100)

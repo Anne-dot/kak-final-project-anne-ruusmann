@@ -1,0 +1,39 @@
+' Filename: test_30_atendofstream.m1s
+' Purpose: Test AtEndOfStream property
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test AtEndOfStream
+On Error Resume Next
+Dim fso_30, mainFolder_30, testFile_30, file_30, lineCount_30
+Set fso_30 = CreateObject("Scripting.FileSystemObject")
+
+mainFolder_30 = GetMainFolder()
+testFile_30 = mainFolder_30 & "test_stream.txt"
+
+' Create test file
+Set file_30 = fso_30.CreateTextFile(testFile_30, True)
+file_30.WriteLine("Line 1")
+file_30.WriteLine("Line 2")
+file_30.Close
+
+' Test AtEndOfStream
+Set file_30 = fso_30.OpenTextFile(testFile_30, 1)
+lineCount_30 = 0
+
+While Not file_30.AtEndOfStream
+    file_30.ReadLine()
+    lineCount_30 = lineCount_30 + 1
+Wend
+file_30.Close
+
+If Err.Number <> 0 Then
+    Message("TEST 30 FAILED: AtEndOfStream error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 30 PASSED: Read " & lineCount_30 & " lines")
+    Sleep(100)
+    ' Clean up
+    fso_30.DeleteFile(testFile_30)
+End If

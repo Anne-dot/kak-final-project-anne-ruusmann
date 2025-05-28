@@ -1,0 +1,33 @@
+' Filename: test_20_user_function.m1s
+' Purpose: Test user-defined function (compile-time error)
+' Expected: Should FAIL in Mach3 - script stops at Function line
+' Created: 2025-03-05
+
+' EXPECTED BEHAVIOR:
+' - Only the first message will appear
+' - Script stops at Function declaration (line 19)
+' - This is a COMPILE-TIME error that cannot be caught
+
+' CONFIRMED RESULT (from testing):
+' - First message appears: "TEST 20: Testing user-defined functions..."
+' - Script then SILENTLY FAILS at the Function line
+' - No error message is displayed
+' - On Error Resume Next cannot catch this error
+' - This is the worst type of error - silent failure with no debugging info
+
+Message("TEST 20: Testing user-defined functions (compile-time error)")
+Sleep(100)
+
+' The following line causes immediate script termination
+' Function declarations are not supported in Mach3
+Function AddNumbers(a_20, b_20)
+    AddNumbers = a_20 + b_20
+End Function
+
+' This code will NEVER execute
+Message("TEST 20: This message should NEVER appear")
+Sleep(100)
+
+' LESSON: Function declarations cause silent crashes in Mach3.
+' Never use Function or Sub declarations in Mach3 VBScript macros.
+

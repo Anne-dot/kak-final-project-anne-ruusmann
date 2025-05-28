@@ -1,0 +1,1046 @@
+PRAKTIKAPÄEVIKU KOONDVORM
+
+Õppija: Anne Ruusmann (48604080320)
+Õpperühm: TA-23
+
+Ettevõte:
+Praktika koht:
+Ettevõtte juhendaja(d):
+Õppeasutuse juhendaja:
+Praktika algus:
+Praktika lõpp:
+
+Praktika moodul
+
+Õppekava: TA-23 Noorem tarkvaraarendaja
+Õppevorm: statsionaarne - koolipõhine õpe
+
+Osaühing Kasesalu (10596815)
+Saare maakond, Saaremaa vald, Pihtla küla, Kasesalu
+Andres Käsper, andres@kasesalu.ee, 5155567
+Krista Rang
+10.02.2025
+30.05.2025
+
+Teema
+
+M12. Praktika - Põhiõpingud (TA-23) Praktika II
+M12. Praktika - Põhiõpingud (TA-23) Praktikaülesanded ja -aruanded II
+
+PRAKTIKA KAVA
+• Praktika tarkvaraarenduse meeskonnas
+• Praktika sooritamine ettenähtud mahus
+• Praktikapäeviku täitmine
+• Ettevõttepoolne hinnang praktikandile
+• Praktikandi eneseanalüüs
+• Praktika tarkvaraarenduse meeskonnas
+• Praktika sooritamine ettenähtud mahus
+• Praktikapäeviku täitmine
+• Ettevõttepoolne hinnang praktikandile
+• Praktikandi eneseanalüüs
+
+Maht
+EKAP
+25.70
+0.30
+
+Maht
+astron
+tundides
+668
+8
+
+PRAKTIKAPÄEVIKU SISSEKANDED
+Praktika
+kp
+
+Sisu
+
+Maht
+Ettevõtte juhendaja
+astron
+kommentaar
+tundides
+
+Esimesel praktiklapäeval
+toimus kohtumine
+praktikaettevõtte omanikuga.
+Vestlesime CNC-tööpingi
+moderniseerimise projekti
+üldistest eesmärkidest ning
+esmatasandi probleemidest.
+Peamine fookus kujunes välja
+horisontaalpuurimise
+võimekuse lisamisel süsteemi.
+Tegime esiaglgse kokkuleppe,
+et lõputöö projekt võiks
+keskenduda just sellele
+teemale ning ajastada
+hilisematesse nädalatesse, kui
+oleme olemasoleva
+süsteemiga piirangute ja
+10.02.2025
+10:00
+võimalustega paremini
+tuttavaks saanud. Järgmistel
+päevadel tuleb põhjalikumalt
+uurida olemasolevat
+süsteemi, et hinnata tegelikke
+võimalusi ja piiranguid. (2h)
+Ülejäänud päev kulus
+olemasoleva CNC seadme ja
+Mach3 süsteemiga
+põhjalikumaks tutvumiseks.
+Tegin esmased märkmed
+süsteemi ülesehitusest,
+tööriistadest ja nende
+paigutusest. Sain aru, et
+horisontuulpuurimise
+võimekuse lisamine vajab
+põhjalikumat analüüsi. (8h)
+
+Õppeasutuse juhendaja
+kommentaar
+
+Teisipäeval toimuvad
+iganädalased ülevaatlikud
+koosolkud, kus arutame
+avastusi, progressi ja edasisi
+plaane ja eesmärke. Täna
+toimus esimene 1-tunnine
+koosolek omaniku ja
+praktikajuhendajaga, kus
+arutasime eelmise päeva
+tähelepanekuid CNC seadme
+kohta. Kinnitasime
+horisontaalpuurimise
+võimekuse lisamise projekti
+põhieesmärgiks ning
+leppisime kokku järgmiste
+päevade põhjalikus
+11.02.2025
+10:00
+uurimisprotsessis. (1h)
+Jätkasin CNC seadme ja
+Mach3 süsteemi detailsemat
+uurimist. Keskendusin
+peamiselt süsteemi
+tööriistade ja nende
+parameetrite kaardistamisele.
+Analüüsisin olemasolevate
+tööriistade tüüpe, nende
+geomeetriat ning praegust
+andmehalduse mehhanismi.
+Märkisin üles kitsaskohad
+praeguses andmete haldamise
+süsteemis ning võimalikud
+parenduskohad. (9h)
+
+Otsisin Mach3 ametlikult
+kodulehelt (https://www.
+machsupport.com/helplearning/product-manuals/)
+dokumentatsiooni ja leidsin
+järgmised juhendid ja
+abimaterjalid:
+Mach3 GCode Online
+Referencev v1.02.pdf
+Mach3Mill_1.84.pdf
+12.02.2025 Mach3Mill_Install_Config.pdf 2:00
+Mach3_CVSettings_v2.pdf
+Mach3_V3.
+x_Macro_Prog_Ref.pdf
+Mach3 V3.x Programmer
+Reference Draft v0.11a.pdf
+Laadsin dokumendid alla ja
+lõin neile projekti kausta.
+Põgusalt sirvides sain esmase
+ülevaate dokumentide sisust
+ja struktuurist.
+Pika koolipäeva järel olin
+väsinud, kuid otsustasin siiski
+võtta ette ühe Mach3
+dokumendi ja jätkata
+põhjalikumat tutvumist
+olemasoleva
+dokumentatsiooniga.
+Võtsin ette Mach3 V3.x
+Programmer Reference Draft
+v0.11a dokumenti.
+Eesmärgiks oli saada
+13.02.2025
+2:00
+algteadmised makro
+programmeerimise
+põhimõtetest VBScriptis ning
+mõista Mach3 spetsiifilisi
+käsklusi ja funktsionaalsusi.
+Alustasin sellest, et süvenesin
+dokumentatsiooni, märkides
+üles võtmeteemad ja
+tähtsamad funktsioonid, mis
+arvasin, et võivad olla
+olulised horisontaalpuurimise
+projekti jaoks.
+
+Jätkasin Mach3 V3.x Macro
+Programmer Reference
+dokumentatsiooni uurimist.
+Uurisin põhjalikult makrosid,
+mis on seotud tööriistade
+haldamise ja liikumise
+juhtimisega:
+Tuvastatud funktsioonid:
+GetToolParam() - tööriista
+parameetrite lugemine
+14.02.2025 SetToolParam() - tööriista
+2:30
+parameetrite määramine
+GetCurrentTool() - praeguse
+tööriista numbri saamine
+SetCurrentTool() - tööriista
+numbri määramine
+Code() - G-koodi käskude
+täitmine otse makrost
+Message() - teadete kuvamine
+kasutajaliideses
+Tegin märkmeid võimalike
+makro lahenduste jaoks
+tööriistavahetusel ja -haldusel.
+Lõpetasin Mach3 V3.x Macro
+Programmer Reference
+dokumendi läbilugemise. Sain
+aru, et funktsioonide
+testimiseks on vaja Mach3
+15.02.2025 demo versiooni.
+3:00
+Mach3 jookseb Windows
+platvormil ja mul on Linux.
+Järgmisel korral on vaja leida
+lahendus arenduskeskkonnale.
+
+Uurisin ja kaalusin erinevaid
+lahendusi arenduskeskkonna
+jaoks ning otsustasin
+VirtualBoxi kasuks.
+Installimine ja seadistamine
+võttis päris kaua aega.
+Sammud:
+Laadsin alla VirtualBoxi
+ametliku versiooni Linuxi
+jaoks
+Installeerisin VirtualBoxi
+põhipaketid
+Installeerimisel esines
+sõltuvuste konflikte, mis
+vajas täiendavat tõrkeotsingut
+Tegin mitu süsteemi
+taaskäivitust erinevate
+konfiguratsioonide testimiseks
+16.02.2025 Installeerisin VirtualBoxi
+6:00
+laienduspaketid
+Seadisasin virtualiseerimise
+toed BIOS-is
+Lõin uue virtuaalmasina
+Windowsi jaoks
+Laadsin alla Windowsi ISOfaili
+Installeerisin Windowsi
+virtuaalmasinasse
+Installeerisin Mach3 demo
+versiooni aadressilt
+https://www.machsupport.
+com/software/mach3/
+Kogu protsess võttis terve
+päeva ning nõudis mitmeid
+süsteemi taaskäivitusi ja
+tõrkeotsinguid.
+
+Plaanis oli testida, kuid
+mõistsin, et mul on vaja paika
+panna koodimise põhimõtted
+ja parimad praktikad, et minu
+makrode (kaasa arvatud
+testmakrode) struktuur oleks
+17.02.2025 ühtne, selge ja ülevaatlik.
+6:00
+Alustasin Mach3 VBScript
+Macro Development Guide
+koostamisega, millest
+edaspidi lähtuda ja mida
+edaspidise töö käigus edasi
+arendada.
+Pärast esimeste testmakrode
+kirjutamist sain aru, et vajan
+põhjalikumat VBScript keele
+oskust. Kuigi olin eelnevalt
+uurinud Mach3 makro
+programmeerimise
+dokumentatsiooni, tundsin
+vajadust omandada VBScript
+süntaks ja
+põhikonstruktsioonid.
+Otsisin tasuta materjale
+õppimiseks ja tegin endale
+õpiplaani olulisemate
+teemade läbimiseks. Tegin
+endale vbscripti õppimise
+juhendi
+Eesmärk on saavutada piisav
+VBScript oskus, et kirjutada
+ja muuta testmakrosid
+iseseisvalt.
+Paralleelselt õppimisega
+plaanin hakata kirjutama
+väikeseid harjutusmakrosid,
+et testida õpitut praktikas
+Mach3 keskkonnas.
+Täna alustasin https://www.
+tutorialspoint.com/vbscript
+/index.htm lehelt, et mõista,
+mis on VBScript. VSCode'is
+seadsin üles VBScripti
+keskkonna.
+
+18.02.2025 Läbisin õppematerjalid:
+https://www.tutorialspoint.
+com/vbscript
+/vbscript_variables.htm
+https://www.tutorialspoint.
+com/vbscript
+/vbscript_constants.htm
+Õppisin:
+Muutujate deklareerimist
+Dim käsuga
+VBScripti Variant-tüüpi
+Abimaterjalid:
+MsgBox süntaks:
+https://www.w3schools.com
+/asp
+/asp_ref_vbscript_functions.
+asp
+Lisainfo: https://www.
+geeksforgeeks.org/vbscriptintroduction/
+Lõin esimese "Tere, maailm!"
+skripti, testimisel kasutasin
+erinevaid muutujatüüpe.
+Testisin Dim käsku Mach3
+keskkonnas ja sain syntax
+errori, mille märkisin üles
+Mach3 piirangute nimekirja.
+Funktsioonide kasutamine
+vajab täiendavat uurimist.
+
+10:00
+
+Täna õppisin stringide
+kasutamist ja hulkasid (array).
+Läbisin õppematerjalid:
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_strings.htm
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_arrays.htm
+Õppisin:
+- Stringifunktsioonid: Len,
+Left, Right, Mid, InStr, Trim,
+UCase, LCase
+- Staatilised ja dünaamilised
+massiivid (ReDim, ReDim
+Preserve)
+- UBound() funktsiooni
+kasutamine
+20.02.2025
+
+Abimaterjalid:
+- Funktsioonide süntaks:
+https://www.w3schools.com
+/asp
+/asp_ref_vbscript_functions.
+asp
+- Praktiline arrayde
+kasutamine: https://www.
+guru99.com/vbscripttutorials-for-beginners.html
+Lõin enda Replace() ja Split()
+funktsioonide alternatiivid,
+kuna Mach3 ei toeta neid .
+Mach3 piirangud: avastatud ja
+dokumenteeritud - Replace(),
+Split(), Join(), Filter() ja
+InStrRev() funktsioonid ei
+tööta
+
+8:00
+
+Täna uurisin protseduure ja
+veahaldust.
+Läbisin õppematerjalid:
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_procedures.htm
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_error_handling.htm
+Õppisin:
+- Sub vs Function süntaks
+standardses VBScriptis
+- On Error Resume Next,
+On Error GoTo 0
+- Err objekt: Number,
+Description, Clear, Source
+Abimaterjalid:
+21.02.2025 - Praktilised veahalduse
+näited: https://www.
+softwaretestinghelp.com
+/vbscript-tutorial-1/
+Uurisin ja harjutasin
+töökindla veahalduse
+mustreid CNC
+operatsioonide jaoks.
+Mach3 kriitiline piirang: Userdefined Functions ja
+Subroutines ei ole toetatud!
+Kõik kood peab olema
+lineaarne. See selgitab ka
+eelnevate päevade avastusi ilma funktsioonideta ei saa
+kasutada paljusid
+standardseid VBScript
+võimalusi.
+
+8:00
+
+Täna alustasin objektide ja
+failisüsteemi õppimist.
+Läbisin õppematerjalid:
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_object_oriented.
+htm (esimene pool)
+- FileSystemObject põhitõed
+
+22.02.2025
+
+Õppisin:
+- CreateObject("Scripting.
+FileSystemObject")
+kasutamine
+- Set võtmesõna kasutamine
+objektidega
+- Failide olemasolu
+kontrollimine (FileExists)
+- Teksti failide loomine
+(CreateTextFile)
+Abimaterjalid:
+- FSO näited: https://www.
+w3schools.com/asp
+/asp_ref_vbscript_functions.
+asp
+Harjutasin lihtsamate failide
+loomist ja olemasolu
+kontrollimist. Testisin Set
+käsku ja objektide loomist
+Mach3 keskkonnas.
+Mach3 spetsiifilised avastused:
+- GetMainFolder() on
+kriitiline kõigi failiteedede
+jaoks
+- Suhtelised failiteed ei tööta
+usaldusväärselt
+
+4:00
+
+Täna jätkasin failihalduse
+süvendatud õppimist.
+Läbisin õppematerjalid:
+- FileSystemObject
+täiendavad funktsioonid
+- CSV failide töötlemine
+
+23.02.2025
+
+Õppisin:
+- OpenTextFile
+avamisrežiimid (lugemine,
+kirjutamine, lisamine)
+- WriteLine, ReadLine,
+ReadAll meetodid
+- AtEndOfStream omadus
+- CreateFolder kaustade
+loomiseks
+- Failide sulgemine (Close
+meetod)
+Abimaterjalid:
+- Failihalduse näited:
+https://www.guru99.com
+/vbscript-tutorials-forbeginners.html
+Harjutasin CSV failide
+lugemist rida-realt ja
+logifailide kirjutamist.
+Mach3 spetsiifilised avastused:
+- For Each...In folder.Files ei
+tööta
+- FolderExists() on
+ebausaldusväärne
+- Failid tuleb alati sulgeda
+pärast kasutamist
+
+4:00
+
+Täna läbisin süstemaatiliselt
+kõik sisseehitatud
+funktsioonid.
+Läbisin õppematerjalid:
+- https://www.w3schools.
+com/asp
+/asp_ref_vbscript_functions.
+asp (täielik reference)
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_dialog_boxes.htm
+Õppisin:
+- Matemaatilised
+funktsioonid: Abs, Round,
+Int, Sqr, Exp, Log
+- Tüübikontroll: IsNumeric,
+IsNull, IsEmpty
+- Teisendused: CInt, CDbl,
+CLng, CStr
+24.02.2025 - Kuupäevafunktsioonid:
+Now, Date, Time, Timer,
+DateDiff
+- Dialog funktsioonid:
+MsgBox, InputBox
+Abimaterjalid:
+- Kasutaja interaktsiooni
+mustrid: https://www.
+softwaretestinghelp.com
+/vbscript-tutorial-1/
+Mach3 spetsiifilised avastused:
+- SetTimer() ja GetTimer() ei
+tööta (91-93% viga!)
+- Kasutada tuleb native
+Timer() funktsiooni timeout
+mustrite jaoks
+- KRIITILINE: Message()
+vajab ALATI Sleep() käsku
+järel, muidu kaob teade!
+Täna ühendasin kõik õpitu
+Mach3 spetsiifilisteks
+makrodeks.
+Läbisin õppematerjalid:
+- https://www.tutorialspoint.
+
+8:00
+
+com/vbscript
+/vbscript_events.htm
+- Enda koostatud Mach3
+piirangute nimekiri
+Õppisin:
+- #expand direktiivi
+kasutamine (peab olema
+lowercase, vajab absoluutset
+hardcoded path!)
+- Mach3 funktsioonid:
+GetOEMDRO,
+SetUserDRO, Code,
+GetToolParam,
+SetToolParam
+- DRO numbrite süsteem
+(800-802 XYZ positsioonid,
+1000+ tool data)
+- Subroutine-style käskude
+kutsumine ilma sulgudeta
+Abimaterjalid:
+25.02.2025 - Kõik eelnevad ressursid
+reference'ina
+- Mach3 dokumentatsioon
+Kokkuvõte Mach3
+piirangutest:
+- Lineaarne kood (ei
+funktsioone, ei subroutine)
+- Piiratud string funktsioonid
+(pole Replace, Split, Join,
+Filter, InStrRev)
+- Spetsiifilised timer
+funktsioonid ei tööta
+- Mitte-ASCII märgid ei
+tööta (kasutada "PASSED",
+"FAILED", "WARNING")
+- Message() vajab Sleep() järel
+- #expand vajab hardcoded
+path
+Lõpetasin õppimisnädala
+arusaamaga, et Mach3
+VBScriptil on palju
+piiranguid. Mul on nimekiri
+avastatud piirangutest
+
+8:00
+
+(märkmetes). Olen valmis
+kirjutama lihtsaid
+testmakrosid.
+Erinevate tööriistatüüpide
+analüüsimine ja
+dokumenteerimine. Nendeks
+on vertikaalsed puurid,
+horisontaalsed puurid, saag ja
+26.02.2025
+freesid. Kõigil on omad
+piirangud ja eripärad, millega
+peab programmerimisel
+arvestama, et masina ohutus
+oleks tagatud.
+Analüüs ja dokumentatsioon.
+Andmehalduse csv
+andmebaasi struktuuri ja
+väljade analüüs kõikide
+27.02.2025 tööriista tüüpide
+dokumentide põhjal.
+VBScripti võimaluste ja
+piirangute testimine ja
+dokumenteerimine.
+VBScripti built-in
+funktsioonide testimine ja
+dokumenteerimine.
+Puuduvatele funktsioonidele
+alternatiivide otsimine, nt
+replace, join, filter. ClaudeAI
+uue programmeerimiseks
+28.02.2025 sobiliku versiooni kasutamine
+testimise ja dokumentatsiooni
+uuendamise jaoks abilisena.
+Jätkamiseks: lõputöö projekti
+spetsiifiliste funktsioonide
+kontrollimine ja eri
+keskondade vahelise koostöö
+esmased testid.
+VBScripti built-in
+funktsioonide testimine ja
+01.03.2025
+dokumentatsiooni
+uuendamine.
+
+7:00
+
+8:00
+
+8:00
+
+4:00
+
+Leidsin googeldades ühe
+Mach3 Programmer Manuali
+ja testisin selle käskluste
+toimivust ja täiendasin selle
+põhjal oma
+02.03.2025
+4:00
+dokumentatsiooni. Esialgsel
+hinnangul saab sellele
+manuaalile toetuda, sest
+paljud testid andsid positiivse
+tulemuse
+Jätkasin manuaali testimist ja
+jõudsin sellega lõpuni. Lisasin
+tulemused oma
+dokumentatsiooni.
+Uurisin eelmisel korral välja
+tulnud failitee probleeme ja
+leidsin selle jaoks toimiva
+alternatiivi. Testisin
+põhjalikult array
+funktsionaalsust. Kirjeldasin
+ära failide lugemise ja
+kirjutamise makro
+põhiparameetrid.
+Keskendusin just csv-faili
+lugemisele, kuna plaanin selle
+peale üles ehitada uue
+tööriista andmete haldamise
+03.03.2025
+8:00
+süsteemi, mille integreerin
+mach3.
+Täpsemalt keskendusid CSVfailiga seotud andmetöötluse
+võimalustele, uurides
+erinevaid meetodeid failiteede
+lahendamiseks ning array
+kasutamise võimalustele
+andmete käsitlemisel.
+Eesmärk on luua
+usaldusväärne ja paindlik
+lahendus tööriista andmete
+haldamiseks, mis võimaldaks
+lihtsat andmete lugemist ja
+kirjutamist ning hilisemat
+integreerimist Mach3
+keskkonda.
+
+Töötasin tööriistade andmete
+haldamise süsteemi kallal.
+Analüüsisin erinevaid
+võimalusi tööriistade
+andmete CSV failist
+laadimiseks.
+Lähenemisviisid, mida
+kaalusin on:
+1. Kõikide tööriistade andete
+salvestamine DROdele andmed laaditakse
+programmi alglaadimise
+hetkel ning neid saab
+kasutada kogu programmi
+vältel.
+2. G-koodi programmiline
+ülevaatus enne käivitamist.
+3. Tööriista andmete
+laadimine tööriista vahetuse
+04.03.2025
+4:00
+hetkel. Toimub iga
+tööriistavahetuse korral.
+Lõpuks otsustasin kasutada
+hübriidlahendust, kus kõik
+andmed laaditakse
+alglaadimise ajal, kuid on
+olemas mehhanism nende
+uuendamiseks tööriista
+vahetusel. Kirjeldasin selle
+lahenduse ära ning plaanisin,
+kuidas süsteemi täiendada
+nõnda, et vähendada
+andmete aegumist ja andmete
+värskendamise vajadust.
+Samuti määrasin, kuidas neid
+andmeid DRO-des salvestada
+ja andmete terviklikkust
+tagada.
+
+Testisin Mach3_V3.
+x_Macro_Prog_Ref.txt
+dokumenti
+Alustasin järgmiste
+dokumentide koostamist:
+* Mach3 VBScript Error
+Handling Guide.md,,
+05.03.2025
+* Mach VBScript
+Compatibility.md ja
+* Mach3 VBScript Macro
+Development Guide.md .
+
+10:00
+
+Lisasin sinna varasemad
+märkmed ja testimise käigus
+selgunu.
+Jätkasin Mach3_V3.
+x_Macro_Prog_Ref testimist.
+Leidsin internetist Mach3 V3.
+x Programmer Reference
+06.03.2025 Draft v0.11a dokumendi.
+10:00
+Alustasin selle testimisega.
+
+07.03.2025
+
+Täiendasin jooksvalt oma
+juhendmaterjale uute
+avastustega.
+Testisin Mach3 V3.x
+Programmer Reference Draft
+v0.11a dokumenti
+Jätkasin oma juhendite
+täiendamist.
+
+10:00
+
+Läbisin õppematerjalid:
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_decisions.htm
+- https://www.tutorialspoint.
+com/vbscript
+/vbscript_loops.htm
+Õppisin:
+- If...Then...Else ja Select
+Case laused
+- For...Next, While...Wend,
+Do...Loop tsüklid
+- Exit Do ja Exit For käsud
+Abimaterjalid:
+- Lisanäited tsüklite kohta:
+08.03.2025 https://www.guru99.com
+/vbscript-tutorials-forbeginners.html
+- Visuaalsed näited:
+https://www.
+softwaretestinghelp.com
+/vbscript-tutorial-1/
+
+10:00
+
+Lõin harjutusskripte tsüklite
+(k.a nested cycles) ja
+tingimuslausetega. Testisin
+While IsMoving() tsüklit
+Mach3 kontekstis.
+Mach3 piirang: avastatud ja
+dokumenteeritud - GOTO
+käsk ei tööta Mach3
+VBScriptis
+Hakkasin uurima
+retrofittimise kohta. Otsisin
+10.03.2025
+artikleid ja cnc foorumite
+postitusi.
+
+2:00
+
+Koosolek (1h)
+
+11.03.2025
+
+Suh, S.H., Noh, S.K., &
+Choi, Y.J. (1995) "A PCbased retrofitting toward
+CAD/CAM/CNC
+integration", Computers &
+Industrial Engineering, 28(1),
+133-146 lugemine,
+kokkuvõtte tegemine. (4h)
+
+10:00
+
+Al-Maeeni, S. S. H.,
+Kuhnhen, C., Engel, B., &
+Schiller, M. (2020) "Smart
+retrofitting of machine tools
+in the context of industry
+4.0", Procedia CIRP 88
+(2020) 369–374
+lugemine, kokkukvõtte
+tegemine. (5h)
+Lugemine ja kokkuvõtte
+tegemine:
+Retrofitting Enables
+Sustainability, Industry 4.0
+12.03.2025 Connectivity, and Improved 2:00
+Usability, Tero Kaarlela, Tero
+Niemi, Tomi Pitkäaho, Jari
+Harjula , 2024, Advances in
+Industrial and Manufacturing
+Engineering
+Lugemine ja kokkuvõtte
+tegemine.
+Retrofitting Enables
+Sustainability, Industry 4.0
+13.03.2025 Connectivity, and Improved 2:00
+Usability, Tero Kaarlela, Tero
+Niemi, Tomi Pitkäaho, Jari
+Harjula , 2024, Advances in
+Industrial and Manufacturing
+Engineering
+
+Lugemine ja kokkuvõtte
+tegemine
+Lynn, R., Helu, M., Sati, M.,
+Tucker, T. and Kurfess, T.
+14.03.2025
+(2020) "The State of
+Integrated CAM/CNC
+Control Systems: Prior
+Developments and the Path
+Towards a Smarter CNC"
+Lugemine ja kokkuvõtte
+tegemine
+Lynn, R., Helu, M., Sati, M.,
+Tucker, T. and Kurfess, T.
+16.03.2025
+(2020) "The State of
+Integrated CAM/CNC
+Control Systems: Prior
+Developments and the Path
+Towards a Smarter CNC"
+Foorumite "kammimine"
+17.03.2025
+märkmete tegemine
+Koosolek (1h)
+18.03.2025 Foorumite "kammimine"
+märkmete tegemine(9h)
+Foorumite "kammimine"
+19.03.2025
+märkmete tegemine
+20.03.2025
+21.03.2025
+23.03.2025
+24.03.2025
+25.03.2025
+26.03.2025
+27.03.2025
+28.03.2025
+30.03.2025
+31.03.2025
+01.04.2025
+02.04.2025
+03.04.2025
+04.04.2025
+06.04.2025
+07.04.2025
+09.04.2025
+
+2:00
+
+2:00
+
+10:00
+
+10:00
+
+8:00
+8:00
+8:00
+2:00
+10:00
+10:00
+2:00
+2:00
+2:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+8:00
+2:00
+
+10.04.2025
+11.04.2025
+14.04.2025
+15.04.2025
+16.04.2025
+17.04.2025
+18.04.2025
+19.04.2025
+20.04.2025
+21.04.2025
+22.04.2025
+23.04.2025
+24.04.2025
+25.04.2025
+26.04.2025
+27.04.2025
+28.04.2025
+29.04.2025
+30.04.2025
+01.05.2025
+02.05.2025
+03.05.2025
+04.05.2025
+05.05.2025
+06.05.2025
+07.05.2025
+08.05.2025
+09.05.2025
+10.05.2025
+11.05.2025
+12.05.2025
+16.05.2025
+17.05.2025
+18.05.2025
+20.05.2025
+
+2:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+10:00
+12:00
+12:00
+12:00
+12:00
+12:00
+8:00
+10:00
+10:00
+2:00
+2:30
+2:00
+10:00
+10:00
+10:00
+10:00
+8:00
+8:00
+9:00
+668:00
+
+Kokku
+
+ÕPPIJA PRAKTIKA ARUANNE
+
+Faili nimi
+
+Lisamise kuupäev
+
+Lisaja
+
+Õppeasutuse juhendaja
+kommentaar:
+Ettevõtte juhendaja
+kommentaar:
+
+JUHENDAJA(TE) ARVAMUS
+Õppeasutuse juhendaja
+arvamus:
+Ettevõtte juhendaja arvamus:
+
+Faili nimi
+
+Lisamise kuupäev
+
+PRAKTIKAKAITSMISE KOMISJON
+Komisjoni nimi:
+Komisjoni otsus:
+
+PRAKTIKA TULEMUS
+Hinne:
+
+ÕPPIJA HINDAMISVORM
+Kriteerium
+Vastus(ed)
+Tööks vajalike teadmiste ja oskuste olemasolu
+Töös ilmnenud tugevad kuljed
+Töös ilmnenud nõrgad kuljed
+Hinnang meeskonnatööle
+Praktika käigus omandatud olulisemad teadmised,
+oskused ja kogemused
+Soovitused koolile praktikandi ettevalmistamisel ja
+juhendamisel
+
+Lisaja
+
+ETTEVÕTTE JUHENDAJA HINDAMISVORM
+Kriteerium
+Vastus(ed)
+Millised on praktikandi töös ilmnenud tugevad
+küljed?
+Millised on praktikandi töös ilmnenud nõrgad
+küljed (mis vajavad arendamist)?
+Täiendused ja märkused (erinevad tähelepanekud,
+mis aitavad koolil paremaid töötajaid koolitada)
+Teiepoolne hinnang praktikandi praktikapäevikule
+
+

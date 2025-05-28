@@ -1,0 +1,12 @@
+' Filename: test_14_string_instr.m1s
+' Purpose: Test InStr() function
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test InStr function
+Dim haystack_14, position_14
+haystack_14 = "Find needle in haystack"
+position_14 = InStr(haystack_14, "needle")
+
+Message("TEST 14 PASSED: InStr() works, position = " & position_14)
+Sleep(100)

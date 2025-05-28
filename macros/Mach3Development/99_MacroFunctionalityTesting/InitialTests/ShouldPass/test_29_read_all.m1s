@@ -1,0 +1,35 @@
+' Filename: test_29_read_all.m1s
+' Purpose: Test ReadAll method
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test ReadAll
+On Error Resume Next
+Dim fso_29, mainFolder_29, testFile_29, file_29, allContent_29
+Set fso_29 = CreateObject("Scripting.FileSystemObject")
+
+mainFolder_29 = GetMainFolder()
+testFile_29 = mainFolder_29 & "test_readall.txt"
+
+' Create test file
+Set file_29 = fso_29.CreateTextFile(testFile_29, True)
+file_29.WriteLine("Line 1")
+file_29.WriteLine("Line 2")
+file_29.WriteLine("Line 3")
+file_29.Close
+
+' Test ReadAll
+Set file_29 = fso_29.OpenTextFile(testFile_29, 1)
+allContent_29 = file_29.ReadAll()
+file_29.Close
+
+If Err.Number <> 0 Then
+    Message("TEST 29 FAILED: ReadAll error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 29 PASSED: ReadAll works")
+    Sleep(100)
+    ' Clean up
+    fso_29.DeleteFile(testFile_29)
+End If

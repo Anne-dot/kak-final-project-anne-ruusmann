@@ -1,0 +1,15 @@
+' Filename: test_09_do_loop.m1s
+' Purpose: Test Do...Loop
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Do Loop
+Dim count_09
+count_09 = 0
+
+Do While count_09 < 2
+    count_09 = count_09 + 1
+Loop
+
+Message("TEST 09 PASSED: Do-Loop works, count = " & count_09)
+Sleep(100)

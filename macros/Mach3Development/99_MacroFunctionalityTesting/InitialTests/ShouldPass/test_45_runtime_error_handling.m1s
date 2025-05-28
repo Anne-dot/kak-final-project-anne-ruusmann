@@ -1,0 +1,129 @@
+' Filename: test_45_runtime_error_handling.m1s
+' Purpose: Test runtime error handling with true/false ladder
+' Expected: Should demonstrate successful error catching and recovery
+' Created: 2025-01-26
+
+' Initialize tracking variables for each step
+Dim step1_errorHandlerSet, step2_divByZero, step3_typeMismatch
+Dim step4_invalidMethod, step5_normalOps, step6_finalCheck
+Dim allStepsPass
+
+step1_errorHandlerSet = False
+step2_divByZero = False
+step3_typeMismatch = False
+step4_invalidMethod = False
+step5_normalOps = False
+step6_finalCheck = False
+
+Message("TEST 45: Runtime Error Handling with True/False Tracking")
+Sleep(100)
+
+' STEP 1: Enable error handling
+On Error Resume Next
+step1_errorHandlerSet = True
+Message("STEP 1: Error handler enabled = " & step1_errorHandlerSet)
+Sleep(100)
+
+' STEP 2: Test division by zero
+Message("STEP 2: Testing division by zero...")
+Sleep(100)
+Dim divResult, divErrorCaught
+divResult = 10 / 0
+If Err.Number = 11 Then  ' Error 11 is division by zero
+    step2_divByZero = True
+    divErrorCaught = "Error " & Err.Number & " caught"
+    Err.Clear
+Else
+    divErrorCaught = "No error or wrong error"
+End If
+Message("  Division by zero handled = " & step2_divByZero & " (" & divErrorCaught & ")")
+Sleep(100)
+
+' STEP 3: Test type mismatch
+Message("STEP 3: Testing type mismatch...")
+Sleep(100)
+Dim typeResult, typeErrorCaught
+typeResult = "text" + 10
+If Err.Number = 13 Then  ' Error 13 is type mismatch
+    step3_typeMismatch = True
+    typeErrorCaught = "Error " & Err.Number & " caught"
+    Err.Clear
+Else
+    typeErrorCaught = "No error or wrong error"
+End If
+Message("  Type mismatch handled = " & step3_typeMismatch & " (" & typeErrorCaught & ")")
+Sleep(100)
+
+' STEP 4: Test invalid method call
+Message("STEP 4: Testing invalid method...")
+Sleep(100)
+Dim obj, methodErrorCaught
+Set obj = CreateObject("Scripting.FileSystemObject")
+obj.NonExistentMethod()  ' This method doesn't exist
+If Err.Number = 438 Then  ' Error 438 is object doesn't support property/method
+    step4_invalidMethod = True
+    methodErrorCaught = "Error " & Err.Number & " caught"
+    Err.Clear
+Else
+    methodErrorCaught = "No error or wrong error"
+End If
+Message("  Invalid method handled = " & step4_invalidMethod & " (" & methodErrorCaught & ")")
+Sleep(100)
+
+' STEP 5: Test normal operations still work
+Message("STEP 5: Testing normal operations...")
+Sleep(100)
+Dim normalCalc, stringOp
+normalCalc = 5 * 10
+stringOp = "Hello" & " " & "World"
+If normalCalc = 50 And stringOp = "Hello World" Then
+    step5_normalOps = True
+End If
+Message("  Normal operations work = " & step5_normalOps)
+Sleep(100)
+
+' STEP 6: Final verification
+Message("STEP 6: Final verification...")
+Sleep(100)
+' Check that we can still do operations after all the errors
+Dim finalTest
+finalTest = 100 - 50
+If finalTest = 50 And Err.Number = 0 Then
+    step6_finalCheck = True
+End If
+Message("  Final check passed = " & step6_finalCheck)
+Sleep(100)
+
+' Calculate overall result
+allStepsPass = step1_errorHandlerSet And step2_divByZero And _
+               step3_typeMismatch And step4_invalidMethod And _
+               step5_normalOps And step6_finalCheck
+
+' Display summary
+Message("========== TEST 45 SUMMARY ==========")
+Sleep(100)
+Message("Step 1 (Error Handler): " & step1_errorHandlerSet)
+Sleep(100)
+Message("Step 2 (Div by Zero):   " & step2_divByZero)
+Sleep(100)
+Message("Step 3 (Type Mismatch): " & step3_typeMismatch)
+Sleep(100)
+Message("Step 4 (Invalid Method):" & step4_invalidMethod)
+Sleep(100)
+Message("Step 5 (Normal Ops):    " & step5_normalOps)
+Sleep(100)
+Message("Step 6 (Final Check):   " & step6_finalCheck)
+Sleep(100)
+Message("=====================================")
+Sleep(100)
+
+If allStepsPass Then
+    Message("TEST 45 PASSED: All runtime errors handled correctly!")
+Else
+    Message("TEST 45 FAILED: Some steps did not complete as expected")
+End If
+Sleep(100)
+
+' This demonstrates the key difference:
+' - test_20 has a compile-time error (Function) that stops the script
+' - test_45 has runtime errors that can be caught and handled

@@ -1,0 +1,33 @@
+' Filename: test_31_append_file.m1s
+' Purpose: Test file append mode
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test append mode
+On Error Resume Next
+Dim fso_31, mainFolder_31, testFile_31, file_31
+Set fso_31 = CreateObject("Scripting.FileSystemObject")
+
+mainFolder_31 = GetMainFolder()
+testFile_31 = mainFolder_31 & "test_append.txt"
+
+' Create initial file
+Set file_31 = fso_31.CreateTextFile(testFile_31, True)
+file_31.WriteLine("Original line")
+file_31.Close
+
+' Append to file (8 = ForAppending)
+Set file_31 = fso_31.OpenTextFile(testFile_31, 8, True)
+file_31.WriteLine("Appended line")
+file_31.Close
+
+If Err.Number <> 0 Then
+    Message("TEST 31 FAILED: Append error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 31 PASSED: File append works")
+    Sleep(100)
+    ' Clean up
+    fso_31.DeleteFile(testFile_31)
+End If

@@ -1,0 +1,23 @@
+' Filename: test_01_dim_variable.m1s
+' Purpose: Test if Dim statement works in Mach3
+' Expected: Should work (basic VBScript feature)
+' Created: 2025-03-05
+
+' Test Dim statement
+Dim testVar_01
+testVar_01 = 10
+
+' Validate the result
+Message("TEST 01: Dim variable declaration")
+Sleep(100)
+Message("  Expected: testVar_01 = 10")
+Sleep(100)
+Message("  Actual: testVar_01 = " & testVar_01)
+Sleep(100)
+
+If testVar_01 = 10 And testVar_01 <> 9 Then
+    Message("  Result: PASSED - Variable correctly assigned")
+Else
+    Message("  Result: FAILED - Variable value incorrect")
+End If
+Sleep(100)

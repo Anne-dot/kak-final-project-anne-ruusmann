@@ -1,0 +1,23 @@
+' Filename: test_35_type_conversion.m1s
+' Purpose: Test type conversion functions
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test type conversions
+On Error Resume Next
+Dim intVal_35, dblVal_35, strVal_35
+
+intVal_35 = CInt("123")      ' String to Integer
+dblVal_35 = CDbl("123.45")   ' String to Double
+strVal_35 = CStr(456)        ' Number to String
+
+If Err.Number <> 0 Then
+    Message("TEST 35 FAILED: Type conversion error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 35 PASSED: CInt=" & intVal_35 & " CDbl=" & dblVal_35)
+    Sleep(100)
+    Message("CStr=" & strVal_35 & " (type: string)")
+    Sleep(100)
+End If

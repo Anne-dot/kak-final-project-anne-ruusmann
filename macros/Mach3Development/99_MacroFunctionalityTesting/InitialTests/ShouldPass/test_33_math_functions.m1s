@@ -1,0 +1,22 @@
+' Filename: test_33_math_functions.m1s
+' Purpose: Test mathematical functions
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test math functions
+On Error Resume Next
+Dim result1_33, result2_33, result3_33, result4_33
+
+result1_33 = Abs(-5)      ' Should be 5
+result2_33 = Round(3.7)   ' Should be 4
+result3_33 = Int(3.7)     ' Should be 3
+result4_33 = Sqr(16)      ' Should be 4
+
+If Err.Number <> 0 Then
+    Message("TEST 33 FAILED: Math function error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 33 PASSED: Abs=" & result1_33 & " Round=" & result2_33 & " Int=" & result3_33 & " Sqr=" & result4_33)
+    Sleep(100)
+End If

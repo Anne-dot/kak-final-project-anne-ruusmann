@@ -1,0 +1,18 @@
+' Filename: test_27_getmainfolder.m1s
+' Purpose: Test GetMainFolder() function
+' Expected: Should work (Mach3 specific)
+' Created: 2025-03-05
+
+' Test GetMainFolder
+On Error Resume Next
+Dim mainPath_27
+mainPath_27 = GetMainFolder()
+
+If Err.Number <> 0 Then
+    Message("TEST 27 FAILED: GetMainFolder error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 27 PASSED: GetMainFolder = " & mainPath_27)
+    Sleep(100)
+End If

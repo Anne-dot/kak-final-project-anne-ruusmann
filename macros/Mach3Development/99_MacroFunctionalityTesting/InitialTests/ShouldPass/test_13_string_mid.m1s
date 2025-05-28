@@ -1,0 +1,12 @@
+' Filename: test_13_string_mid.m1s
+' Purpose: Test Mid() function
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Mid function
+Dim fullText_13, middle_13
+fullText_13 = "123456789"
+middle_13 = Mid(fullText_13, 3, 4)
+
+Message("TEST 13 PASSED: Mid() works, result = " & middle_13)
+Sleep(100)

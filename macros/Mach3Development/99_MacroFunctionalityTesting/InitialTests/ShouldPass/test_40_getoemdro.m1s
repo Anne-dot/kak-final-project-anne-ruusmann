@@ -1,0 +1,25 @@
+' Filename: test_40_getoemdro.m1s
+' Purpose: Test GetOEMDRO function
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test GetOEMDRO
+On Error Resume Next
+Dim xPos_40, yPos_40, zPos_40, feedRate_40
+
+' Standard DRO numbers
+xPos_40 = GetOEMDRO(800)      ' X position
+yPos_40 = GetOEMDRO(801)      ' Y position  
+zPos_40 = GetOEMDRO(802)      ' Z position
+feedRate_40 = GetOEMDRO(818)  ' Feed rate
+
+If Err.Number <> 0 Then
+    Message("TEST 40 FAILED: GetOEMDRO error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 40 PASSED: GetOEMDRO works")
+    Sleep(100)
+    Message("X=" & xPos_40 & " Y=" & yPos_40 & " Z=" & zPos_40 & " F=" & feedRate_40)
+    Sleep(100)
+End If

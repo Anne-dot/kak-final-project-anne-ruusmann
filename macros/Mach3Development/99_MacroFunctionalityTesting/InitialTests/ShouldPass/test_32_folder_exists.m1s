@@ -1,0 +1,23 @@
+' Filename: test_32_folder_exists.m1s
+' Purpose: Test FolderExists method
+' Expected: Unreliable in Mach3
+' Created: 2025-03-05
+
+' Test FolderExists (known unreliable)
+On Error Resume Next
+Dim fso_32, mainFolder_32, exists_32
+Set fso_32 = CreateObject("Scripting.FileSystemObject")
+
+mainFolder_32 = GetMainFolder()
+exists_32 = fso_32.FolderExists(mainFolder_32)
+
+If Err.Number <> 0 Then
+    Message("TEST 32 ERROR: FolderExists failed")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 32 UNRELIABLE: FolderExists returned " & exists_32)
+    Sleep(100)
+    Message("Note: FolderExists is unreliable in Mach3")
+    Sleep(100)
+End If

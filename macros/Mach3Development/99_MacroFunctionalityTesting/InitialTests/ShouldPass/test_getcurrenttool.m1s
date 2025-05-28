@@ -1,0 +1,43 @@
+' Filename: test_getcurrenttool.m1s
+' Purpose: Test GetCurrentTool() function and Message() display
+' Used in: Initial testing of Mach3 macro functions
+' Status: Test
+' Created: 2025-03-05
+
+' Debug configuration
+' Set to True for detailed diagnostic messages, False for production use
+Const DEBUG_MODE_getcurrenttool = True
+
+' Timing constants
+Const MESSAGE_DELAY_getcurrenttool = 100     ' Standard message delay in milliseconds
+Const DEBUG_DELAY_getcurrenttool = 50        ' Debug message delay in milliseconds
+
+' Test execution
+Message("INFO: Starting GetCurrentTool() test")
+Sleep(MESSAGE_DELAY_getcurrenttool)
+
+' Get current tool number
+Dim currentTool_getcurrenttool
+currentTool_getcurrenttool = GetCurrentTool()
+
+' Display the result
+Message("SUCCESS: Current tool number is: " & currentTool_getcurrenttool)
+Sleep(MESSAGE_DELAY_getcurrenttool)
+
+' Test with debug messages
+If DEBUG_MODE_getcurrenttool Then
+    Message("DEBUG: GetCurrentTool() returned: " & currentTool_getcurrenttool)
+    Sleep(DEBUG_DELAY_getcurrenttool)
+    
+    ' Check if tool number is valid
+    If currentTool_getcurrenttool >= 0 And currentTool_getcurrenttool <= 99 Then
+        Message("DEBUG: Tool number is within valid range (0-99)")
+        Sleep(DEBUG_DELAY_getcurrenttool)
+    Else
+        Message("WARNING: Tool number " & currentTool_getcurrenttool & " is outside normal range")
+        Sleep(MESSAGE_DELAY_getcurrenttool)
+    End If
+End If
+
+Message("INFO: Test completed successfully")
+Sleep(MESSAGE_DELAY_getcurrenttool)

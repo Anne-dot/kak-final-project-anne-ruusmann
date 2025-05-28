@@ -1,0 +1,34 @@
+' Filename: test_28_open_text_file.m1s
+' Purpose: Test OpenTextFile for reading
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test OpenTextFile
+On Error Resume Next
+Dim fso_28, mainFolder_28, testFile_28, file_28, content_28
+Set fso_28 = CreateObject("Scripting.FileSystemObject")
+
+mainFolder_28 = GetMainFolder()
+testFile_28 = mainFolder_28 & "test_read.txt"
+
+' First create a test file
+Set file_28 = fso_28.CreateTextFile(testFile_28, True)
+file_28.WriteLine("Test line 1")
+file_28.WriteLine("Test line 2")
+file_28.Close
+
+' Now test reading
+Set file_28 = fso_28.OpenTextFile(testFile_28, 1)  ' 1 = ForReading
+
+If Err.Number <> 0 Then
+    Message("TEST 28 FAILED: OpenTextFile error")
+    Sleep(100)
+    Err.Clear
+Else
+    content_28 = file_28.ReadLine()
+    file_28.Close
+    Message("TEST 28 PASSED: Read = " & content_28)
+    Sleep(100)
+    ' Clean up
+    fso_28.DeleteFile(testFile_28)
+End If

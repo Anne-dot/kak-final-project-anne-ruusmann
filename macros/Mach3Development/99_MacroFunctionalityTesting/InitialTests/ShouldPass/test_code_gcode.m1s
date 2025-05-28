@@ -1,0 +1,152 @@
+' Filename: test_code_gcode.m1s
+' Purpose: Test Code() function for executing G-code commands
+' Used in: Initial testing of Mach3 G-code execution from macros
+' Status: Test
+' Created: 2025-03-05
+' WARNING: This test will move machine axes - ensure safe clearances!
+
+' Debug configuration
+' Set to True for detailed diagnostic messages, False for production use
+Const DEBUG_MODE_code_gcode = True
+
+' Timing constants
+Const MESSAGE_DELAY_code_gcode = 100     ' Standard message delay in milliseconds
+Const DEBUG_DELAY_code_gcode = 50        ' Debug message delay in milliseconds
+Const ERROR_DELAY_code_gcode = 150       ' Error message delay in milliseconds
+Const MOVEMENT_DELAY_code_gcode = 2000   ' Wait time for movements to complete
+
+' Movement constants
+Const SAFE_FEED_RATE_code_gcode = 100    ' Safe feed rate in mm/min
+Const TEST_DISTANCE_code_gcode = 10      ' Small test movement distance in mm
+
+' Test execution
+Message("WARNING: This test will execute G-code commands!")
+Sleep(ERROR_DELAY_code_gcode)
+Message("WARNING: Ensure machine has safe clearances!")
+Sleep(ERROR_DELAY_code_gcode)
+
+' Get current position for reference
+Dim startX_code_gcode, startY_code_gcode, startZ_code_gcode
+startX_code_gcode = GetOEMDRO(800)  ' X position DRO
+startY_code_gcode = GetOEMDRO(801)  ' Y position DRO
+startZ_code_gcode = GetOEMDRO(802)  ' Z position DRO
+
+Message("INFO: Starting position X=" & startX_code_gcode & " Y=" & startY_code_gcode & " Z=" & startZ_code_gcode)
+Sleep(MESSAGE_DELAY_code_gcode)
+
+' Test 1: Set feed rate
+Message("INFO: Test 1 - Setting feed rate")
+Sleep(MESSAGE_DELAY_code_gcode)
+
+On Error Resume Next
+Code("F" & SAFE_FEED_RATE_code_gcode)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set feed rate - " & Err.Description)
+    Sleep(ERROR_DELAY_code_gcode)
+    Err.Clear
+Else
+    Message("SUCCESS: Feed rate set to " & SAFE_FEED_RATE_code_gcode & " mm/min")
+    Sleep(MESSAGE_DELAY_code_gcode)
+End If
+
+
+' Test 2: Simple G-code comment
+Message("INFO: Test 2 - G-code comment")
+Sleep(MESSAGE_DELAY_code_gcode)
+
+On Error Resume Next
+Code("(This is a test comment from macro)")
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to execute comment - " & Err.Description)
+    Sleep(ERROR_DELAY_code_gcode)
+    Err.Clear
+Else
+    Message("SUCCESS: Comment executed")
+    Sleep(MESSAGE_DELAY_code_gcode)
+End If
+
+
+' Test 3: Relative positioning mode
+Message("INFO: Test 3 - Setting relative positioning (G91)")
+Sleep(MESSAGE_DELAY_code_gcode)
+
+On Error Resume Next
+Code("G91")  ' Relative positioning
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set G91 - " & Err.Description)
+    Sleep(ERROR_DELAY_code_gcode)
+    Err.Clear
+Else
+    Message("SUCCESS: Relative positioning set (G91)")
+    Sleep(MESSAGE_DELAY_code_gcode)
+End If
+
+
+' Test 4: Small relative movement
+Message("INFO: Test 4 - Small relative X movement")
+Sleep(MESSAGE_DELAY_code_gcode)
+
+On Error Resume Next
+Code("G1 X" & TEST_DISTANCE_code_gcode)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to execute movement - " & Err.Description)
+    Sleep(ERROR_DELAY_code_gcode)
+    Err.Clear
+Else
+    Message("SUCCESS: Movement command sent")
+    Sleep(MESSAGE_DELAY_code_gcode)
+    
+    ' Wait for movement to complete
+    While IsMoving()
+        Sleep(100)
+    Wend
+    
+    ' Check new position
+    Dim newX_code_gcode
+    newX_code_gcode = GetOEMDRO(800)
+    Message("INFO: New X position: " & newX_code_gcode & " (moved " & (newX_code_gcode - startX_code_gcode) & " mm)")
+    Sleep(MESSAGE_DELAY_code_gcode)
+End If
+
+
+' Test 5: Return to start position
+Message("INFO: Test 5 - Return to absolute positioning and start position")
+Sleep(MESSAGE_DELAY_code_gcode)
+
+On Error Resume Next
+Code("G90")  ' Absolute positioning
+Sleep(100)
+Code("G1 X" & startX_code_gcode & " Y" & startY_code_gcode)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to return to start - " & Err.Description)
+    Sleep(ERROR_DELAY_code_gcode)
+    Err.Clear
+Else
+    Message("SUCCESS: Returning to start position")
+    Sleep(MESSAGE_DELAY_code_gcode)
+    
+    ' Wait for movement to complete
+    While IsMoving()
+        Sleep(100)
+    Wend
+    
+    Message("INFO: Movement complete")
+    Sleep(MESSAGE_DELAY_code_gcode)
+End If
+
+
+' Debug mode - additional tests
+If DEBUG_MODE_code_gcode Then
+    Message("DEBUG: Testing string concatenation in Code()")
+    Sleep(DEBUG_DELAY_code_gcode)
+    
+    ' Test concatenated G-code
+    Dim testValue_code_gcode
+    testValue_code_gcode = 50
+    Code("F" & testValue_code_gcode * 2)  ' Should set F100
+    Message("DEBUG: Set feed rate using calculation: F" & (testValue_code_gcode * 2))
+    Sleep(DEBUG_DELAY_code_gcode)
+End If
+
+Message("INFO: Code() G-code execution test completed")
+Sleep(MESSAGE_DELAY_code_gcode)

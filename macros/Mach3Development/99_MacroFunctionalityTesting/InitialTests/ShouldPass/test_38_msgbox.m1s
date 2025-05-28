@@ -1,0 +1,73 @@
+' Filename: test_38_msgbox.m1s
+' Purpose: Test MsgBox function for user interaction
+' Expected: Should PASS - MsgBox works in Mach3
+' Created: 2025-03-05
+
+' IMPORTANT NOTES:
+' - MsgBox creates MODAL popup dialogs that PAUSE macro execution
+' - Use Message() for status updates that don't block
+' - MsgBox is useful for user confirmations and critical warnings
+
+On Error Resume Next
+
+Message("TEST 38: Testing MsgBox functionality")
+Sleep(100)
+
+' Test 1: Simple informational message
+Message("Test 1: Information dialog")
+Sleep(100)
+MsgBox "This is an informational message" & vbCrLf & _
+       "Click OK to continue", 0, "TEST 38: Info"
+
+' Test 2: Yes/No confirmation dialog
+Message("Test 2: Yes/No confirmation")
+Sleep(100)
+Dim yesNoResult
+yesNoResult = MsgBox("Do you want to continue?" & vbCrLf & _
+                     "Click Yes or No", 4, "TEST 38: Confirm")
+
+' Check result (vbYes = 6, vbNo = 7)
+If yesNoResult = 6 Then
+    Message("  User clicked YES (value = " & yesNoResult & ")")
+ElseIf yesNoResult = 7 Then
+    Message("  User clicked NO (value = " & yesNoResult & ")")
+Else
+    Message("  Unexpected result: " & yesNoResult)
+End If
+Sleep(100)
+
+' Test 3: Warning with icon
+Message("Test 3: Warning dialog with icon")
+Sleep(100)
+MsgBox "This is a warning message!" & vbCrLf & _
+       "Note the warning icon", 48, "TEST 38: Warning"
+
+' Test 4: Error handling
+Message("Test 4: Error handling")
+Sleep(100)
+If Err.Number <> 0 Then
+    Message("TEST 38 FAILED: MsgBox error - " & Err.Description)
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 38 PASSED: All MsgBox tests completed successfully")
+    Sleep(100)
+End If
+
+' USAGE GUIDELINES:
+' - vbOKOnly (0): Simple OK button
+' - vbYesNo (4): Yes/No buttons, returns 6 (Yes) or 7 (No)
+' - vbCritical (16): Error icon
+' - vbQuestion (32): Question icon
+' - vbExclamation (48): Warning icon
+' - vbInformation (64): Info icon
+'
+' WHEN TO USE:
+' - User confirmations before dangerous operations
+' - Critical error notifications
+' - Setup/configuration dialogs
+'
+' WHEN NOT TO USE:
+' - Status updates (use Message() instead)
+' - During automatic operations
+' - In loops or frequent operations

@@ -1,0 +1,15 @@
+' Filename: test_08_while_wend.m1s
+' Purpose: Test While...Wend loop
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test While loop
+Dim counter_08
+counter_08 = 0
+
+While counter_08 < 3
+    counter_08 = counter_08 + 1
+Wend
+
+Message("TEST 08 PASSED: While-Wend works, counter = " & counter_08)
+Sleep(100)

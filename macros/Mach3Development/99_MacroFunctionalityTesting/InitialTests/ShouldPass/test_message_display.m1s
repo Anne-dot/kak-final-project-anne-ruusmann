@@ -1,0 +1,140 @@
+' Filename: test_message_display.m1s
+' Purpose: Test Message() function display and timing requirements
+' Used in: Initial testing of Mach3 message system
+' Status: Test
+' Created: 2025-03-05
+' Note: This test demonstrates proper message timing and categorization
+
+' Debug configuration
+' Set to True for detailed diagnostic messages, False for production use
+Const DEBUG_MODE_message_display = True
+
+' Message category prefixes (from development guide)
+' ERROR:    Fatal errors requiring immediate attention
+' WARNING:  Potential issues that don't stop execution
+' INFO:     General information and status updates
+' DEBUG:    Detailed information for troubleshooting
+' SYSTEM:   System-level operations
+' USER:     User interaction required
+' SUCCESS:  Operation completed successfully
+
+' Timing constants (from development guide)
+Const CRITICAL_DELAY_message_display = 100    ' Critical errors minimum delay
+Const STANDARD_DELAY_message_display = 50     ' Standard status minimum delay
+Const DEBUG_DELAY_message_display = 25        ' Debug information minimum delay
+
+' Test execution
+Message("INFO: Starting Message() display test")
+Sleep(STANDARD_DELAY_message_display)
+
+' Test 1: Basic message without Sleep
+Message("TEST 1: Message without Sleep - may not appear!")
+' NO SLEEP - This message might be lost!
+
+' Test 2: Message with proper Sleep
+Message("TEST 2: Message with proper Sleep")
+Sleep(STANDARD_DELAY_message_display)
+
+' Test 3: All message categories
+Message("INFO: Testing all message categories")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("ERROR: This is a critical error message")
+Sleep(CRITICAL_DELAY_message_display)
+
+Message("WARNING: This is a warning message")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("INFO: This is an information message")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("SYSTEM: This is a system message")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("USER: This is a user interaction message")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("SUCCESS: This is a success message")
+Sleep(STANDARD_DELAY_message_display)
+
+If DEBUG_MODE_message_display Then
+    Message("DEBUG: This is a debug message")
+    Sleep(DEBUG_DELAY_message_display)
+End If
+
+' Test 4: Rapid messages to test timing
+Message("INFO: Testing rapid message sequence")
+Sleep(STANDARD_DELAY_message_display)
+
+Dim i_message_display
+For i_message_display = 1 To 5
+    Message("RAPID TEST: Message " & i_message_display & " without proper delay")
+    Sleep(10)  ' Too short - messages may be lost!
+Next
+
+Message("INFO: Some rapid messages may have been lost")
+Sleep(STANDARD_DELAY_message_display)
+
+' Test 5: Proper rapid sequence
+Message("INFO: Testing proper rapid sequence")
+Sleep(STANDARD_DELAY_message_display)
+
+For i_message_display = 1 To 5
+    Message("PROPER TEST: Message " & i_message_display & " with correct delay")
+    Sleep(DEBUG_DELAY_message_display)  ' Minimum delay for rapid messages
+Next
+
+' Test 6: Long messages
+Message("INFO: Testing long message display")
+Sleep(STANDARD_DELAY_message_display)
+
+Dim longMessage_message_display
+longMessage_message_display = "This is a very long message to test how Mach3 handles extended text in the status bar. "
+longMessage_message_display = longMessage_message_display & "It contains multiple sentences and should demonstrate any truncation that occurs."
+Message(longMessage_message_display)
+Sleep(CRITICAL_DELAY_message_display)  ' Extra time for long message
+
+' Test 7: Special characters (ASCII only)
+Message("INFO: Testing ASCII characters")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("Numbers: 0123456789")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("Letters: ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("Symbols: !@#$%^&*()_+-=[]{}|;:,.<>?/")
+Sleep(STANDARD_DELAY_message_display)
+
+' Test 8: Empty message
+Message("")
+Sleep(STANDARD_DELAY_message_display)
+
+Message("INFO: Empty message sent (line above)")
+Sleep(STANDARD_DELAY_message_display)
+
+' Debug mode - timing comparison
+If DEBUG_MODE_message_display Then
+    Message("DEBUG: Comparing different Sleep delays")
+    Sleep(DEBUG_DELAY_message_display)
+    
+    Message("DEBUG: 25ms delay")
+    Sleep(25)
+    
+    Message("DEBUG: 50ms delay")
+    Sleep(50)
+    
+    Message("DEBUG: 100ms delay")
+    Sleep(100)
+    
+    Message("DEBUG: 500ms delay")
+    Sleep(500)
+End If
+
+' Final summary
+Message("SUCCESS: Message() display test completed")
+Sleep(CRITICAL_DELAY_message_display)
+
+Message("INFO: Remember - always use Sleep() after Message()")
+Sleep(STANDARD_DELAY_message_display)

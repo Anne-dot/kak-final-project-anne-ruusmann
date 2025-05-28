@@ -1,0 +1,18 @@
+' Filename: test_23_create_object.m1s
+' Purpose: Test CreateObject for FileSystemObject
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test CreateObject
+On Error Resume Next
+Dim fso_23
+Set fso_23 = CreateObject("Scripting.FileSystemObject")
+
+If Err.Number <> 0 Then
+    Message("TEST 23 FAILED: CreateObject error - " & Err.Description)
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 23 PASSED: FileSystemObject created")
+    Sleep(100)
+End If

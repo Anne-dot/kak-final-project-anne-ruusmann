@@ -1,0 +1,19 @@
+' Filename: test_24_set_keyword.m1s
+' Purpose: Test Set keyword with objects
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Set keyword
+On Error Resume Next
+Dim obj1_24, obj2_24
+Set obj1_24 = CreateObject("Scripting.FileSystemObject")
+Set obj2_24 = obj1_24  ' Copy object reference
+
+If Err.Number <> 0 Then
+    Message("TEST 24 FAILED: Set keyword error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 24 PASSED: Set keyword works")
+    Sleep(100)
+End If

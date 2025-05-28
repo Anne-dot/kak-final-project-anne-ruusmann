@@ -1,0 +1,15 @@
+' Filename: test_07_for_next.m1s
+' Purpose: Test For...Next loop
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test For loop
+Dim i_07, sum_07
+sum_07 = 0
+
+For i_07 = 1 To 3
+    sum_07 = sum_07 + i_07
+Next
+
+Message("TEST 07 PASSED: For-Next works, sum = " & sum_07)
+Sleep(100)

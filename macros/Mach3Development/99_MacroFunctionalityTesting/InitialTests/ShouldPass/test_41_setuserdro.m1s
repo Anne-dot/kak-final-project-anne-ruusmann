@@ -1,0 +1,31 @@
+' Filename: test_41_setuserdro.m1s
+' Purpose: Test SetUserDRO and GetUserDRO
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test SetUserDRO/GetUserDRO
+On Error Resume Next
+Dim testDRO_41, testValue_41, readValue_41
+
+testDRO_41 = 1050    ' User DRO number
+testValue_41 = 123.45
+
+' Set value
+SetUserDRO(testDRO_41, testValue_41)
+
+' Read it back
+readValue_41 = GetUserDRO(testDRO_41)
+
+If Err.Number <> 0 Then
+    Message("TEST 41 FAILED: UserDRO error")
+    Sleep(100)
+    Err.Clear
+Else
+    If Abs(readValue_41 - testValue_41) < 0.001 Then
+        Message("TEST 41 PASSED: UserDRO works")
+        Sleep(100)
+    Else
+        Message("TEST 41 FAILED: Value mismatch")
+        Sleep(100)
+    End If
+End If

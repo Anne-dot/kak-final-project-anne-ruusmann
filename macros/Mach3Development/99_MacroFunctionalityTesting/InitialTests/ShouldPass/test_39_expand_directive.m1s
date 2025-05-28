@@ -1,0 +1,19 @@
+' Filename: test_39_expand_directive.m1s
+' Purpose: Test #expand directive
+' Expected: Should work with hardcoded path
+' Created: 2025-03-05
+
+' Test #expand directive
+' NOTE: #expand requires hardcoded absolute path!
+' This test demonstrates syntax only
+
+Message("TEST 39: #expand directive")
+Sleep(100)
+
+' Example syntax (commented to avoid errors):
+' #expand "c:\mach3\macros\config.m1s"
+
+Message("Note: #expand must be lowercase")
+Sleep(100)
+Message("Note: Path must be hardcoded (no variables)")
+Sleep(100)

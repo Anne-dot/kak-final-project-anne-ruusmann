@@ -1,0 +1,24 @@
+' Filename: test_02_multiple_dim.m1s
+' Purpose: Test multiple variable declarations
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test multiple Dim statements
+Dim var1_02, var2_02, var3_02
+var1_02 = "text"
+var2_02 = 123
+var3_02 = 45.67
+
+Message("TEST 02: Multiple variable declaration")
+Sleep(100)
+Message("  Expected: var1='text', var2=123, var3=45.67")
+Sleep(100)
+Message("  Actual: var1='" & var1_02 & "', var2=" & var2_02 & ", var3=" & var3_02)
+Sleep(100)
+
+If var1_02 = "text" And var2_02 = 123 And var3_02 = 45.67 Then
+    Message("  Result: PASSED - All variables correctly assigned")
+Else
+    Message("  Result: FAILED - Variable values incorrect")
+End If
+Sleep(100)

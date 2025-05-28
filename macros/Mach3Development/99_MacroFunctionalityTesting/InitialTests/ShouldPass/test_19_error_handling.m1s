@@ -1,0 +1,23 @@
+' Filename: test_19_error_handling.m1s
+' Purpose: Test On Error Resume Next
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test error handling
+On Error Resume Next
+
+' Cause an error (divide by zero)
+Dim result_19
+result_19 = 10 / 0
+
+If Err.Number <> 0 Then
+    Message("TEST 19 PASSED: Error caught, Number = " & Err.Number)
+    Sleep(100)
+    Message("Description: " & Err.Description)
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 19 FAILED: Error not caught")
+    Sleep(100)
+End If
+

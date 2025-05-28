@@ -1,0 +1,134 @@
+' Filename: test_settoolparam.m1s
+' Purpose: Test SetToolParam() function for writing tool parameters
+' Used in: Initial testing of Mach3 tool parameter modification
+' Status: Test
+' Created: 2025-03-05
+' WARNING: This test modifies tool parameters - backup tool table first!
+
+' Debug configuration
+' Set to True for detailed diagnostic messages, False for production use
+Const DEBUG_MODE_settoolparam = True
+
+' Timing constants
+Const MESSAGE_DELAY_settoolparam = 100     ' Standard message delay in milliseconds
+Const DEBUG_DELAY_settoolparam = 50        ' Debug message delay in milliseconds
+Const ERROR_DELAY_settoolparam = 150       ' Error message delay in milliseconds
+
+' Tool parameter constants
+Const PARAM_DIAMETER_settoolparam = 1      ' Tool diameter
+Const PARAM_LENGTH_settoolparam = 2        ' Tool length
+Const PARAM_WEAR_settoolparam = 3          ' Tool wear offset
+
+' Test values
+Const TEST_DIAMETER_settoolparam = 10.5    ' Test diameter in mm
+Const TEST_LENGTH_settoolparam = 75.25     ' Test length in mm
+Const TEST_WEAR_settoolparam = 0.05        ' Test wear offset in mm
+
+' Test execution
+Message("WARNING: This test will modify tool parameters!")
+Sleep(ERROR_DELAY_settoolparam)
+
+' Use a specific test tool number (99) to avoid affecting production tools
+Dim testToolNumber_settoolparam, originalDiameter_settoolparam, originalLength_settoolparam, originalWear_settoolparam
+testToolNumber_settoolparam = 99
+
+Message("INFO: Starting SetToolParam() test on tool #" & testToolNumber_settoolparam)
+Sleep(MESSAGE_DELAY_settoolparam)
+
+' First, read and save original values
+On Error Resume Next
+originalDiameter_settoolparam = GetToolParam(testToolNumber_settoolparam, PARAM_DIAMETER_settoolparam)
+originalLength_settoolparam = GetToolParam(testToolNumber_settoolparam, PARAM_LENGTH_settoolparam)
+originalWear_settoolparam = GetToolParam(testToolNumber_settoolparam, PARAM_WEAR_settoolparam)
+
+
+Message("INFO: Original values saved for tool #" & testToolNumber_settoolparam)
+Sleep(MESSAGE_DELAY_settoolparam)
+
+' Test setting tool diameter
+On Error Resume Next
+SetToolParam(testToolNumber_settoolparam, PARAM_DIAMETER_settoolparam, TEST_DIAMETER_settoolparam)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set tool diameter - " & Err.Description)
+    Sleep(ERROR_DELAY_settoolparam)
+    Err.Clear
+Else
+    ' Verify the change
+    Dim newDiameter_settoolparam
+    newDiameter_settoolparam = GetToolParam(testToolNumber_settoolparam, PARAM_DIAMETER_settoolparam)
+    If Abs(newDiameter_settoolparam - TEST_DIAMETER_settoolparam) < 0.001 Then
+        Message("SUCCESS: Tool diameter set to " & TEST_DIAMETER_settoolparam & " mm")
+        Sleep(MESSAGE_DELAY_settoolparam)
+    Else
+        Message("ERROR: Diameter mismatch - expected " & TEST_DIAMETER_settoolparam & " got " & newDiameter_settoolparam)
+        Sleep(MESSAGE_DELAY_settoolparam)
+    End If
+End If
+
+
+' Test setting tool length
+On Error Resume Next
+SetToolParam(testToolNumber_settoolparam, PARAM_LENGTH_settoolparam, TEST_LENGTH_settoolparam)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set tool length - " & Err.Description)
+    Sleep(ERROR_DELAY_settoolparam)
+    Err.Clear
+Else
+    ' Verify the change
+    Dim newLength_settoolparam
+    newLength_settoolparam = GetToolParam(testToolNumber_settoolparam, PARAM_LENGTH_settoolparam)
+    If Abs(newLength_settoolparam - TEST_LENGTH_settoolparam) < 0.001 Then
+        Message("SUCCESS: Tool length set to " & TEST_LENGTH_settoolparam & " mm")
+        Sleep(MESSAGE_DELAY_settoolparam)
+    Else
+        Message("ERROR: Length mismatch - expected " & TEST_LENGTH_settoolparam & " got " & newLength_settoolparam)
+        Sleep(MESSAGE_DELAY_settoolparam)
+    End If
+End If
+
+
+' Test setting tool wear offset
+On Error Resume Next
+SetToolParam(testToolNumber_settoolparam, PARAM_WEAR_settoolparam, TEST_WEAR_settoolparam)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set tool wear - " & Err.Description)
+    Sleep(ERROR_DELAY_settoolparam)
+    Err.Clear
+Else
+    ' Verify the change
+    Dim newWear_settoolparam
+    newWear_settoolparam = GetToolParam(testToolNumber_settoolparam, PARAM_WEAR_settoolparam)
+    If Abs(newWear_settoolparam - TEST_WEAR_settoolparam) < 0.001 Then
+        Message("SUCCESS: Tool wear set to " & TEST_WEAR_settoolparam & " mm")
+        Sleep(MESSAGE_DELAY_settoolparam)
+    Else
+        Message("ERROR: Wear mismatch - expected " & TEST_WEAR_settoolparam & " got " & newWear_settoolparam)
+        Sleep(MESSAGE_DELAY_settoolparam)
+    End If
+End If
+
+
+' Debug mode - show all changes
+If DEBUG_MODE_settoolparam Then
+    Message("DEBUG: Tool #" & testToolNumber_settoolparam & " parameter changes:")
+    Sleep(DEBUG_DELAY_settoolparam)
+    Message("DEBUG:   Diameter: " & originalDiameter_settoolparam & " -> " & TEST_DIAMETER_settoolparam)
+    Sleep(DEBUG_DELAY_settoolparam)
+    Message("DEBUG:   Length: " & originalLength_settoolparam & " -> " & TEST_LENGTH_settoolparam)
+    Sleep(DEBUG_DELAY_settoolparam)
+    Message("DEBUG:   Wear: " & originalWear_settoolparam & " -> " & TEST_WEAR_settoolparam)
+    Sleep(DEBUG_DELAY_settoolparam)
+End If
+
+' Restore original values
+Message("INFO: Restoring original values...")
+Sleep(MESSAGE_DELAY_settoolparam)
+
+On Error Resume Next
+SetToolParam(testToolNumber_settoolparam, PARAM_DIAMETER_settoolparam, originalDiameter_settoolparam)
+SetToolParam(testToolNumber_settoolparam, PARAM_LENGTH_settoolparam, originalLength_settoolparam)
+SetToolParam(testToolNumber_settoolparam, PARAM_WEAR_settoolparam, originalWear_settoolparam)
+
+
+Message("INFO: SetToolParam() test completed")
+Sleep(MESSAGE_DELAY_settoolparam)

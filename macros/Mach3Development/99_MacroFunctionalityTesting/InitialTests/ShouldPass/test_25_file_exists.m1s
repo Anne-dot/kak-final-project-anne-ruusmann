@@ -1,0 +1,24 @@
+' Filename: test_25_file_exists.m1s
+' Purpose: Test FileExists method
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test FileExists
+On Error Resume Next
+Dim fso_25, mainFolder_25, testFile_25, exists_25
+Set fso_25 = CreateObject("Scripting.FileSystemObject")
+
+' Use GetMainFolder for path
+mainFolder_25 = GetMainFolder()
+testFile_25 = mainFolder_25 & "macros\test_file.txt"
+
+exists_25 = fso_25.FileExists(testFile_25)
+
+If Err.Number <> 0 Then
+    Message("TEST 25 FAILED: FileExists error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 25 PASSED: FileExists works (file exists: " & exists_25 & ")")
+    Sleep(100)
+End If

@@ -1,0 +1,15 @@
+' Filename: test_03_constants.m1s
+' Purpose: Test Const declaration
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test constants
+Const MY_CONSTANT_03 = 100
+Const TEXT_CONSTANT_03 = "Hello"
+
+Message("TEST 03 PASSED: Const works")
+Sleep(100)
+Message("MY_CONSTANT = " & MY_CONSTANT_03)
+Sleep(100)
+Message("TEXT_CONSTANT = " & TEXT_CONSTANT_03)
+Sleep(100)

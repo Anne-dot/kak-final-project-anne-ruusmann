@@ -1,0 +1,46 @@
+' Filename: test_22_exit_sub.m1s
+' Purpose: Test Exit Sub statement for early macro termination
+' Expected: Should PASS - Exit Sub works to exit macros safely
+' Created: 2025-03-05
+
+' CONFIRMED BEHAVIOR:
+' - Exit Sub immediately terminates the macro execution
+' - Can be used in conditionals for safety checks
+' - Useful for preventing unsafe operations
+
+' Initialize tracking
+Dim safetyCheck, step1, step2, step3
+safetyCheck = False  ' Simulate unsafe condition
+step1 = False
+step2 = False
+step3 = False
+
+Message("TEST 22: Testing Exit Sub for macro termination")
+Sleep(100)
+step1 = True
+
+' Example 1: Safety check with Exit Sub
+If Not safetyCheck Then
+    Message("TEST 22: Safety check failed - exiting macro early")
+    Sleep(100)
+    step2 = True
+    Exit Sub  ' Exit the macro due to unsafe condition
+End If
+
+' This code should NOT execute because of Exit Sub above
+step3 = True
+Message("TEST 22 FAILED: Exit Sub didn't work - unsafe code executed!")
+Sleep(100)
+Message("This could represent dangerous machine operations")
+Sleep(100)
+
+' EXPECTED RESULT:
+' - Only messages before Exit Sub will appear
+' - step1 = True, step2 = True, step3 = False
+' - Macro terminates at Exit Sub line
+'
+' USE CASES:
+' - Safety checks: Exit if machine not homed
+' - Parameter validation: Exit if invalid tool number
+' - Error conditions: Exit if file not found
+' - User abort: Exit if user cancels operation

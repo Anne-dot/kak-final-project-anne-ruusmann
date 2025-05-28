@@ -1,0 +1,28 @@
+' Filename: test_15_string_replace.m1s
+' Purpose: Test Replace() function
+' Expected: Should FAIL in Mach3
+' Created: 2025-03-05
+
+' Test Replace function (known to fail)
+On Error Resume Next
+Dim original_15, replaced_15
+original_15 = "Hello World"
+replaced_15 = Replace(original_15, "World", "Mach3")
+
+Message("TEST 15: Replace() function")
+Sleep(100)
+Message("  Expected: Error (function not supported)")
+Sleep(100)
+
+If Err.Number <> 0 Then
+    Message("  Actual: Error " & Err.Number & " - " & Err.Description)
+    Sleep(100)
+    Message("  Result: PASSED - Failed as expected")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("  Actual: Function returned '" & replaced_15 & "'")
+    Sleep(100)
+    Message("  Result: FAILED - Function unexpectedly worked!")
+    Sleep(100)
+End If

@@ -1,0 +1,13 @@
+' Filename: test_12_string_left_right.m1s
+' Purpose: Test Left() and Right() functions
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Left and Right
+Dim text_12, leftPart_12, rightPart_12
+text_12 = "ABCDEF"
+leftPart_12 = Left(text_12, 3)
+rightPart_12 = Right(text_12, 3)
+
+Message("TEST 12 PASSED: Left=" & leftPart_12 & " Right=" & rightPart_12)
+Sleep(100)

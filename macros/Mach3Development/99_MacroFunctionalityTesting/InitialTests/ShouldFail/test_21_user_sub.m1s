@@ -1,0 +1,42 @@
+' Filename: test_21_user_sub.m1s
+' Purpose: Test user-defined subroutine
+' Expected: Should FAIL in Mach3 - silent crash at Sub line
+' Created: 2025-03-05
+
+' EXPECTED BEHAVIOR:
+' - Script will execute up to the Sub declaration
+' - Then fail silently with no error message
+' - On Error Resume Next cannot catch this error
+
+' Test user-defined sub (known to fail)
+On Error Resume Next
+
+Message("TEST 21: Testing user-defined subroutines (should stop here without explanation)")
+Sleep(100)
+
+' Try to define a sub - this will cause silent failure
+Sub ShowMessage(msg_21)
+    Message(msg_21)
+    Sleep(100)
+End Sub
+
+' This code will NEVER execute
+Message("TEST 21 UNEXPECTED: Sub definition worked?")
+Sleep(100)
+
+' More likely - syntax error on Sub line
+If Err.Number <> 0 Then
+    Message("TEST 21 EXPECTED FAIL: User subs not supported")
+    Sleep(100)
+    Err.Clear
+End If
+
+' CONFIRMED RESULT (from testing):
+' - First message appears: "TEST 21: Testing user-defined subroutines..."
+' - Script then SILENTLY FAILS at the Sub line
+' - No error message is displayed
+' - Just like Function declarations, Sub causes silent crash
+' - This confirms Sub/Function are both compile-time failures
+'
+' LESSON: Never use Sub or Function declarations in Mach3 VBScript
+

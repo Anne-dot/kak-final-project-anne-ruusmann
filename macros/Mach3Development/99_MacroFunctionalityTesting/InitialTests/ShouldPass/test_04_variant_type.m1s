@@ -1,0 +1,21 @@
+' Filename: test_04_variant_type.m1s
+' Purpose: Test Variant type behavior
+' Expected: Should work (variables change type)
+' Created: 2025-03-05
+
+' Test variant type changes
+Dim myVar_04
+myVar_04 = 10
+Message("myVar_04 as number: " & myVar_04)
+Sleep(100)
+
+myVar_04 = "Now text"
+Message("myVar_04 as string: " & myVar_04)
+Sleep(100)
+
+myVar_04 = True
+Message("myVar_04 as boolean: " & myVar_04)
+Sleep(100)
+
+Message("TEST 04 PASSED: Variant type works")
+Sleep(100)

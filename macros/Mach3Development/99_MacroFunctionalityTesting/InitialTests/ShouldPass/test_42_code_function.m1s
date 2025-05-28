@@ -1,0 +1,23 @@
+' Filename: test_42_code_function.m1s
+' Purpose: Test Code() function for G-code
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Code function
+On Error Resume Next
+
+' Simple G-code commands
+Code("F100")           ' Set feed rate
+Code("G90")           ' Absolute mode
+Code("(Test comment)") ' Comment
+
+If Err.Number <> 0 Then
+    Message("TEST 42 FAILED: Code() error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 42 PASSED: Code() works")
+    Sleep(100)
+    Message("G-code commands executed")
+    Sleep(100)
+End If

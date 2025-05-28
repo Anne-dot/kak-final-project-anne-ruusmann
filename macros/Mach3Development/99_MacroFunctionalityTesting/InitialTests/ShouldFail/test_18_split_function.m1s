@@ -1,0 +1,38 @@
+' Filename: test_18_split_function.m1s
+' Purpose: Test Split() function
+' Expected: Should FAIL in Mach3
+' Created: 2025-03-05
+
+' Test Split function (known to fail)
+On Error Resume Next
+Dim csvLine_18, parts_18
+csvLine_18 = "tool,diameter,length"
+parts_18 = Split(csvLine_18, ",")
+
+Message("TEST 18: Split() function")
+Sleep(100)
+Message("  Expected: Error (function not supported)")
+Sleep(100)
+Message("  Test input: '" & csvLine_18 & "' split by ','")
+Sleep(100)
+
+If Err.Number <> 0 Then
+    Message("  Actual: Error " & Err.Number & " - " & Err.Description)
+    Sleep(100)
+    Message("  Result: PASSED - Failed as expected")
+    Sleep(100)
+    Err.Clear
+Else
+    ' This shouldn't happen, but if it does, show what we got
+    Dim arraySize_18
+    On Error Resume Next
+    arraySize_18 = UBound(parts_18) + 1
+    If Err.Number = 0 Then
+        Message("  Actual: Function returned array with " & arraySize_18 & " elements")
+    Else
+        Message("  Actual: Function returned unknown result")
+    End If
+    Sleep(100)
+    Message("  Result: FAILED - Function unexpectedly worked!")
+    Sleep(100)
+End If

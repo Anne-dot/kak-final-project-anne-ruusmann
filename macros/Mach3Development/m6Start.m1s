@@ -1,16 +1,25 @@
 ' M6 Tool Change Macro
-' Declare variables
+' Handles automatic tool changes with magazine selection and positioning
+
+' ========================================
+' === VARIABLE DECLARATIONS            ===
+' ========================================
 Dim tool, xOff, yOff, muxOut, mSel
-' CONFIGURATION CONSTANTS
+
+' ========================================
+' === CONFIGURATION CONSTANTS          ===
+' ========================================
 ' Tool Spacing Configuration
 Const toolSpaceX = 32
 Const toolSpaceY = 32
+
 ' Magazine Offset Positions
 Const M1_OFFSET_X = 81
 Const M2_OFFSET_X = -60.9
 Const M1M2_OFFSET_Y = 206
 Const M3_OFFSET_X = -208
 Const M3_OFFSET_Y = 263
+
 ' Output Signal Mapping
 Const bits0 = OUTPUT5
 Const bits1 = OUTPUT6
@@ -19,6 +28,10 @@ Const bits3 = OUTPUT8
 Const m1Out = OUTPUT2
 Const m2Out = OUTPUT3
 Const m3Out = OUTPUT4
+
+' ========================================
+' === INITIALIZATION & SIGNAL RESET    ===
+' ========================================
 ' Deactivate all tool signals
 DeactivateSignal(bits0)
 DeactivateSignal(bits1)
@@ -28,16 +41,28 @@ DeactivateSignal(m1Out)
 DeactivateSignal(m2Out)
 DeactivateSignal(m3Out)
 sleep(1000)
+
+' ========================================
+' === TOOL RETRIEVAL & STORAGE         ===
+' ========================================
 ' Get the selected tool
 tool = GetSelectedTool()
 ' Store the tool number in a passing DRO right away
 SetUserDRO(1899, tool)
-' Declare variables
+
+' ========================================
+' === POSITION VARIABLE INITIALIZATION ===
+' ========================================
+' Initialize position and control variables
 xOff = 0
 yOff = 0
 muxOut = 0
 mSel = 0
-' Tool selection and positioning
+
+' ========================================
+' === TOOL POSITION CALCULATION        ===
+' ========================================
+' Tool selection and positioning logic
 Select Case tool
 	Case 0
     	xOff = 0
@@ -139,14 +164,23 @@ Select Case tool
         	End If
     	End If
 End Select
+
+' ========================================
+' === TOOL MOVEMENT EXECUTION          ===
+' ========================================
 ' Set tool offset
 code("G52 X" & xOff & "Y" & yOff)
 sleep(500)    	 
+
 ' Wait for movement to complete
 While IsMoving()
 	sleep(100)    	 
 Wend
-' Activate tool signals
+
+' ========================================
+' === SIGNAL ACTIVATION                ===
+' ========================================
+' Activate multiplexer bit signals
 If ((muxOut And 1) = 1) Then
 	ActivateSignal(bits0)
 End If
@@ -159,6 +193,8 @@ End If
 If ((muxOut And 8) = 8) Then
 	ActivateSignal(bits3)
 End If
+
+' Activate magazine selection signals
 If (mSel = 1) Then
 	ActivateSignal(m1Out)
 End If
@@ -168,13 +204,22 @@ End If
 If (mSel = 3) Then
 	ActivateSignal(m3Out)
 End If
+
+' ========================================
+' === TOOL STATE UPDATE                ===
+' ========================================
 ' Set current tool in Mach3 system
 SetCurrentTool(tool)
 ' Make sure the passing DRO still has the correct value
 SetUserDRO(1899, tool)
 sleep(500)
 
+' ========================================
+' === TOOL DATA SYNCHRONIZATION        ===
+' ========================================
+
 ' After tool change completes successfully, update the tool data
+
 If GetOEMDRO(824) > 0 Then  ' Check if tool change was successful
     ' The tool number is already stored in DRO 1899
     

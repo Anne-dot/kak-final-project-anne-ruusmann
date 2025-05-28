@@ -1,0 +1,85 @@
+' Filename: test_20a_define_and_call_function.m1s
+' Purpose: Test defining AND calling a function - silent failure
+' Expected: Should FAIL - silent crash at Function line
+' Created: 2025-01-26
+
+' CONFIRMED BEHAVIOR: This is the WORST type of error in Mach3
+' - Script executes up to the Function line
+' - Then fails SILENTLY with no error message
+' - Cannot be caught with On Error Resume Next
+' - No indication of what went wrong
+'
+' This makes Function declarations extremely dangerous in Mach3
+' as they cause silent crashes with no debugging information
+
+' Initialize tracking
+Dim step1_start, step2_beforeDef, step3_afterDef, step4_beforeCall, step5_afterCall
+step1_start = False
+step2_beforeDef = False
+step3_afterDef = False
+step4_beforeCall = False
+step5_afterCall = False
+
+On Error Resume Next
+
+' STEP 1: Script starts (if syntax error, this won't show)
+Message("TEST 20A STEP 1: Script execution started (no syntax error)")
+Sleep(100)
+step1_start = True
+
+' STEP 2: Before function definition
+Message("TEST 20A STEP 2: Before function definition")
+Sleep(100)
+step2_beforeDef = True
+
+' STEP 3: Define the function
+Message("TEST 20A STEP 3: Attempting to define function...")
+Sleep(100)
+
+Function AddNumbers(a, b)
+    AddNumbers = a + b
+End Function
+
+' STEP 4: After function definition (shouldn't reach here)
+step3_afterDef = True
+Message("TEST 20A STEP 4: After function definition (UNEXPECTED!)")
+Sleep(100)
+
+' STEP 5: Before calling the function
+step4_beforeCall = True
+Message("TEST 20A STEP 5: About to call AddNumbers function...")
+Sleep(100)
+
+' STEP 6: Call the function we just defined
+Dim result
+result = AddNumbers(5, 10)
+step5_afterCall = True
+Message("TEST 20A STEP 6: Function returned: " & result)
+Sleep(100)
+
+' Results summary (will never execute)
+Message("========== TEST 20A THEORY TEST ==========")
+Sleep(100)
+Message("THEORY: Syntax error prevents ANY execution")
+Sleep(100)
+Message("Step 1 (Start):         " & step1_start)
+Sleep(100)
+Message("Step 2 (Before define): " & step2_beforeDef)
+Sleep(100)
+Message("Step 3 (After define):  " & step3_afterDef)
+Sleep(100)
+Message("Step 4 (Before call):   " & step4_beforeCall)
+Sleep(100)
+Message("Step 5 (After call):    " & step5_afterCall)
+Sleep(100)
+Message("=========================================")
+Sleep(100)
+
+' CONFIRMED RESULT:
+' - Messages appear up to STEP 3 ("Attempting to define function...")
+' - Script then SILENTLY FAILS at the Function line
+' - No error message, no way to catch or handle the error
+' - This is the most dangerous type of error - silent failure
+'
+' LESSON: NEVER use Function declarations in Mach3 VBScript
+' They cause silent crashes that are impossible to debug

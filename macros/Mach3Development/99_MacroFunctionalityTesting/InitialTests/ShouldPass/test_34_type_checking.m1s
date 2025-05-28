@@ -1,0 +1,22 @@
+' Filename: test_34_type_checking.m1s
+' Purpose: Test type checking functions
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test type checking
+Dim numCheck_34, nullCheck_34, emptyCheck_34
+Dim testVar_34
+
+testVar_34 = 123
+numCheck_34 = IsNumeric(testVar_34)    ' Should be True
+
+testVar_34 = Null
+nullCheck_34 = IsNull(testVar_34)      ' Should be True
+
+testVar_34 = Empty
+emptyCheck_34 = IsEmpty(testVar_34)    ' Should be True
+
+Message("TEST 34 PASSED: IsNumeric=" & numCheck_34)
+Sleep(100)
+Message("IsNull=" & nullCheck_34 & " IsEmpty=" & emptyCheck_34)
+Sleep(100)

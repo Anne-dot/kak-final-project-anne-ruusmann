@@ -1,0 +1,16 @@
+' Filename: test_05_if_then.m1s
+' Purpose: Test If...Then...Else
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test If statement
+Dim testValue_05
+testValue_05 = 5
+
+If testValue_05 > 3 Then
+    Message("TEST 05 PASSED: If-Then works (5 > 3)")
+    Sleep(100)
+Else
+    Message("TEST 05 FAILED: If-Then logic error")
+    Sleep(100)
+End If

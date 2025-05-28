@@ -1,0 +1,15 @@
+' Filename: test_16_array_static.m1s
+' Purpose: Test static array
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test static array
+Dim myArray_16(3)
+myArray_16(0) = "A"
+myArray_16(1) = "B"
+myArray_16(2) = "C"
+
+Message("TEST 16 PASSED: Static array works")
+Sleep(100)
+Message("Array: " & myArray_16(0) & myArray_16(1) & myArray_16(2))
+Sleep(100)

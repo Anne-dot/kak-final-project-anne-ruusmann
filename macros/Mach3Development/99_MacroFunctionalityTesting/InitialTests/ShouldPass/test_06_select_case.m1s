@@ -1,0 +1,20 @@
+' Filename: test_06_select_case.m1s
+' Purpose: Test Select Case statement
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Select Case
+Dim toolNum_06
+toolNum_06 = 2
+
+Select Case toolNum_06
+    Case 1
+        Message("Tool 1 selected")
+        Sleep(100)
+    Case 2
+        Message("TEST 06 PASSED: Select Case works (Tool 2)")
+        Sleep(100)
+    Case Else
+        Message("Other tool")
+        Sleep(100)
+End Select

@@ -1,0 +1,101 @@
+' Filename: test_on_error_resume_next.m1s
+' Purpose: Test On Error Resume Next behavior and persistence
+' Expected: Error handling should work and remain active
+' Created: 2025-01-25
+
+Message("TEST: On Error Resume Next behavior")
+Sleep(100)
+
+' Test 1: Show what happens WITHOUT error handling
+Message("  Test 1: Demonstrating need for error handling")
+Sleep(100)
+Message("  Without 'On Error Resume Next', errors would crash the script")
+Sleep(100)
+
+' Test 2: Enable error handling
+On Error Resume Next
+Message("  Test 2: Error handling now enabled with 'On Error Resume Next'")
+Sleep(100)
+
+' Test 3: Generate first error (division by zero)
+Message("  Test 3: Testing division by zero")
+Sleep(100)
+Dim testDiv, error1Caught, error1Number
+testDiv = 1 / 0  ' This should generate error 11
+
+error1Number = Err.Number
+If error1Number <> 0 Then
+    error1Caught = True
+    Message("  Expected: Error 11 (Division by zero)")
+    Sleep(100)
+    Message("  Actual: Error " & error1Number & " - " & Err.Description)
+    Sleep(100)
+    Message("  Result: PASSED - Error caught, script continues")
+    Sleep(100)
+    Err.Clear
+Else
+    error1Caught = False
+    Message("  Expected: Error 11")
+    Sleep(100)
+    Message("  Actual: No error")
+    Sleep(100)
+    Message("  Result: FAILED - Division by zero didn't error!")
+    Sleep(100)
+End If
+
+' Test 4: Verify error handling persists after Err.Clear
+Message("  Test 4: Testing array out of bounds")
+Sleep(100)
+Dim testArray, badIndex, error2Number
+testArray = Array(1, 2, 3)
+badIndex = testArray(10)  ' This should generate error 9
+
+error2Number = Err.Number
+If error2Number <> 0 Then
+    Message("  Expected: Error 9 (Subscript out of range)")
+    Sleep(100)
+    Message("  Actual: Error " & error2Number & " - " & Err.Description)
+    Sleep(100)
+    Message("  Result: PASSED - Error handling still active after Err.Clear")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("  Expected: Error 9")
+    Sleep(100)
+    Message("  Actual: No error")
+    Sleep(100)
+    Message("  Result: FAILED - Array access didn't error!")
+    Sleep(100)
+End If
+
+' Test 5: Verify normal operations work between errors
+Message("  Test 5: Normal operations between errors")
+Sleep(100)
+Dim normalVar, mathResult
+normalVar = 42
+mathResult = 10 + 20
+Message("  Expected: normalVar=42, mathResult=30")
+Sleep(100)
+Message("  Actual: normalVar=" & normalVar & ", mathResult=" & mathResult)
+Sleep(100)
+
+' Final validation
+If error1Caught And error2Number = 9 And normalVar = 42 And mathResult = 30 Then
+    Message("  FINAL RESULT: PASSED")
+    Sleep(100)
+    Message("  - Errors were caught (not crashed)")
+    Sleep(100)
+    Message("  - Error handling persisted after Err.Clear")
+    Sleep(100)
+    Message("  - Normal code executed between errors")
+    Sleep(100)
+Else
+    Message("  FINAL RESULT: FAILED")
+    Sleep(100)
+    Message("  - error1Caught=" & error1Caught)
+    Sleep(100)
+    Message("  - error2Number=" & error2Number)
+    Sleep(100)
+    Message("  - normalVar=" & normalVar)
+    Sleep(100)
+End If

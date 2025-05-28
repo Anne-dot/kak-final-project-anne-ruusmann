@@ -1,0 +1,12 @@
+' Filename: test_11_string_len.m1s
+' Purpose: Test Len() function
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Len function
+Dim testStr_11, length_11
+testStr_11 = "Hello"
+length_11 = Len(testStr_11)
+
+Message("TEST 11 PASSED: Len() works, length = " & length_11)
+Sleep(100)

@@ -1,0 +1,18 @@
+' Filename: test_10_exit_for.m1s
+' Purpose: Test Exit For statement
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Exit For
+Dim j_10, result_10
+result_10 = 0
+
+For j_10 = 1 To 10
+    result_10 = j_10
+    If j_10 = 3 Then
+        Exit For
+    End If
+Next
+
+Message("TEST 10 PASSED: Exit For works, stopped at " & result_10)
+Sleep(100)

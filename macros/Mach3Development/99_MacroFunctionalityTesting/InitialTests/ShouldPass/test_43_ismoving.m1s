@@ -1,0 +1,29 @@
+' Filename: test_43_ismoving.m1s
+' Purpose: Test IsMoving() function
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test IsMoving
+On Error Resume Next
+Dim moving_43
+
+' Check if machine is moving
+moving_43 = IsMoving()
+
+If Err.Number <> 0 Then
+    Message("TEST 43 FAILED: IsMoving() error")
+    Sleep(100)
+    Err.Clear
+Else
+    Message("TEST 43 PASSED: IsMoving = " & moving_43)
+    Sleep(100)
+    
+    ' Typical usage pattern
+    If moving_43 Then
+        Message("Machine is currently moving")
+        Sleep(100)
+    Else
+        Message("Machine is stopped")
+        Sleep(100)
+    End If
+End If

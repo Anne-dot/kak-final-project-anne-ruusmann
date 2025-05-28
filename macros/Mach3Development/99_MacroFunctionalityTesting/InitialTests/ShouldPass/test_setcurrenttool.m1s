@@ -1,0 +1,99 @@
+' Filename: test_setcurrenttool.m1s
+' Purpose: Test SetCurrentTool() function for changing active tool
+' Used in: Initial testing of Mach3 tool change functions
+' Status: Test
+' Created: 2025-03-05
+' WARNING: This test changes the current tool - may affect machine state!
+
+' Debug configuration
+' Set to True for detailed diagnostic messages, False for production use
+Const DEBUG_MODE_setcurrenttool = True
+
+' Timing constants
+Const MESSAGE_DELAY_setcurrenttool = 100     ' Standard message delay in milliseconds
+Const DEBUG_DELAY_setcurrenttool = 50        ' Debug message delay in milliseconds
+Const ERROR_DELAY_setcurrenttool = 150       ' Error message delay in milliseconds
+Const PAUSE_DELAY_setcurrenttool = 500       ' Pause between operations
+
+' Test configuration
+Const TEST_TOOL_NUMBER_setcurrenttool = 5    ' Tool number to test with
+
+' Test execution
+Message("WARNING: This test will change the current tool!")
+Sleep(ERROR_DELAY_setcurrenttool)
+
+' Get and save original tool number
+Dim originalTool_setcurrenttool, newTool_setcurrenttool
+originalTool_setcurrenttool = GetCurrentTool()
+
+Message("INFO: Original tool number: " & originalTool_setcurrenttool)
+Sleep(MESSAGE_DELAY_setcurrenttool)
+
+' Test setting a new tool
+Message("INFO: Attempting to set tool to #" & TEST_TOOL_NUMBER_setcurrenttool)
+Sleep(MESSAGE_DELAY_setcurrenttool)
+
+On Error Resume Next
+SetCurrentTool(TEST_TOOL_NUMBER_setcurrenttool)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to set current tool - " & Err.Description)
+    Sleep(ERROR_DELAY_setcurrenttool)
+    Err.Clear
+Else
+    Message("SUCCESS: SetCurrentTool(" & TEST_TOOL_NUMBER_setcurrenttool & ") executed")
+    Sleep(MESSAGE_DELAY_setcurrenttool)
+    
+    ' Wait a moment for the change to take effect
+    Sleep(PAUSE_DELAY_setcurrenttool)
+    
+    ' Verify the change
+    newTool_setcurrenttool = GetCurrentTool()
+    If newTool_setcurrenttool = TEST_TOOL_NUMBER_setcurrenttool Then
+        Message("SUCCESS: Tool changed successfully to #" & newTool_setcurrenttool)
+        Sleep(MESSAGE_DELAY_setcurrenttool)
+    Else
+        Message("ERROR: Tool mismatch - expected #" & TEST_TOOL_NUMBER_setcurrenttool & " but got #" & newTool_setcurrenttool)
+        Sleep(ERROR_DELAY_setcurrenttool)
+    End If
+End If
+
+
+' Debug mode - additional testing
+If DEBUG_MODE_setcurrenttool Then
+    Message("DEBUG: Testing edge cases...")
+    Sleep(DEBUG_DELAY_setcurrenttool)
+    
+    ' Test setting tool 0
+    SetCurrentTool(0)
+    Sleep(PAUSE_DELAY_setcurrenttool)
+    newTool_setcurrenttool = GetCurrentTool()
+    Message("DEBUG: Set tool 0, result: " & newTool_setcurrenttool)
+    Sleep(DEBUG_DELAY_setcurrenttool)
+    
+    ' Test with high tool number
+    SetCurrentTool(99)
+    Sleep(PAUSE_DELAY_setcurrenttool)
+    newTool_setcurrenttool = GetCurrentTool()
+    Message("DEBUG: Set tool 99, result: " & newTool_setcurrenttool)
+    Sleep(DEBUG_DELAY_setcurrenttool)
+End If
+
+' Restore original tool
+Message("INFO: Restoring original tool #" & originalTool_setcurrenttool)
+Sleep(MESSAGE_DELAY_setcurrenttool)
+
+On Error Resume Next
+SetCurrentTool(originalTool_setcurrenttool)
+Sleep(PAUSE_DELAY_setcurrenttool)
+newTool_setcurrenttool = GetCurrentTool()
+If newTool_setcurrenttool = originalTool_setcurrenttool Then
+    Message("SUCCESS: Original tool restored")
+    Sleep(MESSAGE_DELAY_setcurrenttool)
+Else
+    Message("WARNING: Could not restore original tool (expected #" & originalTool_setcurrenttool & ", got #" & newTool_setcurrenttool & ")")
+    Sleep(MESSAGE_DELAY_setcurrenttool)
+End If
+
+
+Message("INFO: SetCurrentTool() test completed")
+Sleep(MESSAGE_DELAY_setcurrenttool)

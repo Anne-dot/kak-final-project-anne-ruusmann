@@ -1,0 +1,27 @@
+' Filename: test_26_create_text_file.m1s
+' Purpose: Test CreateTextFile method
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test CreateTextFile
+On Error Resume Next
+Dim fso_26, mainFolder_26, testFile_26, file_26
+Set fso_26 = CreateObject("Scripting.FileSystemObject")
+
+mainFolder_26 = GetMainFolder()
+testFile_26 = mainFolder_26 & "test_output.txt"
+
+Set file_26 = fso_26.CreateTextFile(testFile_26, True)
+
+If Err.Number <> 0 Then
+    Message("TEST 26 FAILED: CreateTextFile error - " & Err.Description)
+    Sleep(100)
+    Err.Clear
+Else
+    file_26.WriteLine("Test file created by macro")
+    file_26.Close
+    Message("TEST 26 PASSED: CreateTextFile works")
+    Sleep(100)
+    ' Clean up
+    fso_26.DeleteFile(testFile_26)
+End If

@@ -1,0 +1,85 @@
+' Filename: test_gettoolparam.m1s
+' Purpose: Test GetToolParam() function for reading tool parameters
+' Used in: Initial testing of Mach3 tool parameter functions
+' Status: Test
+' Created: 2025-03-05
+' Reference: Mach3 tool parameters typically include diameter, length, offsets
+
+' Debug configuration
+' Set to True for detailed diagnostic messages, False for production use
+Const DEBUG_MODE_gettoolparam = True
+
+' Timing constants
+Const MESSAGE_DELAY_gettoolparam = 100     ' Standard message delay in milliseconds
+Const DEBUG_DELAY_gettoolparam = 50        ' Debug message delay in milliseconds
+Const ERROR_DELAY_gettoolparam = 150       ' Error message delay in milliseconds
+
+' Tool parameter constants (typical Mach3 parameters)
+Const PARAM_DIAMETER_gettoolparam = 1      ' Tool diameter
+Const PARAM_LENGTH_gettoolparam = 2        ' Tool length
+Const PARAM_WEAR_gettoolparam = 3          ' Tool wear offset
+
+' Test execution
+Message("INFO: Starting GetToolParam() test")
+Sleep(MESSAGE_DELAY_gettoolparam)
+
+' Get current tool number first
+Dim currentTool_gettoolparam, toolDiameter_gettoolparam, toolLength_gettoolparam, toolWear_gettoolparam
+currentTool_gettoolparam = GetCurrentTool()
+
+Message("INFO: Testing parameters for tool #" & currentTool_gettoolparam)
+Sleep(MESSAGE_DELAY_gettoolparam)
+
+' Test getting tool diameter
+On Error Resume Next
+toolDiameter_gettoolparam = GetToolParam(currentTool_gettoolparam, PARAM_DIAMETER_gettoolparam)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to get tool diameter - " & Err.Description)
+    Sleep(ERROR_DELAY_gettoolparam)
+    Err.Clear
+Else
+    Message("SUCCESS: Tool diameter = " & toolDiameter_gettoolparam & " mm")
+    Sleep(MESSAGE_DELAY_gettoolparam)
+End If
+
+
+' Test getting tool length
+On Error Resume Next
+toolLength_gettoolparam = GetToolParam(currentTool_gettoolparam, PARAM_LENGTH_gettoolparam)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to get tool length - " & Err.Description)
+    Sleep(ERROR_DELAY_gettoolparam)
+    Err.Clear
+Else
+    Message("SUCCESS: Tool length = " & toolLength_gettoolparam & " mm")
+    Sleep(MESSAGE_DELAY_gettoolparam)
+End If
+
+
+' Test getting tool wear offset
+On Error Resume Next
+toolWear_gettoolparam = GetToolParam(currentTool_gettoolparam, PARAM_WEAR_gettoolparam)
+If Err.Number <> 0 Then
+    Message("ERROR: Failed to get tool wear - " & Err.Description)
+    Sleep(ERROR_DELAY_gettoolparam)
+    Err.Clear
+Else
+    Message("SUCCESS: Tool wear offset = " & toolWear_gettoolparam & " mm")
+    Sleep(MESSAGE_DELAY_gettoolparam)
+End If
+
+
+' Debug mode detailed reporting
+If DEBUG_MODE_gettoolparam Then
+    Message("DEBUG: Complete tool #" & currentTool_gettoolparam & " parameters:")
+    Sleep(DEBUG_DELAY_gettoolparam)
+    Message("DEBUG:   Diameter: " & toolDiameter_gettoolparam & " mm")
+    Sleep(DEBUG_DELAY_gettoolparam)
+    Message("DEBUG:   Length: " & toolLength_gettoolparam & " mm")
+    Sleep(DEBUG_DELAY_gettoolparam)
+    Message("DEBUG:   Wear: " & toolWear_gettoolparam & " mm")
+    Sleep(DEBUG_DELAY_gettoolparam)
+End If
+
+Message("INFO: GetToolParam() test completed")
+Sleep(MESSAGE_DELAY_gettoolparam)

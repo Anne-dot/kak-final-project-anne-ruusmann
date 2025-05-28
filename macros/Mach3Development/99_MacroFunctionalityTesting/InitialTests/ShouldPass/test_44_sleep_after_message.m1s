@@ -1,0 +1,17 @@
+' Filename: test_44_sleep_after_message.m1s
+' Purpose: Test critical Sleep() after Message()
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test Sleep after Message requirement
+Message("TEST 44: Testing message WITHOUT Sleep")
+' NO SLEEP - This message might be lost!
+
+Message("TEST 44: Testing message WITH Sleep")
+Sleep(100)  ' This ensures message is displayed
+
+Message("CRITICAL: Always use Sleep() after Message()")
+Sleep(100)
+
+Message("TEST 44 PASSED: Sleep requirement demonstrated")
+Sleep(100)

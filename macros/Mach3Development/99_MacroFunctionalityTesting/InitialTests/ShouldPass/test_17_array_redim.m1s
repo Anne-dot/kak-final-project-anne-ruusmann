@@ -1,0 +1,20 @@
+' Filename: test_17_array_redim.m1s
+' Purpose: Test dynamic array with ReDim
+' Expected: Should work
+' Created: 2025-03-05
+
+' Test dynamic array
+Dim dynArray_17()
+ReDim dynArray_17(2)
+dynArray_17(0) = 10
+dynArray_17(1) = 20
+
+Message("TEST 17 PASSED: ReDim works")
+Sleep(100)
+
+' Test ReDim Preserve
+ReDim Preserve dynArray_17(3)
+dynArray_17(2) = 30
+
+Message("ReDim Preserve works, values: " & dynArray_17(0) & "," & dynArray_17(1) & "," & dynArray_17(2))
+Sleep(100)

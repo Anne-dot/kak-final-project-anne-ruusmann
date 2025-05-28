@@ -1,0 +1,152 @@
+' Filename: test_37_settimer_gettimer.m1s
+' Purpose: Test SetTimer/GetTimer reliability with various intervals
+' Expected: Should FAIL if results are unreliable/inconsistent
+' Created: 2025-03-05
+
+' Test SetTimer/GetTimer reliability with different time intervals
+On Error Resume Next
+
+Message("TEST 37: Testing SetTimer/GetTimer reliability")
+Sleep(100)
+
+' Test parameters
+Dim timerNum, totalTests, passCount, failCount
+Dim maxErrorPercent, overallReliable
+timerNum = 1
+totalTests = 0
+passCount = 0
+failCount = 0
+maxErrorPercent = 5  ' Allow up to 5% error margin (50ms for 1000ms)
+overallReliable = True
+
+' Test 1: Short interval (100ms)
+Message("Test 1: 100ms interval")
+Sleep(100)
+Dim i
+For i = 1 To 3
+    SetTimer(timerNum)
+    Sleep(100)
+    
+    Dim timerVal, expectedTime, errorPercent
+    timerVal = GetTimer(timerNum)
+    expectedTime = 100
+    
+    If Err.Number <> 0 Then
+        Message("  Run " & i & ": ERROR - " & Err.Description)
+        Sleep(100)
+        failCount = failCount + 1
+        Err.Clear
+    Else
+        errorPercent = Abs(timerVal - expectedTime) / expectedTime * 100
+        
+        If errorPercent <= maxErrorPercent Then
+            Message("  Run " & i & ": " & timerVal & "ms (error: " & Round(errorPercent) & "% - OK)")
+            Sleep(100)
+            passCount = passCount + 1
+        Else
+            Message("  Run " & i & ": " & timerVal & "ms (error: " & Round(errorPercent) & "% - FAIL)")
+            Sleep(100)
+            failCount = failCount + 1
+            overallReliable = False
+        End If
+    End If
+    totalTests = totalTests + 1
+Next
+
+' Test 2: Medium interval (500ms)
+Message("Test 2: 500ms interval")
+Sleep(100)
+For i = 1 To 3
+    SetTimer(timerNum)
+    Sleep(500)
+    
+    timerVal = GetTimer(timerNum)
+    expectedTime = 500
+    
+    If Err.Number <> 0 Then
+        Message("  Run " & i & ": ERROR - " & Err.Description)
+        Sleep(100)
+        failCount = failCount + 1
+        Err.Clear
+    Else
+        errorPercent = Abs(timerVal - expectedTime) / expectedTime * 100
+        
+        If errorPercent <= maxErrorPercent Then
+            Message("  Run " & i & ": " & timerVal & "ms (error: " & Round(errorPercent) & "% - OK)")
+            Sleep(100)
+            passCount = passCount + 1
+        Else
+            Message("  Run " & i & ": " & timerVal & "ms (error: " & Round(errorPercent) & "% - FAIL)")
+            Sleep(100)
+            failCount = failCount + 1
+            overallReliable = False
+        End If
+    End If
+    totalTests = totalTests + 1
+Next
+
+' Test 3: Long interval (1000ms)
+Message("Test 3: 1000ms interval")
+Sleep(100)
+For i = 1 To 2
+    SetTimer(timerNum)
+    Sleep(1000)
+    
+    timerVal = GetTimer(timerNum)
+    expectedTime = 1000
+    
+    If Err.Number <> 0 Then
+        Message("  Run " & i & ": ERROR - " & Err.Description)
+        Sleep(100)
+        failCount = failCount + 1
+        Err.Clear
+    Else
+        errorPercent = Abs(timerVal - expectedTime) / expectedTime * 100
+        
+        If errorPercent <= maxErrorPercent Then
+            Message("  Run " & i & ": " & timerVal & "ms (error: " & Round(errorPercent) & "% - OK)")
+            Sleep(100)
+            passCount = passCount + 1
+        Else
+            Message("  Run " & i & ": " & timerVal & "ms (error: " & Round(errorPercent) & "% - FAIL)")
+            Sleep(100)
+            failCount = failCount + 1
+            overallReliable = False
+        End If
+    End If
+    totalTests = totalTests + 1
+Next
+
+' Calculate success rate
+Dim successRate
+successRate = (passCount / totalTests) * 100
+
+' Summary
+Message("========== TEST 37 SUMMARY ==========")
+Sleep(100)
+Message("Total tests: " & totalTests)
+Sleep(100)
+Message("Passed: " & passCount & " (" & Round(successRate) & "%)")
+Sleep(100)
+Message("Failed: " & failCount & " (" & Round(100 - successRate) & "%)")
+Sleep(100)
+Message("Max allowed error: " & maxErrorPercent & "% (5ms@100ms, 25ms@500ms, 50ms@1000ms)")
+Sleep(100)
+
+' Determine overall pass/fail
+If successRate >= 80 And overallReliable Then
+    Message("TEST 37 PASSED: SetTimer/GetTimer is reliable")
+    Sleep(100)
+Else
+    Message("TEST 37 FAILED: SetTimer/GetTimer is UNRELIABLE!")
+    Sleep(100)
+    If successRate < 80 Then
+        Message("  Reason: Only " & Round(successRate) & "% success rate")
+        Sleep(100)
+    End If
+    Message("  Known issue: 91-93% failure rate reported")
+    Sleep(100)
+End If
+
+' NOTE: This test is in ShouldFail because SetTimer/GetTimer
+' are known to be unreliable in Mach3 (91-93% failure rate)
