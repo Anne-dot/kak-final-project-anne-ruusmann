@@ -77,6 +77,16 @@ I'm also passionate about sustainability - I believe that good design, maintaina
 
 If this sparks your interest or you'd like to collaborate, please reach out! I'm always eager to connect with people who share these interests, as I've found that there are few people around me who get as excited about CNC automation and programming as I do.
 
+## ⚠️ Known Limitations
+
+### File Lock Detection
+The current file lock detection system (`file_lock_utils.py`) has limitations:
+- Cannot reliably detect when files are open in Notepad or other text editors
+- Lock detection behavior varies between Windows and Linux platforms
+- Currently only manages `.lock` files, not actual file access conflicts
+
+**Note:** Since the browser-based UI is under development, users currently edit files directly in Notepad. This module requires rework for production use.
+
 ## 🛠️ Contributing
 
 Please read `CLAUDE.md` for details on our code of conduct and the process for submitting pull requests.

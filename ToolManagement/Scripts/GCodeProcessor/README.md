@@ -46,6 +46,16 @@ The GCodeProcessor is responsible for:
 - Apply consistent line numbering
 - Format comments appropriately
 
+## Planned Improvements
+
+### File Loading Architecture
+- **TODO**: Implement `GCodeFileLoader` class inheriting from `BaseFileLoader`
+  - Consistent file handling across the project
+  - Automatic validation and error handling
+  - Platform-aware file selection
+  - Standardized logging
+  - This will allow GCodeProcessor to focus solely on G-code processing logic
+
 ## Data Flow
 
 Input:
