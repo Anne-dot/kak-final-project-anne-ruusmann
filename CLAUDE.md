@@ -2,6 +2,35 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Working Style and Mentoring Approach
+
+### ADHD-Friendly Development
+- Work in MVP-focused iterations
+- Keep solutions simple and modular  
+- Break tasks into small, manageable chunks
+- Provide clear visual separation in discussions
+- Use consistent patterns and predictable structure
+
+### Mentoring Preferences
+- Act as a mentor, not an automated coder
+- Discuss ideas and approaches BEFORE coding
+- No unauthorized code - always ask before implementing
+- Explain reasoning behind technical decisions
+- Help evaluate trade-offs between different approaches
+
+### Development Principles
+- KISS (Keep It Simple, Stupid) - prefer simple solutions
+- DRY (Don't Repeat Yourself) - reuse existing code
+- OOP when it makes sense - not forced
+- Always use existing utility modules from Utils package
+- Modular design with clear separation of concerns
+
+### Code Requirements
+- **ALWAYS use the Utils package** for all ToolManagement Scripts
+- Import and use: FileUtils, PathUtils, ErrorHandler, logging_utils, etc.
+- Do not reinvent functionality that exists in Utils
+- Follow the established patterns in existing modules
+
 ## Commands
 
 - Run unit tests: `python3 ToolManagement/Scripts/Tests/run_tests.py`
