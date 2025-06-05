@@ -1,5 +1,5 @@
 """
-G-code generator module for orchestrating the complete G-code generation process.
+G-code program generator module for orchestrating the complete G-code generation process.
 
 This module coordinates tool matching, drilling operations, and program structure
 to generate complete G-code programs from processed drilling data.

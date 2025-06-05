@@ -178,7 +178,7 @@ def generate_drilling_sequence(
 
         # Return to safe height
         safe_z = machine_settings.get_safe_z_height()
-        gcode_lines.append(f"G53 G00 Z{safe_z:.1f} (Return to safe height)")
+        gcode_lines.append(f"G53 G00 Z{safe_z:.3f} (Return to safe height)")
 
         return ErrorHandler.create_success_response(
             f"Generated {len(gcode_lines)} lines for {axis}{'+' if direction_sign > 0 else '-'} drilling",

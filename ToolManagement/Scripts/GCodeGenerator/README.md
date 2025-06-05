@@ -29,15 +29,15 @@ The GCodeGenerator is responsible for:
 - Support coordinate system selection based on workpiece dimensions
 - Format coordinates and apply machine conventions
 - Provide M-code references for specialized positioning operations
-- Support 1-decimal precision for woodworking operations
+- Support 3-decimal precision for all coordinates
 
-### `drilling_operations.py` (Planned)
+### `drilling_operations.py` (Implemented)
 - Generate G-code for horizontal drilling operations
 - Calculate appropriate approach, drilling, and retraction movements
 - Handle feed rates for different drilling phases
 - Coordinate with VBScript macros for specialized positioning
 
-### `generator.py` (Planned)
+### `gcode_program_generator.py` (Planned)
 - Orchestrate the G-code generation process
 - Apply machine-specific settings
 - Handle overall program structure
@@ -78,14 +78,14 @@ N8 M00 (WORKPIECE 400.0x600.0x18.0mm - Confirm in G56 position)
 
 N9 T1M6 (Load 8mm horizontal drill)
 N10 M03S1000 (Start spindle)
-N11 G53 G00 Z50 (Safe height in machine coords)
-N12 G00 X85.3 Y479.5 (Position at drill start location)
-N13 G00 Z9.0 (Lower to drilling depth)
+N11 G53 G00 Z50.000 (Safe height in machine coords)
+N12 G00 X85.300 Y479.500 (Position at drill start location)
+N13 G00 Z9.000 (Lower to drilling depth)
 N14 G91 (Switch to incremental mode)
-N15 G01 X15.0 F120 (Drill 15mm in X+ direction)
-N16 G01 X-15.0 F300 (Retract to start position)
+N15 G01 X15.000 F120.0 (Drill 15mm in X+ direction)
+N16 G01 X-15.000 F300.0 (Retract to start position)
 N17 G90 (Return to absolute mode)
-N18 G53 G00 Z50 (Return to safe height)
+N18 G53 G00 Z50.000 (Return to safe height)
 
 N19 M09 (Coolant off)
 N20 M05 (Spindle off)
@@ -100,12 +100,12 @@ Safety-Enhanced Output (after GCodeProcessor processing):
 
 G21 (Set units to mm)
 G90 (Set absolute positioning)
-G53 G00 Z50 (Safe height in machine coords)
+G53 G00 Z50.000 (Safe height in machine coords)
 M03S1000 (Start spindle)
 
 (8mm horizontal X+ drilling)
 T1M06 (Load 8mm bit)
-G53 G00 Z50 (Safe height in machine coords)
+G53 G00 Z50.000 (Safe height in machine coords)
 G00X85.300Y479.500 (Position at drill start location)
 G00Z9.000 (Lower to drilling depth)
 G91 (Switch to incremental mode)
@@ -114,13 +114,13 @@ G91 (Switch to incremental mode)
 #602 = 0 (Y no movement)
 #603 = 0 (Z no movement)
 M150 (Safety check)
-G01X15.000F120 (Drill 15mm in X+ direction)
+G01X15.000F120.0 (Drill 15mm in X+ direction)
 #600 = 1 (G1 mode)
 #601 = 1 (X movement)
 #602 = 0 (Y no movement)
 #603 = 0 (Z no movement)
 M150 (Safety check)
-G01X-15.000F300 (Retract to start position)
+G01X-15.000F300.0 (Retract to start position)
 G90 (Return to absolute mode)
 G53 G00 Z50 (Return to safe height)
 
@@ -149,7 +149,7 @@ For the initial implementation, the focus will be on:
 - [DONE] Safe Z height reading from m6start.m1s macro (single source of truth)
 - [DONE] Horizontal drilling operations generator
 - [TODO] M-code macros for specialized positioning
-- [TODO] Complete G-code generator
+- [TODO] Complete G-code program generator
 
 ## Boundaries
 
@@ -158,4 +158,5 @@ This package:
 - Supports horizontal drilling operations only (no vertical drilling in MVP)
 - Requires specific M-code macros for specialized positioning
 - Targets Mach3 controller compatibility
-- Uses 1-decimal precision for woodworking operations
+- Uses 3-decimal precision for all coordinates
+- Uses 1-decimal precision for feed rates and spindle speeds
