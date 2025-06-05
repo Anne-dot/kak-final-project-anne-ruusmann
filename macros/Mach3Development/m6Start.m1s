@@ -4,7 +4,8 @@
 ' ========================================
 ' === VARIABLE DECLARATIONS            ===
 ' ========================================
-Dim tool, xOff, yOff, muxOut, mSel
+Dim tool, xOff, yOff, muxOut, mSel, tooltipZOffset
+tooltipZOffset = 0  ' Default value, only horizontal drills will override
 
 ' ========================================
 ' === CONFIGURATION CONSTANTS          ===
@@ -12,6 +13,9 @@ Dim tool, xOff, yOff, muxOut, mSel
 ' Tool Spacing Configuration
 Const toolSpaceX = 32
 Const toolSpaceY = 32
+
+' Tool Change Parameters
+Const TOOL_CHANGE_HEIGHT = 50  ' TODO: Verify this height value
 
 ' Magazine Offset Positions
 Const M1_OFFSET_X = 81
@@ -75,78 +79,112 @@ Select Case tool
     	muxOut = 0
     	mSel = 3
 	Case 22
+    	' Direction 3 = Y+
+    	toolLength = 150     ' TODO: Verify
+    	holderZOffset = 30   ' TODO: Measure
+    	tooltipZOffset = 5   ' TODO: Measure
+    	holderYOffset = 75   ' TODO: Measure
     	xOff = toolSpaceX * 3
-    	yOff = toolSpaceY * -2
+    	yOff = (toolSpaceY * -2) - holderYOffset - toolLength
     	muxOut = 1
 	Case 23
+    	' Direction 4 = Y-
+    	toolLength = 150     ' TODO: Verify
+    	holderZOffset = 30   ' TODO: Measure
+    	tooltipZOffset = 5   ' TODO: Measure
+    	holderYOffset = 75   ' TODO: Measure
+    	xOff = toolSpaceX * 3
+    	yOff = (toolSpaceY * -2) + holderYOffset + toolLength
+    	muxOut = 1
+	Case 24
     	xOff = toolSpaceX * 2
     	yOff = toolSpaceY * -3
     	muxOut = 2
-	Case 24
+	Case 25
     	xOff = toolSpaceX * 2
     	yOff = toolSpaceY * -2
     	muxOut = 3
-	Case 25
+	Case 26
     	xOff = toolSpaceX * 2
     	yOff = toolSpaceY * -1    
     	muxOut = 4
-	Case 26
+	Case 27
     	xOff = toolSpaceX * 2
     	yOff = toolSpaceY * 0    
     	muxOut = 5
-	Case 27
+	Case 28
     	xOff = toolSpaceX * 2
     	yOff = toolSpaceY * 1    
     	muxOut = 6
-	Case 28
-    	xOff = toolSpaceX * -2
+	Case 29
+    	' Direction 1 = X+
+    	toolLength = 150     ' TODO: Verify
+    	holderZOffset = 20   ' TODO: Measure
+    	tooltipZOffset = 5   ' TODO: Measure
+    	holderXOffset = 75   ' TODO: Measure
+    	xOff = (toolSpaceX * -2) - holderXOffset - toolLength
     	yOff = toolSpaceY * -1    
     	muxOut = 7
-	Case 29
+	Case 30
+    	' Direction 2 = X-
+    	toolLength = 150     ' TODO: Verify
+    	holderZOffset = 20   ' TODO: Measure
+    	tooltipZOffset = 5   ' TODO: Measure
+    	holderXOffset = 75   ' TODO: Measure
+    	xOff = (toolSpaceX * -2) + holderXOffset + toolLength
+    	yOff = toolSpaceY * -1    
+    	muxOut = 7
+	Case 31
     	' center tool
     	xOff = toolSpaceX * 0
     	yOff = toolSpaceY * 0    
     	muxOut = 8
-	Case 30
+	Case 32
     	xOff = toolSpaceX * -1
     	yOff = toolSpaceY * 0    
     	muxOut = 9
-	Case 31
+	Case 33
     	xOff = toolSpaceX * -2
     	yOff = toolSpaceY * 0    
     	muxOut = 10
-	Case 32
+	Case 34
     	xOff = toolSpaceX * -3
     	yOff = toolSpaceY * 0    
     	muxOut = 11
-	Case 33
+	Case 35
     	xOff = toolSpaceX * -4
     	yOff = toolSpaceY * 0    
     	muxOut = 12
-	Case 34
+	Case 36
     	xOff = toolSpaceX * -5
     	yOff = toolSpaceY * 0    
     	muxOut = 13
-	Case 35
+	Case 37
     	xOff = toolSpaceX * -6
     	yOff = toolSpaceY * 0    
     	muxOut = 14
-	Case 36
+	Case 38
     	xOff = toolSpaceX * -7
     	yOff = toolSpaceY * 0    
     	muxOut = 15
-	Case 37
-    	xOff = toolSpaceX * -2
+	Case 39
+    	' Direction 1 = X+
+    	toolLength = 100     ' TODO: Verify
+    	holderZOffset = 15   ' TODO: Measure  
+    	tooltipZOffset = 3   ' TODO: Measure
+    	holderXOffset = 75   ' TODO: Measure
+    	xOff = (toolSpaceX * -2) - holderXOffset - toolLength
     	yOff = toolSpaceY * -1    
     	muxOut = 16
-	Case 42
-    	xOff = toolSpaceX * 3
-    	yOff = toolSpaceY * -2
-    	muxOut = 1
-	Case 48
-    	xOff = toolSpaceX * -2
+	Case 40
+    	' Direction 2 = X-
+    	toolLength = 100     ' TODO: Verify
+    	holderZOffset = 15   ' TODO: Measure
+    	tooltipZOffset = 3   ' TODO: Measure
+    	holderXOffset = 75   ' TODO: Measure
+    	xOff = (toolSpaceX * -2) + holderXOffset + toolLength
     	yOff = toolSpaceY * -1    
-    	muxOut = 7
+    	muxOut = 16
 	Case Else
     	muxOut = 0
     	If (tool >= 1 And tool <= 10) Then 'M1
@@ -168,13 +206,19 @@ End Select
 ' ========================================
 ' === TOOL MOVEMENT EXECUTION          ===
 ' ========================================
+' Move to safe tool change height in machine coordinates
+Code("G53 G0 Z" & TOOL_CHANGE_HEIGHT)
+While IsMoving()
+	Sleep(100)
+Wend
+
 ' Set tool offset
-code("G52 X" & xOff & "Y" & yOff)
-sleep(500)    	 
+Code("G52 X" & xOff & "Y" & yOff & "Z" & tooltipZOffset)
+Sleep(500)    	 
 
 ' Wait for movement to complete
 While IsMoving()
-	sleep(100)    	 
+	Sleep(100)    	 
 Wend
 
 ' ========================================
