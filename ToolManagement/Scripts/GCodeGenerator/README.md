@@ -78,16 +78,19 @@ N8 M00 (WORKPIECE 400.0x600.0x18.0mm - Confirm in G56 position)
 
 N9 T1M6 (Load 8mm horizontal drill)
 N10 M03S1000 (Start spindle)
-N11 G00 X85.3 Y479.5 Z5.0 (Rapid to position)
-N12 M151 (Position Z for horizontal drilling)
-N13 G00 X75.3 (Approach position)
-N14 G01 X100.3 F120.0 (Drill 15mm in X+ direction)
-N15 G00 X75.3 (Retract)
+N11 G53 G00 Z50 (Safe height in machine coords)
+N12 G00 X85.3 Y479.5 (Position at drill start location)
+N13 G00 Z9.0 (Lower to drilling depth)
+N14 G91 (Switch to incremental mode)
+N15 G01 X15.0 F120 (Drill 15mm in X+ direction)
+N16 G01 X-15.0 F300 (Retract to start position)
+N17 G90 (Return to absolute mode)
+N18 G53 G00 Z50 (Return to safe height)
 
-N16 M09 (Coolant off)
-N17 M05 (Spindle off)
-N18 T0 (Select tool 0 (no tool))
-N19 M30 (Program end)
+N19 M09 (Coolant off)
+N20 M05 (Spindle off)
+N21 T0 (Select tool 0 (no tool))
+N22 M30 (Program end)
 ```
 
 Safety-Enhanced Output (after GCodeProcessor processing):
@@ -97,26 +100,35 @@ Safety-Enhanced Output (after GCodeProcessor processing):
 
 G21 (Set units to mm)
 G90 (Set absolute positioning)
-G00Z50.000 (Move to safe height)
+G53 G00 Z50 (Safe height in machine coords)
 M03S1000 (Start spindle)
 
 (8mm horizontal X+ drilling)
 T1M06 (Load 8mm bit)
-G00X85.300Y479.500Z5.000 (Rapid to position)
+G53 G00 Z50 (Safe height in machine coords)
+G00X85.300Y479.500 (Position at drill start location)
+G00Z9.000 (Lower to drilling depth)
+G91 (Switch to incremental mode)
 #600 = 1 (G1 mode)
 #601 = 1 (X movement)
 #602 = 0 (Y no movement)
 #603 = 0 (Z no movement)
 M150 (Safety check)
-G01X100.300F100 (Drill 15mm in X+ direction)
-G00X85.300 (Retract)
+G01X15.000F120 (Drill 15mm in X+ direction)
+#600 = 1 (G1 mode)
+#601 = 1 (X movement)
+#602 = 0 (Y no movement)
+#603 = 0 (Z no movement)
+M150 (Safety check)
+G01X-15.000F300 (Retract to start position)
+G90 (Return to absolute mode)
+G53 G00 Z50 (Return to safe height)
 
-G00Z50.000 (Move to safe height)
 M09 (Coolant off)
 M30 (Program end)
 
 (End of safety-enhanced G-code)
-(Added 1 safety checks)
+(Added 2 safety checks)
 ```
 
 ## MVP Focus
@@ -134,7 +146,8 @@ For the initial implementation, the focus will be on:
 - [DONE] Tool matching for horizontal drilling tools
 - [DONE] Machine settings management with coordinate system selection
 - [DONE] G-code header/footer generation with operator prompts
-- [TODO] Horizontal drilling operations generator
+- [DONE] Safe Z height reading from m6start.m1s macro (single source of truth)
+- [DONE] Horizontal drilling operations generator
 - [TODO] M-code macros for specialized positioning
 - [TODO] Complete G-code generator
 

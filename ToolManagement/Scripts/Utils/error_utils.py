@@ -15,16 +15,15 @@ Classes:
     ErrorHandler: Main class for error handling operations
 """
 
-import os
-import sys
-import traceback
 import enum
+import traceback
 from pathlib import Path
-from typing import Dict, Any, Optional, Union, Tuple
+from typing import Any
 
 
 class ErrorCategory(enum.Enum):
     """Enumeration of error categories for classification."""
+
     FILE = "FILE"
     VALIDATION = "VALIDATION"
     CONFIGURATION = "CONFIGURATION"
@@ -36,8 +35,9 @@ class ErrorCategory(enum.Enum):
 
 class ErrorSeverity(enum.Enum):
     """Enumeration of error severity levels."""
+
     INFO = "INFO"
-    WARNING = "WARNING" 
+    WARNING = "WARNING"
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
 
@@ -45,26 +45,26 @@ class ErrorSeverity(enum.Enum):
 class BaseError(Exception):
     """
     Base exception class for all custom exceptions.
-    
+
     This provides consistent error information across all derived exceptions.
-    
+
     Attributes:
         message (str): Human-readable error description
         category (ErrorCategory): Error category for classification
         severity (ErrorSeverity): Error severity level
         details (Dict): Additional error details
     """
-    
+
     def __init__(
-        self, 
-        message: str, 
+        self,
+        message: str,
         category: ErrorCategory = ErrorCategory.UNKNOWN,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize a BaseError.
-        
+
         Args:
             message: Human-readable error description
             category: Error category for classification (default: UNKNOWN)
@@ -76,34 +76,34 @@ class BaseError(Exception):
         self.severity = severity
         self.details = details or {}
         super().__init__(self.message)
-    
+
     def __str__(self):
         """Return string representation of the error."""
         return f"{self.severity.value} [{self.category.value}]: {self.message}"
-    
-    def to_dict(self) -> Dict[str, Any]:
+
+    def to_dict(self) -> dict[str, Any]:
         """Convert error to dictionary representation."""
         return {
             "message": self.message,
             "category": self.category.value,
             "severity": self.severity.value,
-            "details": self.details
+            "details": self.details,
         }
 
 
 class FileError(BaseError):
     """Exception raised for file-related errors."""
-    
+
     def __init__(
         self,
         message: str,
-        file_path: Optional[Union[str, Path]] = None,
+        file_path: str | Path | None = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize a FileError.
-        
+
         Args:
             message: Human-readable error description
             file_path: Path to the file causing the error (default: None)
@@ -112,32 +112,29 @@ class FileError(BaseError):
         """
         if details is None:
             details = {}
-        
+
         if file_path:
             details["file_path"] = str(file_path)
-        
+
         super().__init__(
-            message=message,
-            category=ErrorCategory.FILE,
-            severity=severity,
-            details=details
+            message=message, category=ErrorCategory.FILE, severity=severity, details=details
         )
 
 
 class ValidationError(BaseError):
     """Exception raised for data validation errors."""
-    
+
     def __init__(
         self,
         message: str,
-        field: Optional[str] = None,
-        value: Optional[Any] = None,
+        field: str | None = None,
+        value: Any | None = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize a ValidationError.
-        
+
         Args:
             message: Human-readable error description
             field: Name of the field that failed validation (default: None)
@@ -147,34 +144,31 @@ class ValidationError(BaseError):
         """
         if details is None:
             details = {}
-        
+
         if field:
             details["field"] = field
-        
+
         if value is not None:  # Allow 0, False, empty string
             details["value"] = str(value)
-        
+
         super().__init__(
-            message=message,
-            category=ErrorCategory.VALIDATION,
-            severity=severity,
-            details=details
+            message=message, category=ErrorCategory.VALIDATION, severity=severity, details=details
         )
 
 
 class ConfigurationError(BaseError):
     """Exception raised for configuration-related errors."""
-    
+
     def __init__(
         self,
         message: str,
-        param: Optional[str] = None,
+        param: str | None = None,
         severity: ErrorSeverity = ErrorSeverity.ERROR,
-        details: Optional[Dict[str, Any]] = None
+        details: dict[str, Any] | None = None,
     ):
         """
         Initialize a ConfigurationError.
-        
+
         Args:
             message: Human-readable error description
             param: Name of the configuration parameter (default: None)
@@ -183,87 +177,86 @@ class ConfigurationError(BaseError):
         """
         if details is None:
             details = {}
-        
+
         if param:
             details["param"] = param
-        
+
         super().__init__(
             message=message,
             category=ErrorCategory.CONFIGURATION,
             severity=severity,
-            details=details
+            details=details,
         )
 
 
 class ErrorHandler:
     """
     Handles error processing, formatting, and integration with logging.
-    
+
     This class provides methods for consistent error handling across
     the application, with integration to the logging system.
     """
-    
+
     @staticmethod
     def format_exception(exc: Exception) -> str:
         """
         Format an exception into a human-readable string.
-        
+
         Args:
             exc: Exception to format
-            
+
         Returns:
             str: Formatted exception message with type
         """
-        return f"{type(exc).__name__}: {str(exc)}"
-    
+        return f"{type(exc).__name__}: {exc!s}"
+
     @staticmethod
-    def get_exception_details(exc: Exception) -> Dict[str, Any]:
+    def get_exception_details(exc: Exception) -> dict[str, Any]:
         """
         Extract detailed information from an exception.
-        
+
         Args:
             exc: Exception to process
-            
+
         Returns:
             Dict: Dictionary with exception details
         """
         details = {
             "type": type(exc).__name__,
             "message": str(exc),
-            "traceback": traceback.format_exc()
+            "traceback": traceback.format_exc(),
         }
-        
+
         # Add custom attributes from BaseError
         if isinstance(exc, BaseError):
-            details.update({
-                "category": exc.category.value,
-                "severity": exc.severity.value,
-                "details": exc.details
-            })
-        
+            details.update(
+                {
+                    "category": exc.category.value,
+                    "severity": exc.severity.value,
+                    "details": exc.details,
+                }
+            )
+
         return details
-    
+
     @classmethod
     def handle_exception(
-        cls,
-        exc: Exception,
-        logger=None,
-        log_traceback: bool = True
-    ) -> Dict[str, Any]:
+        cls, exc: Exception, logger=None, log_traceback: bool = True
+    ) -> dict[str, Any]:
         """
         Handle an exception with standard formatting and optional logging.
-        
+
         Args:
             exc: Exception to handle
             logger: Logger to use for logging (default: None)
             log_traceback: Whether to include traceback in logs (default: True)
-            
+
         Returns:
             Dict: Standardized error information
         """
         # Get exception details
         error_info = cls.get_exception_details(exc)
-        
+
         # Handle logging if a logger is provided
         if logger:
             if isinstance(exc, BaseError):
@@ -279,28 +272,27 @@ class ErrorHandler:
             else:
                 # For non-custom exceptions, log as error
                 logger.error(cls.format_exception(exc))
-            
+
             # Log traceback if enabled
             if log_traceback:
                 logger.debug(f"Traceback: {error_info['traceback']}")
-        
+
         return error_info
-    
+
     @staticmethod
     def from_exception(
-        exc: Exception,
-        default_message: str = "An error occurred"
-    ) -> Tuple[bool, str, Dict[str, Any]]:
+        exc: Exception, default_message: str = "An error occurred"
+    ) -> tuple[bool, str, dict[str, Any]]:
         """
         Create a standard error response from an exception.
-        
+
         This creates a consistent (success, message, details) response
         format used throughout the application.
-        
+
         Args:
             exc: Exception to process
             default_message: Fallback message if exception has no message
-            
+
         Returns:
             Tuple: (success, message, details) where:
                 success: Always False for exceptions
@@ -309,7 +301,7 @@ class ErrorHandler:
         """
         # Format the message
         message = str(exc) if str(exc) else default_message
-        
+
         # Get exception details
         if isinstance(exc, BaseError):
             details = exc.to_dict()
@@ -318,23 +310,22 @@ class ErrorHandler:
                 "type": type(exc).__name__,
                 "message": message,
                 "category": ErrorCategory.UNKNOWN.value,
-                "severity": ErrorSeverity.ERROR.value
+                "severity": ErrorSeverity.ERROR.value,
             }
-        
+
         return False, message, details
-    
+
     @staticmethod
     def create_success_response(
-        message: str = "Operation completed successfully",
-        data: Optional[Dict[str, Any]] = None
-    ) -> Tuple[bool, str, Dict[str, Any]]:
+        message: str = "Operation completed successfully", data: dict[str, Any] | None = None
+    ) -> tuple[bool, str, dict[str, Any]]:
         """
         Create a standard success response.
-        
+
         Args:
             message: Success message
             data: Optional data to include in response
-            
+
         Returns:
             Tuple: (success, message, data) where:
                 success: Always True for success responses

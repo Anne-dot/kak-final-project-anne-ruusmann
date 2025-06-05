@@ -10,10 +10,10 @@ This script tests the basic connectivity between Python and Mach3 by:
 This is a minimal connectivity test and doesn't test specific functionality.
 """
 
-import sys
-import os
 import datetime
+import os
 import platform
+import sys
 
 # Print header
 print("Python-Mach3 Connectivity Test")

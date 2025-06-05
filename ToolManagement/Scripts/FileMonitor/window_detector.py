@@ -9,9 +9,9 @@ Note: This functionality is Windows-specific. On other platforms,
 the detection always returns False.
 """
 
-import subprocess
 import logging
 import platform
+import subprocess
 import sys
 from pathlib import Path
 
@@ -19,15 +19,16 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from Utils.config import AppConfig
 
+
 def is_tool_data_open() -> bool:
     """
     Check if tool-data file is currently open in Notepad or Wordpad.
-    
+
     On Windows: Uses PowerShell to query window titles and checks for tool-data
     related filename patterns in the window titles.
-    
+
     On other platforms: Always returns False as Notepad/Wordpad are Windows-specific.
-    
+
     Returns:
         bool: True if tool-data file is open, False otherwise
     """
@@ -35,16 +36,20 @@ def is_tool_data_open() -> bool:
     if platform.system() != "Windows":
         logging.debug(f"Window detection not supported on {platform.system()}")
         return False
-        
+
     # Window title check for various possible filename patterns
     name_variants = AppConfig.file_patterns.TOOL_DATA_WINDOW_PATTERNS
 
     try:
         # Use PowerShell to get window titles of Notepad and Wordpad processes
         result = subprocess.run(
-            ['powershell', '-Command',
-             'Get-Process | Where-Object {$_.MainWindowTitle -and ($_.ProcessName -eq "notepad" -or $_.ProcessName -eq "wordpad")} | Select-Object -ExpandProperty MainWindowTitle'],
-            capture_output=True, text=True
+            [
+                "powershell",
+                "-Command",
+                'Get-Process | Where-Object {$_.MainWindowTitle -and ($_.ProcessName -eq "notepad" -or $_.ProcessName -eq "wordpad")} | Select-Object -ExpandProperty MainWindowTitle',
+            ],
+            capture_output=True,
+            text=True,
         )
 
         # Check each window title for tool-data patterns
@@ -61,6 +66,7 @@ def is_tool_data_open() -> bool:
     except Exception as e:
         logging.error(f"Error checking window status: {e}")
         return False
+
 
 # Example use
 if __name__ == "__main__":

@@ -4,13 +4,13 @@ window_detector.py - Detects if files are open in Notepad or Wordpad.
 This module provides a simple class to detect if a specific file is
 currently open in Notepad or Wordpad by checking window titles.
 
-Place in: C:\Mach3\ToolManagement\Scripts\FileMonitor\
+Place in: C:\\Mach3\\ToolManagement\\Scripts\\FileMonitor\
 """
 
-
+import logging
 import os
 import subprocess
-import logging
+
 
 class WindowDetector:
     """Detects if files are open in Notepad or Wordpad."""
@@ -20,7 +20,7 @@ class WindowDetector:
 
         logging.basicConfig(
             level=logging.DEBUG if debug_mode else logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s'
+            format="%(asctime)s - %(levelname)s - %(message)s",
         )
         self.logger = logging.getLogger(__name__)
 
@@ -53,9 +53,13 @@ class WindowDetector:
         """Use PowerShell to get open window titles."""
         try:
             result = subprocess.run(
-                ['powershell', '-Command',
-                 'Get-Process | Where-Object {$_.MainWindowTitle -and ($_.ProcessName -eq "notepad" -or $_.ProcessName -eq "wordpad")} | Select-Object -ExpandProperty MainWindowTitle'],
-                capture_output=True, text=True
+                [
+                    "powershell",
+                    "-Command",
+                    'Get-Process | Where-Object {$_.MainWindowTitle -and ($_.ProcessName -eq "notepad" -or $_.ProcessName -eq "wordpad")} | Select-Object -ExpandProperty MainWindowTitle',
+                ],
+                capture_output=True,
+                text=True,
             )
             if self.debug_mode:
                 self.logger.debug("Open window titles:\n" + result.stdout)
@@ -63,6 +67,7 @@ class WindowDetector:
         except Exception as e:
             self.logger.error(f"Failed to retrieve open windows: {e}")
             return []
+
 
 if __name__ == "__main__":
     detector = WindowDetector(debug_mode=True)

@@ -1,12 +1,11 @@
 import subprocess
+import sys
 import time
 import unittest
 from pathlib import Path
-import os
-import sys
-import unittest
 
 from window_detector import is_tool_data_open  # assumes your function is in this file
+
 
 @unittest.skipUnless(sys.platform.startswith("win"), "Windows-only test")
 class TestToolDataWindow(unittest.TestCase):
@@ -23,7 +22,11 @@ class TestToolDataWindow(unittest.TestCase):
         self.assertTrue(is_tool_data_open())
 
         # Close Notepad
-        subprocess.run(["taskkill", "/IM", "notepad.exe", "/F"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(
+            ["taskkill", "/IM", "notepad.exe", "/F"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         time.sleep(2)  # Give it time to close
 
         # Check that it's detected as closed
@@ -33,6 +36,6 @@ class TestToolDataWindow(unittest.TestCase):
         if self.test_file.exists():
             self.test_file.unlink()
 
+
 if __name__ == "__main__":
     unittest.main()
-

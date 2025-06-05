@@ -12,4 +12,4 @@ Classes and Functions:
 
 from .backup_manager import BackupManager, BackupRotation
 
-__all__ = ['BackupManager', 'BackupRotation']
+__all__ = ["BackupManager", "BackupRotation"]

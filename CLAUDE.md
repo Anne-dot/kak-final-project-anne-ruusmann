@@ -37,6 +37,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run single test: `python3 -m unittest ToolManagement/Scripts/Tests/UnitTests/test_file_name.py`
 - Run manual test: `python3 ToolManagement/Scripts/Tests/ManualTests/test_file_name.py`
 - Install dependencies: `pip3 install -r ToolManagement/Scripts/requirements.txt`
+- Lint check: `ruff check`
+- Auto-fix linting issues: `ruff check --fix`
+- Format code: `ruff format`
+- Show linting statistics: `ruff check --statistics`
 
 ## Project Documentation
 
@@ -63,6 +67,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Handle cross-platform path operations via Utils.path_utils
 - Maintain modular structure based on functionality: DXF, GCode, Utils
 - One responsibility per Python file following project directory structure
+- NEVER use special Unicode characters (checkmarks, arrows, etc.) - use ASCII only (SUCCESS, ERROR, -->, etc.)
+- Avoid any characters that may cause encoding errors
 
 ### Core Development Principles
 

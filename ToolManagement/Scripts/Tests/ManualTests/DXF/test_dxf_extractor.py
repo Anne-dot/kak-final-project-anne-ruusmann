@@ -19,9 +19,11 @@ if str(scripts_dir) not in sys.path:
 
 # Import ezdxf for DXF creation and our modules
 import ezdxf
-from DXF.parser import DXFParser
+
 from DXF.extractor import DXFExtractor
+from DXF.parser import DXFParser
 from Utils.ui_utils import UIUtils
+
 
 def process_file(file_path):
     """Process a single DXF file with the DXFExtractor."""
@@ -29,7 +31,7 @@ def process_file(file_path):
     print("-" * 50)
 
     if not file_path.exists():
-        print(f"File not found, skipping")
+        print("File not found, skipping")
         return
 
     # Parse the DXF file
@@ -60,14 +62,16 @@ def process_file(file_path):
         # Print workpiece info
         if workpiece:
             print("\nWorkpiece Data:")
-            print(f"{'Dimensions':<15}: {workpiece['width']:.2f} x {workpiece['height']:.2f} x {workpiece['thickness']:.2f} mm")
+            print(
+                f"{'Dimensions':<15}: {workpiece['width']:.2f} x {workpiece['height']:.2f} x {workpiece['thickness']:.2f} mm"
+            )
             print(f"{'Layer':<15}: {workpiece['layer']}")
             print(f"{'Corner Points':<15}: {len(workpiece['corner_points'])}")
 
             # Print ALL corner points
             print("\nCorner Points:")
-            for i, point in enumerate(workpiece['corner_points']):
-                print(f"  {i+1}: ({point[0]:.2f}, {point[1]:.2f}, {point[2]:.2f})")
+            for i, point in enumerate(workpiece["corner_points"]):
+                print(f"  {i + 1}: ({point[0]:.2f}, {point[1]:.2f}, {point[2]:.2f})")
 
         # Print drill points info
         if drill_points:
@@ -80,10 +84,12 @@ def process_file(file_path):
                 pos_str = f"({pos[0]:.1f}, {pos[1]:.1f}, {pos[2]:.1f})"
                 diam = point.get("diameter", 0)
                 depth = point.get("depth", 0)
-                direction = point.get("direction", (0,0,0))
+                direction = point.get("direction", (0, 0, 0))
                 layer = point.get("layer", "")
 
-                print(f"{i+1:<4} {pos_str:<24} {diam:<8.2f} {depth:<8.2f} {str(direction):<14} {layer}")
+                print(
+                    f"{i + 1:<4} {pos_str:<24} {diam:<8.2f} {depth:<8.2f} {direction!s:<14} {layer}"
+                )
 
         # Print information about skipped points
         if skipped > 0:
@@ -93,10 +99,13 @@ def process_file(file_path):
         if issues:
             print("\nIssues Detected:")
             for i, issue in enumerate(issues):
-                print(f"  {i+1}. {issue['entity_type']} on layer {issue['layer']} at {issue['position']}")
+                print(
+                    f"  {i + 1}. {issue['entity_type']} on layer {issue['layer']} at {issue['position']}"
+                )
 
     else:
         print(f"Error: {message}")
+
 
 def test_with_selector():
     """Test with a file selector for choosing test files."""
@@ -114,6 +123,7 @@ def test_with_selector():
     else:
         print("No file selected.")
 
+
 def test_all_files():
     """Test all available DXF files."""
     print("\nTesting all available DXF files:")
@@ -128,14 +138,11 @@ def test_all_files():
         test_data_dir / "Back_5_f0.dxf",
         test_data_dir / "Left Side_3_f1.dxf",
         test_data_dir / "Right Side_4_f0.dxf",
-        test_data_dir / "complex_case.dxf"
+        test_data_dir / "complex_case.dxf",
     ]
 
     # List of files expected to fail
-    fail_files = [
-        test_data_dir / "empty.dxf",
-        test_data_dir / "invalid_test.dxf"
-    ]
+    fail_files = [test_data_dir / "empty.dxf", test_data_dir / "invalid_test.dxf"]
 
     print("\n--- Testing Valid DXF Files ---")
     for file_path in test_files:
@@ -145,6 +152,7 @@ def test_all_files():
     for file_path in fail_files:
         process_file(file_path)
 
+
 def create_test_file_missing_workpiece():
     """Create a test file with drill points but no workpiece."""
     try:
@@ -153,16 +161,21 @@ def create_test_file_missing_workpiece():
         msp = doc.modelspace()
 
         # Add drill points without a workpiece
-        msp.add_circle(center=(10, 10, 0), radius=4.0, dxfattribs={"layer": "EDGE.DRILL_D8.0_P15.0"})
-        msp.add_circle(center=(30, 10, 0), radius=5.0, dxfattribs={"layer": "EDGE.DRILL_D10.0_P20.0"})
+        msp.add_circle(
+            center=(10, 10, 0), radius=4.0, dxfattribs={"layer": "EDGE.DRILL_D8.0_P15.0"}
+        )
+        msp.add_circle(
+            center=(30, 10, 0), radius=5.0, dxfattribs={"layer": "EDGE.DRILL_D10.0_P20.0"}
+        )
 
         # Save to a temporary file
-        temp_file = tempfile.NamedTemporaryFile(suffix='.dxf', delete=False)
+        temp_file = tempfile.NamedTemporaryFile(suffix=".dxf", delete=False)
         doc.saveas(temp_file.name)
         return temp_file.name
     except Exception as e:
-        print(f"Error creating test file: {str(e)}")
+        print(f"Error creating test file: {e!s}")
         return None
+
 
 def create_test_file_missing_drills():
     """Create a test file with workpiece but no drill points."""
@@ -176,12 +189,13 @@ def create_test_file_missing_drills():
         msp.add_lwpolyline(points, dxfattribs={"layer": "PANEL_Egger22mm"})
 
         # Save to a temporary file
-        temp_file = tempfile.NamedTemporaryFile(suffix='.dxf', delete=False)
+        temp_file = tempfile.NamedTemporaryFile(suffix=".dxf", delete=False)
         doc.saveas(temp_file.name)
         return temp_file.name
     except Exception as e:
-        print(f"Error creating test file: {str(e)}")
+        print(f"Error creating test file: {e!s}")
         return None
+
 
 def test_validation_cases():
     """Test validation with specially created test cases."""
@@ -214,7 +228,9 @@ def test_validation_cases():
         if not success and "workpiece" in message.lower():
             print("Test PASSED: Correctly failed due to missing workpiece")
         else:
-            print(f"Test FAILED: Unexpected result: {'Success' if success else 'Failed but not due to workpiece'}")
+            print(
+                f"Test FAILED: Unexpected result: {'Success' if success else 'Failed but not due to workpiece'}"
+            )
 
     # Clean up
     try:
@@ -248,13 +264,16 @@ def test_validation_cases():
         if not success and "drill point" in message.lower():
             print("Test PASSED: Correctly failed due to missing drill points")
         else:
-            print(f"Test FAILED: Unexpected result: {'Success' if success else 'Failed but not due to drill points'}")
+            print(
+                f"Test FAILED: Unexpected result: {'Success' if success else 'Failed but not due to drill points'}"
+            )
 
     # Clean up
     try:
         os.unlink(test_file)
     except:
         pass
+
 
 def run_test():
     """Run all DXF extractor tests."""
@@ -284,6 +303,7 @@ def run_test():
             break
         else:
             print("Invalid option. Please try again.")
+
 
 if __name__ == "__main__":
     run_test()

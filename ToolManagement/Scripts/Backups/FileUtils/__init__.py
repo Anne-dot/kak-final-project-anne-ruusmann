@@ -12,16 +12,11 @@ Functions:
 """
 
 # Import key functions to make them available at package level
+from .file_operations import backup_file, create_lock_file, remove_file_safely
 from .lock_detection import check_file_locked
-from .file_operations import create_lock_file, remove_file_safely, backup_file
 
 # Define publicly available items
-__all__ = [
-    'check_file_locked',
-    'create_lock_file',
-    'remove_file_safely',
-    'backup_file'
-]
+__all__ = ["backup_file", "check_file_locked", "create_lock_file", "remove_file_safely"]
 
 # Version information
 __version__ = "1.0.0"

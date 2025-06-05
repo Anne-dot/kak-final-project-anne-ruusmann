@@ -5,10 +5,9 @@ This test demonstrates how the ToolMatcher finds appropriate tools
 for drilling operations based on diameter and direction.
 """
 
-import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Any
 
 # Path setup for imports
 current_dir = Path(__file__).parent.absolute()
@@ -34,11 +33,11 @@ def print_subheader(title: str) -> None:
     print("-" * 50 + "\n")
 
 
-def print_tool_match(group_key: Tuple, result: Dict[str, Any]) -> None:
+def print_tool_match(group_key: tuple, result: dict[str, Any]) -> None:
     """Print formatted tool match results."""
     diameter, direction = group_key
-    
-    print(f"Drill Specification:")
+
+    print("Drill Specification:")
     print(f"  Diameter: {diameter} mm")
     print(f"  Direction: {direction}")
     print("\nMatched Tool:")
@@ -46,16 +45,16 @@ def print_tool_match(group_key: Tuple, result: Dict[str, Any]) -> None:
     print(f"  Description: {result.get('description', 'N/A')}")
     print(f"  Diameter: {result['diameter']} mm")
     print(f"  Direction Code: {result['direction']}")
-    
+
     # Print additional details if available
     optional_fields = [
         ("tool_type", "Tool Type"),
         ("tool_length", "Tool Length"),
         ("max_working_length", "Max Working Length"),
         ("tool_holder_z_offset", "Z Offset"),
-        ("in_spindle", "In Spindle")
+        ("in_spindle", "In Spindle"),
     ]
-    
+
     print("\nAdditional Tool Details:")
     for field, label in optional_fields:
         if field in result:
@@ -69,33 +68,33 @@ def print_tool_match(group_key: Tuple, result: Dict[str, Any]) -> None:
 def test_standard_cases(automated=False) -> None:
     """Test standard tool matching cases."""
     print_header("Testing Standard Tool Matching Cases")
-    
+
     # Create tool matcher with default path
     matcher = ToolMatcher()
-    
+
     # Define test cases
     test_cases = [
-        (8.0, (0.0, 0.0, 1.0)),    # 8mm vertical (direction 5)
-        (10.0, (1.0, 0.0, 0.0)),   # 10mm horizontal X+ (direction 1)
+        (8.0, (0.0, 0.0, 1.0)),  # 8mm vertical (direction 5)
+        (10.0, (1.0, 0.0, 0.0)),  # 10mm horizontal X+ (direction 1)
         (12.0, (-1.0, 0.0, 0.0)),  # 12mm horizontal X- (direction 2)
-        (10.0, (0.0, 1.0, 0.0)),   # 10mm horizontal Y+ (direction 3)
+        (10.0, (0.0, 1.0, 0.0)),  # 10mm horizontal Y+ (direction 3)
         (10.0, (0.0, -1.0, 0.0)),  # 10mm horizontal Y- (direction 4)
     ]
-    
+
     # Test each case
     for group_key in test_cases:
         diameter, direction = group_key
         print_subheader(f"{diameter}mm Drill in Direction {direction}")
-        
+
         success, message, result = matcher.match_tool_to_group(group_key)
-        
+
         if success:
             print(f"SUCCESS: {message}")
             print_tool_match(group_key, result)
         else:
             print(f"ERROR: {message}")
             print(f"No matching tool found for {diameter}mm drill in direction {direction}")
-        
+
         if not automated:
             print("\nPress Enter to continue...")
             input()
@@ -104,38 +103,38 @@ def test_standard_cases(automated=False) -> None:
 def test_edge_cases(automated=False) -> None:
     """Test edge cases and error handling."""
     print_header("Testing Edge Cases")
-    
+
     # Create tool matcher with default path
     matcher = ToolMatcher()
-    
+
     # Test non-existent diameter
     print_subheader("Non-existent Diameter")
     diameter, direction = 99.0, (0.0, 0.0, 1.0)
-    
+
     success, message, result = matcher.match_tool_to_group((diameter, direction))
-    
+
     if success:
         print(f"SUCCESS: {message}")
         print_tool_match((diameter, direction), result)
     else:
         print(f"Expected Error: {message}")
-    
+
     if not automated:
         print("\nPress Enter to continue...")
         input()
-    
+
     # Test invalid direction vector
     print_subheader("Invalid Direction Vector")
     diameter, direction = 8.0, (0.5, 0.5, 0.0)
-    
+
     success, message, result = matcher.match_tool_to_group((diameter, direction))
-    
+
     if success:
         print(f"SUCCESS: {message}")
         print_tool_match((diameter, direction), result)
     else:
         print(f"Expected Error: {message}")
-    
+
     if not automated:
         print("\nPress Enter to continue...")
         input()
@@ -144,10 +143,10 @@ def test_edge_cases(automated=False) -> None:
 def test_direction_mapping(automated=False) -> None:
     """Test the direction vector to code mapping."""
     print_header("Testing Direction Mapping")
-    
+
     # Create tool matcher
     matcher = ToolMatcher()
-    
+
     # Define test vectors
     test_vectors = [
         ((1.0, 0.0, 0.0), "Left to Right (X+)"),
@@ -155,18 +154,18 @@ def test_direction_mapping(automated=False) -> None:
         ((0.0, 1.0, 0.0), "Front to Back (Y+)"),
         ((0.0, -1.0, 0.0), "Back to Front (Y-)"),
         ((0.0, 0.0, 1.0), "Vertical (Z+)"),
-        ((0.5, 0.5, 0.0), "Invalid")
+        ((0.5, 0.5, 0.0), "Invalid"),
     ]
-    
+
     print("{:<20} {:<15} {:<20}".format("Direction Vector", "Direction Code", "Description"))
     print("-" * 60)
-    
+
     for vector, description in test_vectors:
         code = matcher._convert_vector_to_direction_code(vector)
         code_str = str(code) if code is not None else "None"
-        
-        print("{:<20} {:<15} {:<20}".format(str(vector), code_str, description))
-    
+
+        print(f"{vector!s:<20} {code_str:<15} {description:<20}")
+
     if not automated:
         print("\nPress Enter to continue...")
         input()
@@ -180,12 +179,12 @@ def main() -> None:
         print("2. Test edge cases and error handling")
         print("3. Test direction vector mapping")
         print("0. Exit")
-        
+
         choice = input("\nSelect an option: ")
-        
+
         if choice == "0":
             break
-        elif choice == "1":
+        if choice == "1":
             test_standard_cases()
         elif choice == "2":
             test_edge_cases()
@@ -198,7 +197,7 @@ def main() -> None:
 if __name__ == "__main__":
     # For automated testing
     import sys
-    
+
     if len(sys.argv) > 1 and sys.argv[1] == "--diagnose":
         print_header("Running Automated Diagnostics")
         test_standard_cases(automated=True)

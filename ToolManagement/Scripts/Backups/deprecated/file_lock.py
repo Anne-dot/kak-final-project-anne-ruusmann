@@ -8,17 +8,14 @@ For all new code, use:
     from Utils.file_lock_utils import FileLock
 """
 
+import logging
 import os
 import sys
-import logging
 
 # Add parent directory to path so we can import from Utils
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Import the consolidated FileLock implementation
-from Utils.file_lock_utils import FileLock
 
 # Log a deprecation warning
-logging.warning(
-    "Backups.file_lock is deprecated. Please use Utils.file_lock_utils instead."
-)
+logging.warning("Backups.file_lock is deprecated. Please use Utils.file_lock_utils instead.")
