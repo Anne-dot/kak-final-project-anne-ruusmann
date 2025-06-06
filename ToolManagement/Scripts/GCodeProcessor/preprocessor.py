@@ -360,6 +360,44 @@ class GCodePreprocessor:
             "safety_checks_added": safety_checks_added,
         }
 
+    def add_line_numbers(self, gcode_content: str) -> str:
+        """
+        Add line numbers to G-code content.
+        
+        Adds line numbers (N10, N20, etc.) to non-empty lines in the G-code.
+        Line numbers are incremented based on configuration settings.
+        
+        Args:
+            gcode_content: G-code content as a string
+            
+        Returns:
+            str: G-code content with line numbers added
+        """
+        from Utils.config import AppConfig
+        
+        # If line numbers are disabled, return original content
+        if not AppConfig.gcode.USE_LINE_NUMBERS:
+            self.logger.info("Line numbers disabled in config, returning original content")
+            return gcode_content
+            
+        lines = gcode_content.splitlines()
+        numbered_lines = []
+        line_num = AppConfig.gcode.LINE_NUMBER_INCREMENT
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # Don't number empty lines
+            if not stripped:
+                numbered_lines.append(line)
+            else:
+                # Add line number to all non-empty lines (including comments)
+                numbered_lines.append(f"N{line_num} {line}")
+                line_num += AppConfig.gcode.LINE_NUMBER_INCREMENT
+                
+        self.logger.info(f"Added line numbers to G-code (increment: {AppConfig.gcode.LINE_NUMBER_INCREMENT})")
+        return "\n".join(numbered_lines)
+
 
 def main():
     """Main function for command-line usage."""
