@@ -70,17 +70,17 @@ class VisualCoordinateTranslator:
                     skipped_count += 1
                     continue
 
-                # Get original coordinates and direction
+                # Get original coordinates and extrusion_vector
                 original_coords = point["position"]
-                direction = point["direction"]
+                extrusion_vector = point["extrusion_vector"]
 
                 # Detect drilling direction
-                is_x_direction = self._is_x_direction_drilling(direction)
-                is_y_direction = self._is_y_direction_drilling(direction)
+                is_x_direction = self._is_x_direction_drilling(extrusion_vector)
+                is_y_direction = self._is_y_direction_drilling(extrusion_vector)
 
                 # Skip if not a horizontal drilling operation
                 if not (is_x_direction or is_y_direction):
-                    self.logger.warning(f"Unsupported drilling direction: {direction}")
+                    self.logger.warning(f"Unsupported drilling direction: {extrusion_vector}")
                     skipped_count += 1
                     continue
 
@@ -183,7 +183,7 @@ class VisualCoordinateTranslator:
             bool: True if valid, False otherwise
         """
         # Check required fields exist
-        required_fields = ["position", "diameter", "depth", "direction"]
+        required_fields = ["position", "diameter", "depth", "extrusion_vector"]
         if not all(field in point for field in required_fields):
             self.logger.warning(f"Drill point missing required fields: {point}")
             return False
@@ -198,64 +198,64 @@ class VisualCoordinateTranslator:
             self.logger.warning(f"Invalid position type: {type(position).__name__}")
             return False
 
-        # Check direction has 3 components
+        # Check extrusion_vector has 3 components
         try:
-            direction = point["direction"]
-            if len(direction) != 3:
-                self.logger.warning(f"Invalid direction format: {direction}")
+            extrusion_vector = point["extrusion_vector"]
+            if len(extrusion_vector) != 3:
+                self.logger.warning(f"Invalid extrusion_vector format: {extrusion_vector}")
                 return False
         except (TypeError, AttributeError):
-            self.logger.warning(f"Invalid direction type: {type(direction).__name__}")
+            self.logger.warning(f"Invalid extrusion_vector type: {type(extrusion_vector).__name__}")
             return False
 
         return True
 
-    def _is_x_direction_drilling(self, direction) -> bool:
+    def _is_x_direction_drilling(self, extrusion_vector) -> bool:
         """
-        Check if direction vector indicates X-direction drilling.
+        Check if extrusion vector indicates X-direction drilling.
 
         Args:
-            direction: Direction vector (x, y, z)
+            extrusion_vector: Extrusion vector (x, y, z)
 
         Returns:
             bool: True if X-direction drilling
         """
         try:
-            x, y, z = direction
+            x, y, z = extrusion_vector
             # Check if this is an X-direction vector with exact equality
             return abs(x) == 1.0 and y == 0.0 and z == 0.0
         except (ValueError, TypeError, AttributeError):
             return False
 
-    def _is_y_direction_drilling(self, direction) -> bool:
+    def _is_y_direction_drilling(self, extrusion_vector) -> bool:
         """
-        Check if direction vector indicates Y-direction drilling.
+        Check if extrusion vector indicates Y-direction drilling.
 
         Args:
-            direction: Direction vector (x, y, z)
+            extrusion_vector: Extrusion vector (x, y, z)
 
         Returns:
             bool: True if Y-direction drilling
         """
         try:
-            x, y, z = direction
+            x, y, z = extrusion_vector
             # Check if this is a Y-direction vector with exact equality
             return x == 0.0 and abs(y) == 1.0 and z == 0.0
         except (ValueError, TypeError, AttributeError):
             return False
 
-    def _is_z_direction_drilling(self, direction) -> bool:
+    def _is_z_direction_drilling(self, extrusion_vector) -> bool:
         """
-        Check if direction vector indicates Z-direction drilling (vertical).
+        Check if extrusion vector indicates Z-direction drilling (vertical).
 
         Args:
-            direction: Direction vector (x, y, z)
+            extrusion_vector: Extrusion vector (x, y, z)
 
         Returns:
             bool: True if Z-direction drilling
         """
         try:
-            x, y, z = direction
+            x, y, z = extrusion_vector
             # Check if this is a Z-direction vector with exact equality
             return x == 0.0 and y == 0.0 and abs(z) == 1.0
         except (ValueError, TypeError, AttributeError):

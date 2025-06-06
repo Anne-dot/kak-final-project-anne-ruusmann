@@ -37,11 +37,32 @@ The GCodeGenerator is responsible for:
 - Handle feed rates for different drilling phases
 - Coordinate with VBScript macros for specialized positioning
 
-### `gcode_program_generator.py` (Planned)
-- Orchestrate the G-code generation process
-- Apply machine-specific settings
-- Handle overall program structure
-- Integrate with GCodeProcessor for safety enhancements
+### `gcode_program_generator.py` (Implemented)
+- Orchestrates the complete G-code generation process
+- Validates input data from ProcessingEngine
+- Coordinates tool matching and drilling operations
+- Builds complete G-code programs with header and footer
+- Uses modular components for single-responsibility design
+
+### `approach_calculator.py` (Implemented)
+- Calculates safe approach positions for drilling operations
+- Ensures drill starts outside workpiece by configured distance
+- Supports all four horizontal drilling directions (X+, X-, Y+, Y-)
+- Uses machine_settings for approach distance configuration
+
+### `gcode_section_builder.py` (Implemented)
+- Builds individual G-code program sections
+- Generates headers with workpiece dimensions and attribution
+- Creates tool change commands with spindle control
+- Builds drilling operation sequences with approach positioning
+- Generates standard program footers
+
+### `tool_group_processor.py` (Implemented)
+- Processes groups of drill points by tool
+- Matches tools to all drill groups using ToolMatcher
+- Generates complete G-code for each tool group
+- Handles approach position calculations for each drill point
+- Fails immediately if any tool cannot be matched
 
 ## Data Flow Example
 
@@ -49,19 +70,34 @@ Input from ProcessingEngine:
 ```python
 {
     "workpiece": {
-        "width": 400.0,      # Width after processing
-        "height": 600.0,     # Height after processing
-        "thickness": 18.0    # Material thickness
+        "width_after_rotation": 400.0,   # Width after rotation
+        "height_after_rotation": 600.0,  # Height after rotation
+        "thickness": 18.0                # Material thickness
     },
-    "drill_points": [
-        {
-            "machine_position": (85.3, 479.5, 0.0),
-            "diameter": 8.0,
-            "depth": 15.0,
-            "extrusion_vector": (1.0, 0.0, 0.0)  # X+ direction
-        }
-        # More drilling points...
-    ]
+    "grouped_points": {
+        (8.0, (1.0, 0.0, 0.0)): [  # 8mm X+ drilling
+            {
+                "machine_position": (0, -200, 9),
+                "diameter": 8.0,
+                "depth": 15.0,
+                "extrusion_vector": (1.0, 0.0, 0.0)
+            },
+            {
+                "machine_position": (0, -300, 9),
+                "diameter": 8.0,
+                "depth": 15.0,
+                "extrusion_vector": (1.0, 0.0, 0.0)
+            }
+        ],
+        (5.0, (0.0, 1.0, 0.0)): [  # 5mm Y+ drilling
+            {
+                "machine_position": (100, -400, 5.5),
+                "diameter": 5.0,
+                "depth": 12.0,
+                "extrusion_vector": (0.0, 1.0, 0.0)
+            }
+        ]
+    }
 }
 ```
 
@@ -147,9 +183,12 @@ For the initial implementation, the focus will be on:
 - [DONE] Machine settings management with coordinate system selection
 - [DONE] G-code header/footer generation with operator prompts
 - [DONE] Safe Z height reading from m6start.m1s macro (single source of truth)
-- [DONE] Horizontal drilling operations generator
-- [TODO] M-code macros for specialized positioning
-- [TODO] Complete G-code program generator
+- [DONE] Horizontal drilling operations generator with 3-decimal precision
+- [DONE] Complete G-code program generator with modular class structure
+- [DONE] Approach position calculator for safe drilling starts
+- [DONE] Section builder for all G-code program sections
+- [DONE] Tool group processor for handling multiple tools
+- [DONE] M6 macro updated with DoSpinStop() for safe tool changes
 
 ## Boundaries
 

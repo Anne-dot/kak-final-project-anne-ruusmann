@@ -52,7 +52,7 @@ class ToolMatcher:
         Match a drilling group to a tool.
 
         Args:
-            group_key: Tuple of (diameter, direction_vector) from ProcessingEngine
+            group_key: Tuple of (diameter, extrusion_vector) from ProcessingEngine
 
         Returns:
             tuple: (success, message, details) where:
@@ -70,18 +70,18 @@ class ToolMatcher:
                     )
                 )
 
-            # Extract diameter and direction
-            diameter, direction_vector = group_key
+            # Extract diameter and extrusion vector
+            diameter, extrusion_vector = group_key
             self.logger.info(
-                f"Looking for tool with diameter {diameter} and direction {direction_vector}"
+                f"Looking for tool with diameter {diameter} and extrusion vector {extrusion_vector}"
             )
 
-            # Step 1: Convert direction vector to code
-            direction_code = self._convert_vector_to_direction_code(direction_vector)
+            # Step 1: Convert extrusion vector to direction code for tool lookup
+            direction_code = self._convert_vector_to_direction_code(extrusion_vector)
             if direction_code is None:
                 return ErrorHandler.from_exception(
                     ValidationError(
-                        message=f"Unsupported direction vector: {direction_vector}",
+                        message=f"Unsupported extrusion vector: {extrusion_vector}",
                         severity=ErrorSeverity.ERROR,
                     )
                 )

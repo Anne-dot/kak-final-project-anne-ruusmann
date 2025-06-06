@@ -149,6 +149,9 @@ class GCodeConfig:
     DRILLING_FEED_RATE = 120.0  # For kitchen cupboard materials with 8mm bit
     RAPID_POSITIONING_FEED_RATE = 1000.0  # For G00 movements
     RETRACTION_FEED_RATE = 300.0  # For pulling out after drilling
+    
+    # Spindle speed for furniture drilling (RPM)
+    DEFAULT_SPINDLE_SPEED = 3000  # Safe speed for MDF, particleboard, plywood with 5-36mm drills
 
     # Safety parameters for drilling operations (mm)
     SAFE_APPROACH_DISTANCE = 10.0  # Distance before workpiece to start drilling
@@ -164,7 +167,7 @@ class GCodeConfig:
     DECIMAL_PRECISION = 3  # Number of decimal places for coordinates
     COMMENT_STYLE = "parentheses"  # Use (comments) rather than ;comments
     USE_LINE_NUMBERS = True  # Include line numbers (N1, N2, etc.)
-    LINE_NUMBER_INCREMENT = 1  # Increment between line numbers
+    LINE_NUMBER_INCREMENT = 5  # Increment between line numbers (N5, N10, N15...)
 
 
 class ToolConfig:

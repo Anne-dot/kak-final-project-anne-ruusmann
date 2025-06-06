@@ -31,6 +31,13 @@ class WorkpieceRotator:
         """Initialize the workpiece rotator."""
         self.logger = setup_logger(__name__)
         self.logger.info("WorkpieceRotator initialized")
+    
+    def _clean_float(self, value: float) -> float:
+        """Clean up floating point values to avoid -0.0."""
+        # Convert -0.0 to 0.0
+        if value == 0:
+            return 0.0
+        return value
 
     def rotate_coordinates_90(self, x: float, y: float) -> tuple[float, float]:
         """
@@ -44,7 +51,9 @@ class WorkpieceRotator:
             Tuple of (new_x, new_y) after rotation
         """
         # 90° clockwise rotation: (x,y) -> (y,-x)
-        return y, -x
+        new_x = self._clean_float(y)
+        new_y = self._clean_float(-x)
+        return new_x, new_y
 
     def rotate_point_90(self, point: dict[str, Any]) -> tuple[bool, str, dict[str, Any]]:
         """
@@ -91,7 +100,7 @@ class WorkpieceRotator:
                 new_ex, new_ey = self.rotate_coordinates_90(ex, ey)
 
                 # Update extrusion vector with rotated coordinates
-                point["extrusion_vector"] = (new_ex, new_ey, ez)
+                point["extrusion_vector"] = (new_ex, new_ey, self._clean_float(ez))
 
             # Return success with rotated point
             return ErrorHandler.create_success_response(
@@ -208,13 +217,20 @@ class WorkpieceRotator:
 
             # 1. ROTATE ALL POINTS TOGETHER (Corner points and drill points)
 
-            # Rotate corner points (except origin which stays at 0,0,0)
-            rotated_corner_points = [original_corner_points[0]]  # Origin stays at (0,0,0)
-
-            for i in range(1, len(original_corner_points)):
-                x, y, z = original_corner_points[i]
-                rotated_x, rotated_y = self.rotate_coordinates_90(x, y)
-                rotated_corner_points.append((rotated_x, rotated_y, z))
+            # TODO: HARDCODED FIX - Assumes corner_points[3] is origin (0,0,0)
+            # This needs proper origin detection in future - see JIRA MRFP-XXX
+            # Rotate corner points (origin at index 3 stays at 0,0,0)
+            rotated_corner_points = []
+            
+            # Process each corner point
+            for i in range(len(original_corner_points)):
+                if i == 3:  # HARDCODED: Origin is at index 3
+                    # Origin stays at (0,0,0)
+                    rotated_corner_points.append(original_corner_points[3])
+                else:
+                    x, y, z = original_corner_points[i]
+                    rotated_x, rotated_y = self.rotate_coordinates_90(x, y)
+                    rotated_corner_points.append((rotated_x, rotated_y, z))
 
             # Update workpiece with rotated corner points
             workpiece["corner_points"] = rotated_corner_points
@@ -232,8 +248,10 @@ class WorkpieceRotator:
 
             # 2. DETERMINE NEW ORIENTATION AND DIMENSIONS AFTER ROTATION
 
-            # Get the rotated point C (opposite corner from origin)
-            rotated_point_c = rotated_corner_points[2]
+            # TODO: HARDCODED FIX - Assumes corner_points[1] is point C (diagonal opposite from origin)
+            # This needs proper diagonal detection in future - see JIRA MRFP-XXX
+            # Get the rotated point C (opposite corner from origin at index 3)
+            rotated_point_c = rotated_corner_points[1]  # HARDCODED: Point C is at index 1
 
             # Determine orientation after rotation
             orientation = self.get_orientation_from_point_c(rotated_point_c)

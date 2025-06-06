@@ -297,15 +297,15 @@ class DrillPointExtractor:
                 )
                 return None
 
-            # Default drilling direction is vertical (down)
-            direction = (0, 0, 1)
+            # Default drilling extrusion vector is vertical (down)
+            extrusion_vector = (0, 0, 1)
 
             # Check if extrusion vector is specified
             if hasattr(circle.dxf, "extrusion"):
                 extrusion = circle.dxf.extrusion
                 # Only use non-zero vectors
                 if extrusion != (0, 0, 0):
-                    direction = extrusion
+                    extrusion_vector = extrusion
 
             # Final validation of parameters
             if primary_diameter <= 0:
@@ -330,7 +330,7 @@ class DrillPointExtractor:
                 "diameter_specification": diameter_from_layer,  # From layer spec
                 "diameter_mismatch": diameter_mismatch,  # Mismatch info
                 "depth": depth,
-                "direction": direction,
+                "extrusion_vector": extrusion_vector,
                 "layer": layer,
                 "entity_type": "CIRCLE",
             }
