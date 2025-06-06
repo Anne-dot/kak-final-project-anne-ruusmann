@@ -35,7 +35,15 @@ The ProcessingEngine is responsible for:
       - If x_c < 0: Apply -x_c offset in X direction
       - If y_c > 0: Apply -y_c offset in Y direction
 
-#### 3️⃣ `drill_point_grouper.py`
+#### 3️⃣ `drill_point_filter.py`
+- **DrillPointFilter** class
+  - Filters drill points based on machine capabilities
+  - MVP: Removes vertical drilling operations (Z+ direction)
+  - Preserves all horizontal drilling (X+, X-, Y+, Y-)
+  - Methods:
+    - `filter_for_horizontal_drilling(data)` - Main filtering method
+
+#### 4️⃣ `drill_point_grouper.py`
 - **DrillPointGrouper** class
   - Simple grouping by diameter and direction
   - Creates a dictionary with (diameter, direction) keys
@@ -50,8 +58,9 @@ The ProcessingEngine modules form a straightforward pipeline:
 1. **Input**: Data from DXF package with visual coordinates
 2. **Rotation** (optional): Apply rotation via `WorkpieceRotator`
 3. **Positioning**: Apply machine offsets via `MachinePositioner`
-4. **Grouping**: Group drill points via `DrillPointGrouper`
-5. **Output**: Processed data ready for GCodeGenerator
+4. **Filtering**: Filter for horizontal drilling via `DrillPointFilter` (MVP)
+5. **Grouping**: Group drill points via `DrillPointGrouper`
+6. **Output**: Processed data ready for GCodeGenerator
 
 ### Key Design Decisions
 
