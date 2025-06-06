@@ -10,7 +10,7 @@ This project integrates two main components:
 
 ## 🔗 Documentation
 
-For complete documentation, please visit our [Confluence Wiki](INSERT_WIKI_LINK_HERE).
+For complete documentation, please visit our [Confluence Wiki](https://ruusmann.atlassian.net/wiki/spaces/MFPD/) (private access).
 
 ## 🏗️ Repository Structure
 
@@ -60,6 +60,73 @@ Mach3/
 - **Python 3.13+**: Core processing engine
 - **Mach3 VBScript**: Machine interface and control
 - **CSV**: Data storage and exchange format
+
+## 📦 Prerequisites
+
+- **Mach3 CNC Software** (Demo version or licensed)
+  - Download from [Mach3 official website](https://www.machsupport.com/software/mach3/)
+  - Windows operating system required for Mach3
+- **Python 3.13+** installed on your system
+- Basic understanding of CNC operations and G-code
+
+## 🔧 Installation
+
+> **Note:** This system requires integration with an existing Mach3 installation and cannot be run standalone.
+
+1. **Install Mach3**
+   - Download and install Mach3 (demo version works for testing)
+   - Default installation path: `C:\Mach3\`
+
+2. **Clone this repository**
+   ```bash
+   git clone <repository-url>
+   cd Mach3
+   ```
+
+3. **Copy files to Mach3 directory**
+   - Copy the entire `ToolManagement` folder to your Mach3 installation directory
+   - Copy contents of `macros` folder to `C:\Mach3\macros\<YourProfile>\`
+   - Typical structure after copying:
+     ```
+     C:\Mach3\
+     ├── ToolManagement\
+     │   ├── Scripts\
+     │   ├── Data\
+     │   └── Backups\
+     └── macros\
+         └── <YourProfile>\
+             └── Mach3Development\
+     ```
+
+4. **Install Python dependencies**
+   ```bash
+   pip install -r ToolManagement/Scripts/requirements.txt
+   ```
+
+5. **Configure Mach3**
+   - Open Mach3 and load your machine profile
+   - Ensure macro path points to your profile's macro directory
+   - Test by running macro M1000 from MDI (should display system info)
+
+## 💻 Usage
+
+### Running Python Scripts
+```bash
+# Navigate to Scripts directory
+cd C:\Mach3\ToolManagement\Scripts
+
+# Run DXF to G-code generator
+python GCodeGenerator/gcode_program_generator.py
+
+# Run tests
+python Tests/run_tests.py
+```
+
+### Using Mach3 Macros
+- **M1000**: Display system information
+- **M1001**: Load tool data from CSV
+- **M1002**: Backup tool data
+- **M1003**: Sync tools to Mach3 native table
 
 ## 🔄 Development Workflow
 

@@ -120,3 +120,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Implement timeouts for operations that might hang
 - Always validate user input with proper error handling
 - Use On Error Resume Next with Err.Number checks for error handling
+
+## Documentation to Move to Confluence
+
+### From Scripts Folder (11 files):
+
+**High Priority - Core Documentation:**
+1. `ToolManagement/Scripts/README.md` - System architecture overview
+2. `ToolManagement/Scripts/DXF/README.md` - DXF parsing package docs
+3. `ToolManagement/Scripts/ProcessingEngine/README.md` - Coordinate transformation docs
+4. `ToolManagement/Scripts/GCodeGenerator/README.md` - G-code generation docs
+5. `ToolManagement/Scripts/GCodeGenerator/GCODE_GENERATOR_DECISIONS.md` - Technical decisions
+6. `ToolManagement/Scripts/GCodeGenerator/TOOL_OFFSET_APPROACH.md` - Tool offset handling
+7. `ToolManagement/Scripts/Utils/README.md` - Utility modules documentation
+8. `ToolManagement/Scripts/Tests/README.md` - Testing framework guide
+
+**Medium Priority:**
+9. `ToolManagement/Scripts/GCodeProcessor/README.md` - G-code safety enhancement
+10. `ToolManagement/Scripts/CSVEditor/README.md` - CSV editor tool docs
+
+**Low Priority:**
+11. `ToolManagement/Scripts/GCodeGenerator/TODO.md` - Task tracking (better in issue tracker)
+
+### From Macros Folder (5 files):
+
+**High Priority:**
+1. `macros/Mach3Development/99_MacroFunctionalityTesting/README.md` - Comprehensive VBScript testing guide
+2. `macros/Mach3Development/m6startReadme.txt` - Critical tool change macro documentation
+
+**Medium Priority:**
+3. `macros/Mach3Development/99_MacroFunctionalityTesting/InitialTests/TEST_ORGANIZATION.md` - Test inventory
+4. `macros/Mach3Development/99_MacroFunctionalityTesting/Deprecated/DEPRECATED_README.md` - Testing limitations
+
+**Low Priority:**
+5. `macros/Mach3Development/99_MacroFunctionalityTesting/Deprecated/TEST_RUNNER_README.md` - Historical reference
+
+**Total: 16 documentation files** suitable for Confluence migration, with 10 high-priority items containing essential technical documentation.

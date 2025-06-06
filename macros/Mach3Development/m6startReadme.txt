@@ -179,3 +179,20 @@ NOTES ON VBSCRIPT LIMITATIONS
 - Must use #expand for code reuse
 - Communication between macros via DROs or files
 - Error handling limited to On Error Resume Next
+
+M6 MACRO SPINDLE HANDLING (Added: 2025-06-06)
+==============================================
+IMPORTANT: As of June 6, 2025, spindle stop functionality was added to m6Start.m1s
+
+Before this date:
+- The macro did NOT stop the spindle
+- G-code had to issue M5 before each M6
+- G-code generators needed to track spindle state
+
+After this date:
+- DoSpinStop() added at the beginning of m6Start.m1s
+- M6 automatically stops spindle before tool change
+- G-code only needs: T#M6 followed by M03 S####
+- No manual M5 required before tool changes
+- Simplifies G-code generation
+- Ensures safer tool change operations

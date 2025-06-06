@@ -14,7 +14,8 @@ tooltipZOffset = 0  ' Default value, only horizontal drills will override
 Const toolSpaceX = 32
 Const toolSpaceY = 32
 
-' Tool Change Parameters
+' Tool Change Parameter
+
 Const TOOL_CHANGE_HEIGHT = 50  ' TODO: Verify this height value
 
 ' Magazine Offset Positions
@@ -36,6 +37,9 @@ Const m3Out = OUTPUT4
 ' ========================================
 ' === INITIALIZATION & SIGNAL RESET    ===
 ' ========================================
+' Stop spindle for safe tool change
+DoSpinStop()
+
 ' Deactivate all tool signals
 DeactivateSignal(bits0)
 DeactivateSignal(bits1)

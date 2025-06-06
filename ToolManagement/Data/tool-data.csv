@@ -27,8 +27,8 @@ tool_number,tool_type,tool_direction,rotation_direction,diameter,tool_length,max
 26,VerticalDrill,5,CW,5,100,150,0,1,44676.43,,Vertical Drill
 27,VerticalDrill,5,CW,26,100,150,0,1,44676.43,,Vertical Drill
 28,VerticalDrill,5,CW,18,100,150,0,1,44676.43,,Vertical Drill
-29,HorizontalDrill,1,CCW,10,150,200,-20,1,44676.43,,Left to Right Horizontal Drill
-30,HorizontalDrill,2,CW,10,150,200,-20,1,44676.43,,Right to Left Horizontal Drill
+29,HorizontalDrill,1,CCW,8,150,200,-20,1,44676.43,,Left to Right Horizontal Drill
+30,HorizontalDrill,2,CW,8,150,200,-20,1,44676.43,,Right to Left Horizontal Drill
 31,VerticalDrill,5,CW,8,100,150,0,1,44676.43,,Vertical Drill
 32,VerticalDrill,5,CW,8,100,150,0,1,44676.43,,Vertical Drill
 33,VerticalDrill,5,CW,8,100,150,0,1,44676.43,,Vertical Drill
@@ -37,5 +37,5 @@ tool_number,tool_type,tool_direction,rotation_direction,diameter,tool_length,max
 36,VerticalDrill,5,CW,8,100,150,0,1,44676.43,,Vertical Drill
 37,VerticalDrill,5,CW,8,100,150,0,1,44676.43,,Vertical Drill
 38,VerticalDrill,5,CW,8,100,150,0,1,44676.43,,Vertical Drill
-39,HorizontalDrill,1,CW,12,100,150,0,1,44676.43,,Left to Right Horizontal Drill
-40,HorizontalDrill,2,CCW,12,100,150,0,1,44676.43,,Right to Left Horizontal Drill
+39,HorizontalDrill,1,CW,8,100,150,0,1,44676.43,,Left to Right Horizontal Drill
+40,HorizontalDrill,2,CCW,8,100,150,0,1,44676.43,,Right to Left Horizontal Drill
